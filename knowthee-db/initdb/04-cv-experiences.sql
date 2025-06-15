@@ -6,8 +6,11 @@ CREATE TABLE employee_experiences (
   title            VARCHAR(255),
   start_date       DATE,
   end_date         DATE,
-  responsibilities TEXT,
+  description      TEXT,
+  responsabilities TEXT,
   sort_order       INT     NOT NULL DEFAULT 0,
+  created_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   UNIQUE(employee_id, sort_order)
 );
 

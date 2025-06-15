@@ -1,0 +1,47 @@
+Name: Robert Miller
+Email: robertmiller@hotmail.com
+Phone: (973) 313-3408
+Location: Austin, TX
+LinkedIn: linkedin.com/in/robert-miller-250
+
+
+ABOUT ME
+Results-driven Full Stack Developer with expertise in Tableau, MATLAB and Team Management, Strategic Planning. 3+ years of experience delivering launching new product features for organizations in the healthcare sector. Particularly skilled at developing scalable solutions.
+
+WORK EXPERIENCE
+Full Stack Developer | Ford
+Sep 2024 - Present
+• Implemented Ruby solutions that improved system performance by 24%
+• Collaborated with cross-functional teams to deliver enterprise platform features
+• Mentored junior developers in Spring Boot best practices
+• Built scalable microservices architecture using DynamoDB
+• Automated deployment processes using Node.js reducing manual effort by 40%
+
+Finance Manager | Pfizer
+Dec 2023 - Aug 2025
+• Conducted risk analysis for 55 investment opportunities
+• Conducted risk analysis for 166 investment opportunities
+• Optimized cash flow management saving $4408K annually
+
+Senior Data Analyst | Fidelity
+Jul 2016 - Present
+• Collaborated with cross-functional teams to deliver customer solution features
+• Mentored junior developers in Go best practices
+• Implemented MongoDB solutions that improved system performance by 15%
+• Led architecture design for enterprise platform using Redis technologies
+• Optimized database queries reducing response time by 15%
+
+UI Designer | Roche
+Sep 2016 - Feb 2018
+• Conducted user testing with 130 participants
+• Established design guidelines adopted by 95 teams
+• Established design guidelines adopted by 73 teams
+
+
+ACADEMIC BACKGROUND
+University of Michigan
+B.S. in Information Systems, 2003
+
+
+COMPETENCIES
+JavaScript, Docker, GCP, Vue.js, Jira, Git, Agile Methodologies, Negotiation, Problem Solving, Dispute Resolution, Negotiation, Due Diligence, Content Marketing

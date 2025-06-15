@@ -3,8 +3,7 @@ CREATE TABLE employee_assessments (
   employee_id     UUID    NOT NULL REFERENCES employees(id) ON DELETE CASCADE,
   type_id         UUID    NOT NULL REFERENCES assessment_types(id),
   assessment_date DATE    DEFAULT CURRENT_DATE,
-  tenant_id       VARCHAR(50) NOT NULL DEFAULT 'default',
-  created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  tenant_id       VARCHAR(50) NOT NULL DEFAULT 'default'
 );
 
 CREATE INDEX idx_assessments_employee ON employee_assessments(employee_id);

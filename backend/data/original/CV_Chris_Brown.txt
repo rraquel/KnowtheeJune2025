@@ -1,0 +1,66 @@
+Name: Chris Brown
+Email: chris.brown@hotmail.com
+Phone: (244) 735-6646
+Location: Columbus, OH
+
+
+CAREER PROFILE
+Visionary VP of Marketing with over 15+ years of executive leadership in retail. Extensive expertise driving implementing data-driven marketing strategies and implementing data-driven marketing strategies through strategic implementation of MongoDB, MATLAB and focus on digital marketing optimization.
+
+EXPERIENCE
+Content Creator | Intel
+Apr 2022 - Oct 2022
+• Implemented marketing automation reducing costs by 12%
+• Led SEO optimization improving organic traffic by 19%
+• Increased brand awareness by 16% through strategic campaigns
+• Developed content strategy resulting in 18% engagement increase
+• Increased brand awareness by 22% through strategic campaigns
+
+Engineering Intern | Oracle
+Jul 2023 - Jun 2025
+• Built scalable microservices architecture using Cassandra
+• Led architecture design for mobile app using scikit-learn technologies
+• Collaborated with cross-functional teams to deliver mobile app features
+• Developed and maintained MySQL applications serving 43 users
+• Led architecture design for digital product using C# technologies
+
+Junior Product Manager | Spotify
+Dec 2017 - Aug 2019
+• Defined product strategy resulting in 11% market share growth
+• Led product roadmap for web platform with 8 active users
+• Defined product strategy resulting in 10% market share growth
+
+Business Analyst | KPMG
+Sep 2019 - Apr 2021
+• Mentored junior developers in GCP best practices
+• Collaborated with cross-functional teams to deliver digital product features
+• Implemented GCP solutions that improved system performance by 25%
+
+Junior Researcher | YouTube
+Jun 2012 - Present
+• Developed methodology improving research accuracy by 23%
+• Collaborated with 43 universities on joint research projects
+• Conducted research studies with 13 participants
+
+Design Assistant | Johnson & Johnson
+Jan 2011 - Aug 2011
+• Designed user interfaces for mobile app used by 19 customers
+• Designed user interfaces for software system used by 50 customers
+• Improved user satisfaction scores by 25% through redesign
+• Established design guidelines adopted by 48 teams
+• Created 18 design prototypes for new features
+
+
+ACADEMIC HISTORY
+University of Chicago
+M.A. in Economics, 2020
+
+New York University
+B.S. in Mathematics, 2017
+
+University of California, Berkeley
+Ph.D. in Finance, 2003
+
+
+SKILL SET
+MongoDB, React, Django, ASP.NET, pandas, Spring Boot, MATLAB, Public Speaking, Agile Methodologies, Cross-functional Collaboration, Tax Planning, Financial Analysis, Investment Analysis, Client Relations

@@ -7,9 +7,7 @@ CREATE TABLE document_embeddings (
   content     TEXT    NOT NULL,
   embedding   vector(1536) NOT NULL,
   metadata    JSONB,
-  tenant_id   VARCHAR(36) NOT NULL,
-  created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  UNIQUE(doc_type, document_id)
+  tenant_id   VARCHAR(36) NOT NULL
 );
 
 CREATE INDEX idx_embeddings_employee ON document_embeddings(employee_id);

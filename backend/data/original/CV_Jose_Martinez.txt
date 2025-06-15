@@ -1,0 +1,50 @@
+Name: Jose Martinez
+Email: jmartinez@yahoo.com
+Phone: (388) 913-9816
+Location: Austin, TX
+LinkedIn: linkedin.com/in/jose-martinez-979
+
+
+SUMMARY
+Seasoned Process Excellence Leader leader with 12+ years guiding teams and initiatives in financial services. Consistent record of optimizing supply chain efficiency through expertise in CircleCI, PostgreSQL and commitment to quality control implementation.
+
+EMPLOYMENT HISTORY
+Operations Intern | Novartis
+Jan 2025 - Jan 2026
+• Reduced operational waste by 23% through process improvements
+• Reduced operational waste by 24% through process improvements
+• Reduced operational waste by 19% through process improvements
+
+Paralegal | Bank of America
+Sep 2017 - Apr 2018
+• Negotiated 10 contracts reducing legal risks by 14%
+• Managed legal matters for transactions worth $289K
+• Managed litigation cases with 13% success rate
+
+Product Coordinator | General Electric
+Aug 2020 - Oct 2021
+• Coordinated cross-functional teams of 30 members
+• Optimized product metrics improving conversion by 17%
+• Coordinated cross-functional teams of 5 members
+• Managed product lifecycle from concept to 201K revenue
+• Defined product strategy resulting in 20% market share growth
+
+Analytics Intern | Nike
+Dec 2016 - May 2017
+• Collaborated with cross-functional teams to deliver mobile app features
+• Developed and maintained Jenkins applications serving 38 users
+• Automated deployment processes using Terraform reducing manual effort by 9%
+• Collaborated with cross-functional teams to deliver mobile app features
+• Mentored junior developers in Kubernetes best practices
+
+
+EDUCATION AND TRAINING
+Cornell University
+Ph.D. in Computer Science, 2016
+
+University of Michigan
+Ph.D. in Business Administration, 2010
+
+
+PROFESSIONAL SKILLS
+Django, Angular, React, MySQL, BERT, Scrum, Creativity, HVAC, Structural Analysis, Negotiation

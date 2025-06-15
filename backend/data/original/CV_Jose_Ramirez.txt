@@ -1,0 +1,71 @@
+Name: Jose Ramirez
+Email: jose.ramirez@yahoo.com
+Phone: (517) 624-5385
+LinkedIn: linkedin.com/in/jose-ramirez-284
+
+
+CAREER OBJECTIVE
+Dynamic Chief Supply Chain Officer executive offering 25+ years of leadership excellence in healthcare. Track record of implementing lean methodologies through strategic vision, resource allocation, and innovative application of OpenCV, BERT.
+
+RELEVANT EXPERIENCE
+Chief Supply Chain Officer | Unilever
+Feb 2025 - Mar 2030
+• Optimized supply chain reducing costs by 67%
+• Reduced operational waste by 44% through process improvements
+• Implemented lean methodologies improving efficiency by 73%
+• Managed 295 person operations team
+
+Senior Designer | Chevron
+Oct 2018 - Apr 2021
+• Improved user satisfaction scores by 54% through redesign
+• Improved user satisfaction scores by 57% through redesign
+• Established design guidelines adopted by 137 teams
+
+UX Designer | BlackRock
+Apr 2014 - Dec 2015
+• Conducted user testing with 50 participants
+• Created 33 design prototypes for new features
+• Led design sprints resulting in 19% faster development
+• Designed user interfaces for enterprise platform used by 33 customers
+
+Junior Consultant | MIT
+Sep 2014 - May 2015
+• Collaborated with cross-functional teams to deliver digital product features
+• Developed and maintained React applications serving 44 users
+• Developed and maintained Power BI applications serving 35 users
+• Led architecture design for digital product using NLP technologies
+
+Full Stack Developer | ExxonMobil
+Jun 2012 - Jul 2013
+• Collaborated with cross-functional teams to deliver digital transformation features
+• Built scalable microservices architecture using Jira
+• Led architecture design for product suite using C# technologies
+
+Director of Finance | Visa
+Jun 2008 - Present
+• Performed due diligence for $19M M&A transactions
+• Led financial planning reducing operational costs by 33%
+• Performed due diligence for $32M M&A transactions
+• Optimized cash flow management saving $12M annually
+
+Senior Data Analyst | Netflix
+Feb 2011 - Oct 2012
+• Collaborated with cross-functional teams to deliver product suite features
+• Developed and maintained SQL applications serving 23 users
+• Developed and maintained Git applications serving 73 users
+• Automated deployment processes using Terraform reducing manual effort by 29%
+
+
+EDUCATION AND TRAINING
+Carnegie Mellon University
+Ph.D. in Psychology, 2021
+
+University of Washington
+B.S. in Engineering, 1995
+
+Stanford University
+M.S. in Engineering, 1995
+
+
+AREAS OF EXPERTISE
+Flask, PHP, AWS, Django, Terraform, SQL, Conflict Resolution, Customer Service, Analytical Thinking, Adobe Analytics, Salesforce, Email Marketing

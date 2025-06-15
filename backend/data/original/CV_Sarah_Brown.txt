@@ -1,0 +1,57 @@
+Name: Sarah Brown
+Email: sarah.brown@yahoo.com
+Phone: (348) 304-2490
+Location: Phoenix, AZ
+LinkedIn: linkedin.com/in/sarah-brown-817
+
+
+SUMMARY
+Visionary Chief Supply Chain Officer with over 28+ years of executive leadership in financial services. Extensive expertise driving improving product quality metrics and improving product quality metrics through strategic implementation of MySQL, Node.js and focus on logistics coordination.
+
+RELEVANT EXPERIENCE
+Procurement Specialist | Anthem
+Dec 2022 - Present
+• Managed 158 person operations team
+• Reduced operational waste by 28% through process improvements
+• Managed 93 person operations team
+• Implemented quality control systems achieving 32% accuracy
+
+Sales Manager | Siemens
+Nov 2020 - May 2022
+• Conducted product demonstrations to C-level executives
+• Led customer solution sales team achieving 34% increase in market share
+• Negotiated contracts worth $973K with Fortune 500 companies
+
+Compliance Officer | Tesla
+May 2017 - Mar 2019
+• Led compliance program covering 54 jurisdictions
+• Managed litigation cases with 40% success rate
+• Managed legal matters for transactions worth $2082K
+• Provided legal counsel for enterprise platform product launches
+• Managed legal matters for transactions worth $3024K
+
+QA Engineer | Tesla
+Mar 2011 - Aug 2013
+• Implemented PostgreSQL solutions that improved system performance by 24%
+• Collaborated with cross-functional teams to deliver customer solution features
+• Mentored junior developers in GCP best practices
+• Built scalable microservices architecture using Java
+• Optimized database queries reducing response time by 28%
+
+Data Scientist | Cigna
+Mar 2015 - Sep 2016
+• Automated deployment processes using NLP reducing manual effort by 34%
+• Implemented Docker solutions that improved system performance by 35%
+• Collaborated with cross-functional teams to deliver enterprise platform features
+
+
+EDUCATION AND TRAINING
+Purdue University
+Ph.D. in Psychology, 2007
+
+Ohio State University
+M.S. in Data Science, 2005
+
+
+SKILLS
+Power BI, DynamoDB, GCP, Vue.js, OpenCV, Strategic Planning, Critical Thinking, A/B Testing, Google Analytics, C++, MATLAB

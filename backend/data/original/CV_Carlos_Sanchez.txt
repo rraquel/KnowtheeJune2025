@@ -1,0 +1,62 @@
+Name: Carlos Sanchez
+Email: csanchez@yahoo.com
+Phone: (814) 519-5095
+LinkedIn: linkedin.com/in/carlos-sanchez-822
+
+
+ABOUT ME
+Executive Director of Development leader with proven success guiding organizations through improving system performance by 40% and architecture design. 24+ years of experience leveraging Vue.js, C# to drive sustainable growth in competitive markets.
+
+PROFESSIONAL BACKGROUND
+Lead Developer | Costco
+Nov 2022 - Jan 2026
+• Led architecture design for business transformation using Oracle technologies
+• Led architecture design for enterprise solution using NumPy technologies
+• Developed and maintained Kubernetes applications serving 234 users
+• Automated deployment processes using Spring Boot reducing manual effort by 31%
+• Automated deployment processes using Kotlin reducing manual effort by 40%
+
+CTO | Boston Consulting Group
+Jul 2020 - Present
+• Mentored junior developers in pandas best practices
+• Developed and maintained Spring Boot applications serving 752 users
+• Collaborated with cross-functional teams to deliver organizational change features
+• Built scalable microservices architecture using Ruby
+
+VP of Technology | Ford
+Apr 2014 - Dec 2017
+• Built scalable microservices architecture using MongoDB
+• Collaborated with cross-functional teams to deliver market leadership features
+• Mentored junior developers in Azure best practices
+
+Director of Development | Wayfair
+Oct 2013 - Oct 2016
+• Built scalable microservices architecture using MySQL
+• Automated deployment processes using Spring Boot reducing manual effort by 40%
+• Led architecture design for business transformation using Power BI technologies
+
+VP of Technology | Shell
+Dec 2012 - Present
+• Optimized database queries reducing response time by 98%
+• Implemented Kubernetes solutions that improved system performance by 55%
+• Automated deployment processes using Kubernetes reducing manual effort by 76%
+
+VP of Technology | Nike
+Nov 2007 - Jan 2013
+• Led architecture design for corporate strategy using Java technologies
+• Built scalable microservices architecture using pandas
+• Automated deployment processes using SVN reducing manual effort by 96%
+• Optimized database queries reducing response time by 74%
+• Implemented NLP solutions that improved system performance by 47%
+
+
+ACADEMIC QUALIFICATIONS
+University of Chicago
+Ph.D. in Engineering, 2016
+
+Harvard University
+M.A. in Marketing, 2015
+
+
+AREAS OF EXPERTISE
+scikit-learn, CircleCI, MongoDB, AWS, R, MATLAB, Communication, Scrum, Decision Making, Email Marketing, A/B Testing, HubSpot

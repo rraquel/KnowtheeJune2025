@@ -1,0 +1,42 @@
+Name: Chris Garcia
+Email: chrisgarcia@hotmail.com
+Phone: (240) 505-2824
+Location: Indianapolis, IN
+LinkedIn: linkedin.com/in/chris-garcia-437
+
+
+ABOUT ME
+Results-driven Software Engineer II with expertise in TensorFlow, Jira and Scrum, Communication. 6+ years of experience delivering improving system performance by 40% for organizations in the financial services sector. Particularly skilled at code optimization.
+
+WORK EXPERIENCE
+Engineering Intern | YouTube
+Jan 2023 - Jul 2023
+• Built scalable microservices architecture using SVN
+• Led architecture design for mobile app using DynamoDB technologies
+• Mentored junior developers in Ruby best practices
+• Mentored junior developers in scikit-learn best practices
+
+QA Engineer | Pfizer
+May 2019 - Apr 2020
+• Mentored junior developers in DynamoDB best practices
+• Developed and maintained Kubernetes applications serving 108 users
+• Developed and maintained ASP.NET applications serving 104 users
+
+Principal Engineer | Columbia University
+Apr 2019 - Present
+• Built scalable microservices architecture using Git
+• Automated deployment processes using Swift reducing manual effort by 39%
+• Optimized database queries reducing response time by 60%
+• Implemented Azure solutions that improved system performance by 36%
+
+
+EDUCATION
+University of Texas at Austin
+M.S. in Statistics, 2005
+
+Georgia Institute of Technology
+Ph.D. in Chemistry, 2003
+
+
+KEY SKILLS
+Docker, BERT, CircleCI, Node.js, Angular, Cassandra, Python, Coaching, Leadership, Communication, Financial Reporting, Risk Management, Financial Analysis, Critical Thinking

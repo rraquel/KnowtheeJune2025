@@ -311,3 +311,65 @@ For technical support or questions:
 - Check documentation
 - Contact system administrator
 - Review error logs
+
+## One-off Ingestion
+
+The platform includes a standalone ingestion process that can be run locally or via Docker to process CV and assessment files.
+
+### Prerequisites
+
+1. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+2. Set up environment variables:
+```bash
+export DATABASE_URL="postgresql://postgres:postgres@localhost:5432/knowthee"
+```
+
+### Running Locally
+
+1. Place CV and assessment files in `backend/data/imports/`
+
+2. Run the ingestion process:
+```bash
+# Process all files
+python -m backend.services.ingest ingest all
+
+# Process a single file
+python -m backend.services.ingest ingest single filename.pdf
+
+# Specify custom directories
+python -m backend.services.ingest ingest all --source /path/to/source --processed-dir /path/to/processed
+```
+
+### Running with Docker
+
+1. Build and run the ingestion service:
+```bash
+docker-compose run --rm ingest ingest all
+```
+
+2. Process a single file:
+```bash
+docker-compose run --rm ingest ingest single filename.pdf
+```
+
+### Scheduled Ingestion
+
+To run the ingestion process nightly at 2 AM, add this to your crontab:
+```bash
+0 2 * * * cd /path/to/project && docker-compose run --rm ingest ingest all >> /var/log/knowthee/ingest.log 2>&1
+```
+
+### Output
+
+The ingestion process will:
+1. Validate files for type and size
+2. Parse CVs and assessments
+3. Generate embeddings
+4. Store data in the database
+5. Move processed files to `backend/data/processed/`
+
+Statistics and errors are logged to stdout in JSON format.

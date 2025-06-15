@@ -1,0 +1,32 @@
+Name: Hassan Hassan
+Email: hassan.hassan@outlook.com
+Phone: (279) 289-5382
+Location: San Antonio, TX
+LinkedIn: linkedin.com/in/hassan-hassan-926
+
+
+ABOUT ME
+Recent Communication graduate with strong Public Speaking, Critical Thinking skills seeking to leverage academic knowledge and SQL, Jira expertise in a Sales Development Rep role. Passionate about media with a keen interest in strategy development.
+
+EMPLOYMENT HISTORY
+Inside Sales Representative | BMW
+Feb 2023 - Jul 2024
+• Conducted product demonstrations to C-level executives
+• Led mobile app sales team achieving 21% increase in market share
+• Managed portfolio of 32 enterprise clients worth $204K
+• Conducted product demonstrations to C-level executives
+
+Solutions Consultant | Volkswagen
+Nov 2020 - Present
+• Managed portfolio of 30 enterprise clients worth $3031K
+• Managed portfolio of 185 enterprise clients worth $3427K
+• Led enterprise platform sales team achieving 16% increase in market share
+
+
+EDUCATION
+Purdue University
+M.S. in Computer Science, 1998
+
+
+COMPETENCIES
+Kubernetes, Power BI, Confluence, PostgreSQL, Vue.js, Time Management, Coaching, ICD-10 Coding, Healthcare Regulations, Flask

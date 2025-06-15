@@ -1,0 +1,39 @@
+Name: Terrell Taylor
+Email: terrell.taylor@gmail.com
+Phone: (428) 770-9320
+Location: San Antonio, TX
+LinkedIn: linkedin.com/in/terrell-taylor-582
+
+
+PERSONAL STATEMENT
+Facilities Manager professional with a diverse background spanning 8+ years in technology. Consistently recognized for optimizing supply chain efficiency and abilities in Kotlin, PHP. Known for quality control implementation.
+
+WORK EXPERIENCE
+Director of Operations | Stanford University
+Oct 2023 - Apr 2026
+• Reduced operational waste by 60% through process improvements
+• Managed 80 person operations team
+• Implemented lean methodologies improving efficiency by 49%
+
+VP of Operations | KPMG
+Aug 2019 - Jun 2025
+• Reduced operational waste by 77% through process improvements
+• Coordinated logistics for 792 shipments monthly
+• Managed 628 person operations team
+• Reduced operational waste by 55% through process improvements
+• Managed 439 person operations team
+
+Operational Excellence Director | Zoom
+Oct 2014 - Present
+• Optimized supply chain reducing costs by 92%
+• Led vendor negotiations securing $193M in savings
+• Implemented lean methodologies improving efficiency by 91%
+
+
+ACADEMIC HISTORY
+University of Michigan
+B.A. in Business Administration, 2000
+
+
+SKILL SET
+MATLAB, Redis, Ruby, Kubernetes, R, DynamoDB, Tableau, Decision Making, Conflict Resolution, Cross-functional Collaboration, Financial Reporting, Financial Modeling, Portfolio Management, SQL, Financial Analysis

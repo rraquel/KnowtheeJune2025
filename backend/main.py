@@ -5,8 +5,8 @@ from sqlalchemy.orm import Session
 
 from database import get_db, engine
 from database.models import Base, Employee, Experience, Education, Skill, EmployeeSkill, Assessment
-from services.parser.cv_parser import CVParser
-from services.parser.assessment_parser import AssessmentParser
+from services.parsers.cv_parser import CVParser
+from services.parsers.assessment_parser import AssessmentParser
 from utils.validators import validate_file
 
 # Set up logging

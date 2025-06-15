@@ -1,0 +1,53 @@
+Name: Emily Smith
+Email: emilysmith@yahoo.com
+Phone: (237) 504-9046
+Location: Denver, CO
+LinkedIn: linkedin.com/in/emily-smith-661
+
+
+CAREER PROFILE
+Transformational Head of Global Operations executive with 15+ years of C-suite experience across media. History of streamlining production processes through strategic vision, resource allocation, and cultivating high-performance cultures.
+
+WORK EXPERIENCE
+Operations Assistant | Valero Energy
+Jul 2024 - Dec 2024
+• Implemented lean methodologies improving efficiency by 17%
+• Managed operations for 14 facilities across 14 regions
+• Managed operations for 32 facilities across 32 regions
+• Led vendor negotiations securing $209K in savings
+• Managed 25 person operations team
+
+Talent Acquisition Director | Novartis
+Aug 2022 - Mar 2026
+• Implemented HR systems reducing processing time by 82%
+• Led diversity initiative increasing representation by 86%
+• Conducted performance reviews for 357 team members
+• Led diversity initiative increasing representation by 81%
+• Led diversity initiative increasing representation by 97%
+
+Chief Compliance Officer | Fidelity
+May 2014 - Nov 2016
+• Reduced legal costs by 59% through process optimization
+• Developed legal policies for 447 business units
+• Reduced legal costs by 58% through process optimization
+
+Recruiter | Columbia University
+Apr 2013 - Present
+• Reduced turnover rate by 26% through retention strategies
+• Led diversity initiative increasing representation by 26%
+• Conducted performance reviews for 76 team members
+
+
+EDUCATION
+University of Pennsylvania
+M.S. in Engineering, 2010
+
+University of Minnesota
+Ph.D. in Engineering, 2005
+
+University of Washington
+M.A. in Economics, 2003
+
+
+SKILL SET
+CircleCI, TensorFlow, PyTorch, Excel, Django, Redis, C#, Java, Team Management, Strategic Planning, Public Speaking, Leadership, Email Marketing, A/B Testing, SEO/SEM, Salesforce

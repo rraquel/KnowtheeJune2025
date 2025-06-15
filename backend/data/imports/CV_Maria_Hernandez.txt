@@ -1,0 +1,36 @@
+Name: Maria Hernandez
+Email: mariahernandez@yahoo.com
+Phone: (253) 605-2858
+LinkedIn: linkedin.com/in/maria-hernandez-466
+
+
+PERSONAL STATEMENT
+Detail-oriented Finance Intern with excellent Analytical Thinking, Scrum abilities and a passion for innovation. Seeking to apply my knowledge of JavaScript, scikit-learn to solve real-world problems in education.
+
+PROFESSIONAL EXPERIENCE
+Treasury Analyst | Toyota
+May 2022 - Present
+• Implemented financial controls improving accuracy by 21%
+• Led financial planning reducing operational costs by 40%
+• Implemented financial controls improving accuracy by 22%
+• Optimized cash flow management saving $3585K annually
+• Performed due diligence for $3873K M&A transactions
+
+UX Designer | Dell
+Jun 2016 - Oct 2017
+• Established design guidelines adopted by 158 teams
+• Mentored 31 junior designers in design best practices
+• Led design sprints resulting in 19% faster development
+• Designed user interfaces for enterprise platform used by 135 customers
+
+
+ACADEMIC QUALIFICATIONS
+University of Wisconsin-Madison
+Ph.D. in Economics, 2009
+
+Princeton University
+M.S. in Engineering, 1997
+
+
+KEY SKILLS
+ASP.NET, Flask, pandas, DynamoDB, R, Python, Azure, Presentation, Leadership, Adaptability, SEO/SEM, Content Marketing, Google Analytics, Telehealth, TensorFlow

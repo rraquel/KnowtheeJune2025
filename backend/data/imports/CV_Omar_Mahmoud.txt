@@ -1,0 +1,36 @@
+Name: Omar Mahmoud
+Email: omahmoud@outlook.com
+Phone: (290) 467-5242
+Location: Seattle, WA
+LinkedIn: linkedin.com/in/omar-mahmoud-327
+
+
+PERSONAL STATEMENT
+Controller professional with a diverse background spanning 6+ years in energy. Consistently recognized for reducing operational costs by 20% and abilities in pandas, MATLAB. Known for financial analysis.
+
+RELEVANT EXPERIENCE
+Accountant | Mercedes-Benz
+Jun 2023 - Feb 2024
+• Led budget planning process for $178K annual budget
+• Performed due diligence for $334K M&A transactions
+• Conducted risk analysis for 33 investment opportunities
+
+Senior Accountant | Nike
+Mar 2016 - Jul 2018
+• Performed due diligence for $1571K M&A transactions
+• Implemented financial controls improving accuracy by 37%
+• Optimized cash flow management saving $1963K annually
+• Implemented financial controls improving accuracy by 29%
+• Conducted risk analysis for 79 investment opportunities
+
+
+EDUCATION
+Purdue University
+B.A. in Communication, 2014
+
+University of Illinois at Urbana-Champaign
+B.A. in Economics, 1994
+
+
+SKILLS
+Docker, SVN, C#, Jenkins, MATLAB, Ruby, Kotlin, TensorFlow, Mentoring, Customer Service, Problem Solving, Resource Allocation, ICD-10 Coding, Healthcare Regulations, Medical Terminology, Clinical Workflows

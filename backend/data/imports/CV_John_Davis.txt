@@ -1,0 +1,47 @@
+Name: John Davis
+Email: jdavis@gmail.com
+Phone: (385) 590-1283
+Location: Charlotte, NC
+LinkedIn: linkedin.com/in/john-davis-888
+
+
+CAREER OBJECTIVE
+Versatile Controller with 3+ years of experience and a solid foundation in Excel, NLP. Proven ability to budget management and budget management while delivering securing favorable funding in fast-paced environments.
+
+EXPERIENCE
+Controller | TD Bank
+Mar 2024 - Feb 2026
+• Implemented financial controls improving accuracy by 15%
+• Optimized cash flow management saving $3464K annually
+• Prepared financial reports for 129 business units
+
+Recruiter | Cigna
+Jul 2020 - Mar 2022
+• Led diversity initiative increasing representation by 20%
+• Managed benefits administration for 51 employees
+• Led diversity initiative increasing representation by 19%
+• Reduced turnover rate by 19% through retention strategies
+
+Senior Analyst | Spotify
+May 2016 - Feb 2019
+• Collaborated with cross-functional teams to deliver enterprise platform features
+• Mentored junior developers in BERT best practices
+• Automated deployment processes using PostgreSQL reducing manual effort by 25%
+• Collaborated with cross-functional teams to deliver enterprise platform features
+• Implemented C++ solutions that improved system performance by 20%
+
+Marketing Analyst | EY
+Sep 2014 - Jan 2017
+• Implemented marketing automation reducing costs by 27%
+• Launched enterprise platform marketing campaign generating 29 leads
+• Led SEO optimization improving organic traffic by 18%
+• Coordinated 101 product launches across global markets
+
+
+EDUCATION
+Stanford University
+B.A. in Marketing, 2000
+
+
+PROFESSIONAL SKILLS
+Docker, Excel, scikit-learn, ASP.NET, TensorFlow, Terraform, C#, Node.js, Agile Methodologies, Client Relations, Customer Service, Decision Making, Financial Modeling, Bloomberg Terminal, Forecasting, Mergers & Acquisitions

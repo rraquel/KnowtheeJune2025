@@ -1,0 +1,42 @@
+Name: Ashley Smith
+Email: ashley.smith@yahoo.com
+Phone: (502) 250-2563
+Location: Phoenix, AZ
+
+
+EXECUTIVE SUMMARY
+Software Engineer II professional with a diverse background spanning 4+ years in energy. Consistently recognized for launching new product features and abilities in Kotlin, Jira. Known for architecture design.
+
+EMPLOYMENT HISTORY
+Technical Architect | Accenture
+Jul 2025 - Present
+• Optimized database queries reducing response time by 40%
+• Built scalable microservices architecture using Go
+• Built scalable microservices architecture using C++
+• Mentored junior developers in C++ best practices
+• Mentored junior developers in Django best practices
+
+Chief Architect | Phillips 66
+Mar 2022 - Present
+• Collaborated with cross-functional teams to deliver organizational change features
+• Developed and maintained C# applications serving 417 users
+• Automated deployment processes using C++ reducing manual effort by 83%
+
+VP of Technology | Disney
+Dec 2014 - Mar 2018
+• Automated deployment processes using Jira reducing manual effort by 54%
+• Automated deployment processes using JavaScript reducing manual effort by 69%
+• Collaborated with cross-functional teams to deliver business transformation features
+• Built scalable microservices architecture using SVN
+
+
+ACADEMIC HISTORY
+Georgia Institute of Technology
+Ph.D. in Engineering, 2022
+
+University of North Carolina at Chapel Hill
+B.A. in Business Administration, 2019
+
+
+SKILL SET
+Flask, scikit-learn, Tableau, BERT, Vue.js, MATLAB, MySQL, Azure, AWS, Analytical Thinking, Resource Allocation, Creativity, Team Management, Medical Terminology, Telehealth, Clinical Workflows, Healthcare Regulations, Java

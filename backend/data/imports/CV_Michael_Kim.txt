@@ -1,0 +1,67 @@
+Name: Michael Kim
+Email: michaelkim@yahoo.com
+Phone: (344) 801-2531
+Location: San Antonio, TX
+
+
+ABOUT ME
+Executive VP of Engineering leader with proven success guiding organizations through optimizing development workflows and cross-functional collaboration. 23+ years of experience leveraging Git, PHP to drive sustainable growth in competitive markets.
+
+WORK HISTORY
+Lead Developer | Meta
+Apr 2022 - Present
+• Optimized database queries reducing response time by 55%
+• Built scalable microservices architecture using SQL
+• Led architecture design for strategic initiative using Java technologies
+• Built scalable microservices architecture using Docker
+
+Chief Architect | Nordstrom
+Nov 2023 - Jul 2029
+• Mentored junior developers in MySQL best practices
+• Collaborated with cross-functional teams to deliver business transformation features
+• Built scalable microservices architecture using GCP
+• Implemented Terraform solutions that improved system performance by 97%
+• Automated deployment processes using Go reducing manual effort by 86%
+
+VP of Technology | Sempra Energy
+Jan 2021 - Jun 2026
+• Led architecture design for organizational change using AWS technologies
+• Led architecture design for organizational change using C# technologies
+• Mentored junior developers in Tableau best practices
+• Collaborated with cross-functional teams to deliver organizational change features
+• Mentored junior developers in Ruby best practices
+
+VP of Technology | Harvard University
+Jun 2019 - Aug 2023
+• Automated deployment processes using CircleCI reducing manual effort by 94%
+• Mentored junior developers in NLP best practices
+• Optimized database queries reducing response time by 95%
+• Optimized database queries reducing response time by 45%
+
+VP of Engineering | Bank of America
+Apr 2010 - Nov 2013
+• Collaborated with cross-functional teams to deliver corporate strategy features
+• Built scalable microservices architecture using Terraform
+• Mentored junior developers in BERT best practices
+• Built scalable microservices architecture using Oracle
+
+CTO | John Deere
+Oct 2011 - Present
+• Built scalable microservices architecture using TensorFlow
+• Led architecture design for corporate strategy using Terraform technologies
+• Automated deployment processes using DynamoDB reducing manual effort by 91%
+
+
+QUALIFICATIONS
+University of Michigan
+Ph.D. in Chemistry, 2021
+
+University of Minnesota
+Ph.D. in Business Administration, 2021
+
+University of Chicago
+M.S. in Data Science, 2004
+
+
+CAPABILITIES
+R, SVN, Redis, Jira, SQL, Java, MongoDB, MySQL, Budget Management, Kanban, Change Management, Presentation, Risk Management, Mergers & Acquisitions, Valuation, Bloomberg Terminal, Electronic Medical Records (EMR)

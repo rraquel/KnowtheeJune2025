@@ -1,0 +1,52 @@
+Name: Sarah Smith
+Email: sarah.smith@outlook.com
+Phone: (674) 425-7240
+LinkedIn: linkedin.com/in/sarah-smith-423
+
+
+ABOUT ME
+Dynamic Operational Excellence Director executive offering 24+ years of leadership excellence in retail. Track record of implementing lean methodologies through strategic vision, process optimization, and innovative application of GCP, Vue.js.
+
+EMPLOYMENT HISTORY
+Senior Operations Manager | Visa
+May 2023 - Mar 2027
+• Managed 181 person operations team
+• Led vendor negotiations securing $40M in savings
+• Reduced operational waste by 44% through process improvements
+
+Senior Product Manager | Roche
+Jan 2022 - Jun 2024
+• Managed product lifecycle from concept to 22M revenue
+• Conducted user research with 275 customers to validate features
+• Launched 470 product features increasing user engagement by 60%
+• Led product roadmap for strategic initiative with 428 active users
+• Led product launch generating $24M in first-year revenue
+
+HR Manager | Meta
+Aug 2017 - Present
+• Developed training programs improving employee satisfaction by 27%
+• Implemented HR systems reducing processing time by 52%
+• Designed compensation program for 452 employees
+
+Technical Architect | TikTok
+Jul 2014 - Sep 2017
+• Led architecture design for market expansion using Power BI technologies
+• Developed and maintained pandas applications serving 345 users
+• Developed and maintained Node.js applications serving 163 users
+• Led architecture design for strategic initiative using AWS technologies
+• Led architecture design for strategic initiative using pandas technologies
+
+
+EDUCATION
+University of Wisconsin-Madison
+Ph.D. in Engineering, 2021
+
+Harvard University
+M.A. in Psychology, 2016
+
+New York University
+Ph.D. in Psychology, 2007
+
+
+KEY SKILLS
+Java, Power BI, Angular, ASP.NET, Swift, React, Excel, Critical Thinking, Client Relations, Change Management, Clinical Workflows, Patient Care, Healthcare Informatics, MATLAB, OpenCV

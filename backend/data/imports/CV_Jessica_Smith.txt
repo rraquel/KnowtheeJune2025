@@ -1,0 +1,29 @@
+Name: Jessica Smith
+Email: jsmith@outlook.com
+Phone: (430) 328-9720
+Location: Los Angeles, CA
+LinkedIn: linkedin.com/in/jessica-smith-833
+
+
+CAREER OBJECTIVE
+Entry-level Bookkeeper with academic training in marketing and hands-on experience with Jira, SVN. Quick learner committed to professional growth in the energy sector.
+
+WORK EXPERIENCE
+Accountant | Macy's
+Jun 2024 - Present
+• Led financial planning reducing operational costs by 9%
+• Conducted risk analysis for 40 investment opportunities
+• Prepared financial reports for 49 business units
+• Conducted risk analysis for 23 investment opportunities
+
+
+ACADEMIC QUALIFICATIONS
+University of California, Los Angeles
+Ph.D. in Chemistry, 2006
+
+University of Minnesota
+B.S. in Biology, 1999
+
+
+SKILLS
+Git, AWS, MySQL, Terraform, NLP, Leadership, Time Management, A/B Testing, Brand Management, Corporate Law, JavaScript

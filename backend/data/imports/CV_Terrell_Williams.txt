@@ -1,0 +1,49 @@
+Name: Terrell Williams
+Email: twilliams@outlook.com
+Phone: (292) 448-2942
+Location: Charlotte, NC
+
+
+PROFILE
+Executive CMO leader with proven success guiding organizations through increasing conversion rates by 35% and digital marketing optimization. 26+ years of experience leveraging React, Jira to drive sustainable growth in competitive markets.
+
+EXPERIENCE
+Product Marketing Manager | Spotify
+Oct 2022 - Sep 2023
+• Developed content strategy resulting in 17% engagement increase
+• Analyzed customer data to identify 136 new market segments
+• Led SEO optimization improving organic traffic by 35%
+• Developed content strategy resulting in 19% engagement increase
+
+Product Manager | Mercedes-Benz
+Dec 2016 - Dec 2018
+• Led product roadmap for digital transformation with 194 active users
+• Led product roadmap for customer solution with 120 active users
+• Coordinated cross-functional teams of 89 members
+• Led product launch generating $2329K in first-year revenue
+
+Senior Data Analyst | YouTube
+Jul 2019 - Present
+• Collaborated with cross-functional teams to deliver product suite features
+• Mentored junior developers in SQL best practices
+• Implemented BERT solutions that improved system performance by 34%
+• Implemented Ruby solutions that improved system performance by 16%
+
+Visual Designer | Lockheed Martin
+Sep 2019 - Jan 2021
+• Led design sprints resulting in 39% faster development
+• Improved user satisfaction scores by 22% through redesign
+• Designed user interfaces for customer solution used by 128 customers
+• Conducted user testing with 173 participants
+
+
+ACADEMIC HISTORY
+Ohio State University
+Ph.D. in Biology, 2019
+
+University of Minnesota
+Ph.D. in Economics, 2014
+
+
+AREAS OF EXPERTISE
+Redis, Jenkins, Excel, Oracle, JavaScript, ASP.NET, Power BI, Docker, Communication, Problem Solving, Leadership, Mentoring, Financial Analysis, Risk Management, Capital Markets, Investment Analysis, Agile Methodologies

@@ -1,0 +1,32 @@
+Name: Chris Williams
+Email: cwilliams@outlook.com
+Phone: (780) 404-8115
+Location: Indianapolis, IN
+
+
+PROFESSIONAL SUMMARY
+Recent Accounting graduate with strong Team Management, Presentation skills seeking to leverage academic knowledge and PHP, C++ expertise in a Junior Developer role. Passionate about retail with a keen interest in optimization.
+
+WORK EXPERIENCE
+Senior Software Engineer | SpaceX
+Nov 2024 - Dec 2026
+• Implemented Swift solutions that improved system performance by 51%
+• Mentored junior developers in Power BI best practices
+• Collaborated with cross-functional teams to deliver market expansion features
+• Mentored junior developers in Oracle best practices
+• Developed and maintained Azure applications serving 261 users
+
+Principal Data Scientist | Cleveland Clinic
+Sep 2019 - Present
+• Mentored junior developers in NLP best practices
+• Optimized database queries reducing response time by 40%
+• Collaborated with cross-functional teams to deliver business transformation features
+
+
+QUALIFICATIONS
+Georgia Institute of Technology
+Ph.D. in Mathematics, 2011
+
+
+CAPABILITIES
+AWS, Terraform, Kotlin, Git, Jenkins, Oracle, Creativity, Mentoring, Coaching, MATLAB, HVAC, PCB Design

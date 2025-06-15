@@ -1,0 +1,37 @@
+Name: Amanda Brown
+Email: amandabrown@hotmail.com
+Phone: (664) 988-9801
+Location: Charlotte, NC
+
+
+ABOUT ME
+Versatile Senior Accountant with 7+ years of experience and a solid foundation in TensorFlow, Kubernetes. Proven ability to stakeholder communication and stakeholder communication while delivering optimizing cash flow management in fast-paced environments.
+
+EXPERIENCE
+Financial Analyst | Airbnb
+Jun 2025 - Feb 2026
+• Led financial planning reducing operational costs by 8%
+• Managed $154K investment portfolio with 18% annual returns
+• Conducted risk analysis for 32 investment opportunities
+• Led financial planning reducing operational costs by 24%
+• Led financial planning reducing operational costs by 5%
+
+Head of Design | Pfizer
+Oct 2017 - Jul 2023
+• Conducted user testing with 412 participants
+• Created 473 design prototypes for new features
+• Improved user satisfaction scores by 84% through redesign
+• Led design sprints resulting in 57% faster development
+• Led design system implementation across 758 products
+
+
+ACADEMIC HISTORY
+Massachusetts Institute of Technology
+Ph.D. in Psychology, 2017
+
+Harvard University
+M.S. in Computer Science, 2013
+
+
+COMPETENCIES
+React, DynamoDB, Kotlin, PostgreSQL, Python, Strategic Planning, Leadership, Legal Research, Compliance, Portfolio Management

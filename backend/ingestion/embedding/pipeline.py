@@ -11,7 +11,14 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 from sqlalchemy.exc import SQLAlchemyError
 
-from backend.db.models import EmbeddingRun, EmbeddingDocument, EmbeddingChunk, Employee
+from backend.db.models import (
+    EmbeddingRun, 
+    EmbeddingDocument, 
+    EmbeddingChunk, 
+    Employee,
+    EmployeeCV,
+    EmployeeAssessment
+)
 from backend.db.session import get_db
 from .chunker import TextChunker
 from .embedder import OpenAIEmbedder
@@ -340,8 +347,33 @@ class EmbeddingPipeline:
         }
         return mapping.get(doc_type, 'other')
         
+    def _get_external_document_id(self, filename: str, employee_id: str, doc_type: str) -> Optional[str]:
+        """Get the external document ID based on document type.
+        
+        Args:
+            filename: Name of the file
+            employee_id: UUID of the employee
+            doc_type: Type of document (cv, assessment)
+            
+        Returns:
+            UUID of the external document or None if not found
+        """
+        if doc_type == "CV":
+            cv = self.db.query(EmployeeCV).filter(
+                EmployeeCV.employee_id == employee_id,
+                EmployeeCV.filename == filename
+            ).first()
+            return cv.id if cv else None
+        elif doc_type in ["IDI", "Hogan"]:
+            assessment = self.db.query(EmployeeAssessment).filter(
+                EmployeeAssessment.employee_id == employee_id,
+                EmployeeAssessment.source_filename == filename
+            ).first()
+            return assessment.id if assessment else None
+        return None
+
     def process_document(self, file_path: Path, employee_id: str, doc_type: str, embedding_run_id: str) -> None:
-        """Process a single document.
+        """Process a single document: chunk → embed → store.
         
         Args:
             file_path: Path to the document
@@ -350,42 +382,57 @@ class EmbeddingPipeline:
             embedding_run_id: UUID of the embedding run
         """
         try:
-            # Map document type to allowed database values
-            mapped_doc_type = self._map_document_type(doc_type)
-                
-            # Create document record
-            document = EmbeddingDocument(
+            # Get external document ID
+            external_document_id = self._get_external_document_id(file_path.name, employee_id, doc_type)
+            if not external_document_id:
+                logger.error(f"Could not find external document ID for {file_path.name}")
+                return
+
+            # Create embedding document
+            doc = EmbeddingDocument(
                 employee_id=employee_id,
                 embedding_run_id=embedding_run_id,
-                document_type=mapped_doc_type,
+                document_type=doc_type.lower(),
                 source_filename=file_path.name,
-                title=file_path.stem
+                external_document_id=external_document_id,
+                source_type=doc_type.lower()
             )
-            self.db.add(document)
+            self.db.add(doc)
             self.db.flush()
-            
-            # Read and chunk document
+
+            # Read and chunk content
             with open(file_path, 'r', encoding='utf-8') as f:
                 content = f.read()
-                
-            chunks = self.chunker.chunk_text(content, doc_type)
-                
-            # Generate embeddings for chunks
+
+            # Get appropriate chunking method
+            chunking_method = registry.get_method(doc_type.lower())
+            if not chunking_method:
+                chunking_method = registry.get_method("generic")
+
+            chunks = chunking_method(content)
+            logger.info(f"Generated {len(chunks)} chunks for {file_path.name}")
+
+            # Process each chunk
             for i, chunk in enumerate(chunks):
-                    embedding = self.embedder.embed(chunk)
+                # Generate embedding
+                embedding = self.embedder.embed(chunk["content"])
                 
-                    chunk_record = EmbeddingChunk(
-                        document_id=document.id,
-                        chunk_index=i,
-                        content=chunk,
-                    embedding=embedding
-                    )
-                    self.db.add(chunk_record)
-                    
+                # Create chunk record
+                chunk_record = EmbeddingChunk(
+                    external_document_id=external_document_id,
+                    chunk_index=i,
+                    content=chunk["content"],
+                    embedding=embedding,
+                    token_count=chunk.get("token_count"),
+                    char_count=chunk.get("char_count"),
+                    chunk_label=chunk.get("label")
+                )
+                self.db.add(chunk_record)
+
             self.db.commit()
-            logger.info(f"Successfully processed document: {file_path.name}")
-            
+            logger.info(f"Successfully processed {file_path.name}")
+
         except Exception as e:
-            self.db.rollback() 
-            logger.error(f"Error processing document {file_path.name}: {str(e)}")
+            self.db.rollback()
+            logger.error(f"Error processing document {file_path}: {str(e)}")
             raise 

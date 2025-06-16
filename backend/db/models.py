@@ -16,6 +16,19 @@ class TimestampMixin:
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
+class EmployeeCV(Base, TimestampMixin):
+    """Model for employee CV documents."""
+    __tablename__ = 'employee_cvs'
+
+    id = Column(PG_UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    employee_id = Column(PG_UUID(as_uuid=True), ForeignKey('employees.id', ondelete='CASCADE'), nullable=False)
+    filename = Column(Text, nullable=False)
+    upload_date = Column(DateTime(timezone=True), server_default=func.now())
+    source = Column(Text)
+
+    # Relationships
+    employee = relationship("Employee", back_populates="cvs")
+
 class Employee(Base, TimestampMixin):
     """Model for employee personal information."""
     __tablename__ = 'employees'
@@ -33,6 +46,7 @@ class Employee(Base, TimestampMixin):
     experiences = relationship("EmployeeExperience", back_populates="employee", cascade="all, delete-orphan")
     skills = relationship("EmployeeSkill", back_populates="employee", cascade="all, delete-orphan")
     assessments = relationship("EmployeeAssessment", back_populates="employee", cascade="all, delete-orphan")
+    cvs = relationship("EmployeeCV", back_populates="employee", cascade="all, delete-orphan")
     embedding_documents = relationship("EmbeddingDocument", back_populates="employee", cascade="all, delete-orphan")
 
 class EmployeeContact(Base, TimestampMixin):
@@ -152,10 +166,16 @@ class EmbeddingDocument(Base):
     document_type = Column(Text, nullable=False)
     source_filename = Column(Text, nullable=False)
     title = Column(Text)
-    document_id = Column(Text)
-    document_origin = Column(Text)
+    external_document_id = Column(PG_UUID(as_uuid=True), nullable=False, unique=True)  # Links to employee_cvs.id or employee_assessments.id
+    parsed_source_id = Column(PG_UUID(as_uuid=True))  # For tracking the parsed source
+    source_type = Column(Text)  # Type of the source document
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+    # Add unique constraint for source_filename and embedding_run_id
+    __table_args__ = (
+        UniqueConstraint('source_filename', 'embedding_run_id', name='uix_source_run'),
+    )
 
     # Relationships
     employee = relationship("Employee", back_populates="embedding_documents")
@@ -167,10 +187,10 @@ class EmbeddingChunk(Base, TimestampMixin):
     __tablename__ = 'embedding_chunks'
 
     id = Column(PG_UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    document_id = Column(PG_UUID(as_uuid=True), ForeignKey('embedding_documents.id', ondelete='CASCADE'), nullable=False)
+    external_document_id = Column(PG_UUID(as_uuid=True), ForeignKey('embedding_documents.external_document_id', ondelete='CASCADE'), nullable=False)
     chunk_index = Column(Integer, nullable=False)
     content = Column(Text, nullable=False)
     embedding = Column(Vector(1536), nullable=False)
     
     # Relationships
-    document = relationship("EmbeddingDocument", back_populates="chunks")
+    document = relationship("EmbeddingDocument", back_populates="chunks", foreign_keys=[external_document_id])

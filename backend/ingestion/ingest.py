@@ -20,6 +20,7 @@ from backend.db.models import (
     EmployeeEducation,
     EmployeeSkill,
     EmployeeAssessment,
+    EmployeeCV,
     IDIScore,
     HoganScore,
     EmbeddingRun,
@@ -67,7 +68,7 @@ class IngestService:
             try:
                 if file_path.stem.startswith("CV_"):
                     parsed_data = parse_cv(file_path)
-                    self._handle_cv_data(parsed_data, db)
+                    self._handle_cv_data(parsed_data, db, file_path)
 
                 elif file_path.stem.startswith(("IDI_", "Hogan_")):
                     parsed_data = parse_assessment(file_path)
@@ -86,7 +87,7 @@ class IngestService:
                 db.rollback()
                 logger.error(f"Error processing {file_path.name}: {e}")
 
-    def _handle_cv_data(self, parsed_data, db):
+    def _handle_cv_data(self, parsed_data, db, file_path):
         """Handle parsed CV data and create/update database records."""
         try:
             # Create or update employee record
@@ -102,15 +103,22 @@ class IngestService:
                 db.add(employee)
                 db.flush()
 
+            # Create CV record
+            cv = EmployeeCV(
+                employee_id=employee.id,
+                filename=file_path.name,
+                source="manual_upload"
+            )
+            db.add(cv)
+            db.flush()
+
             # Handle contacts
             for contact_data in parsed_data.get("contacts", []):
-                # Check if contact already exists
                 existing_contact = db.query(EmployeeContact).filter_by(
                     employee_id=employee.id,
                     type=contact_data["type"],
                     value=contact_data["value"]
                 ).first()
-                
                 if not existing_contact:
                     contact = EmployeeContact(
                         employee_id=employee.id,
@@ -220,11 +228,11 @@ class IngestService:
                     db.add(skill)
 
             db.commit()
-            return True
+            return cv.id  # Return the CV ID for embedding document creation
         except Exception as e:
             db.rollback()
             logger.error(f"Error handling CV data: {str(e)}")
-            return False
+            return None
 
     def _handle_assessment_data(self, parsed_data, db, file_path):
         """Handle parsed assessment data and create/update database records."""
@@ -235,54 +243,67 @@ class IngestService:
             ).first()
             if not employee:
                 logger.warning(f"Employee not found for assessment: {employee_name}")
-                return False
+                return None
 
             for assessment_data in parsed_data.get("assessments", []):
-                existing_assessment = db.query(EmployeeAssessment).filter_by(
+                assessment = db.query(EmployeeAssessment).filter_by(
                     employee_id=employee.id,
                     assessment_type=assessment_data["type"],
                     assessment_date=assessment_data["date"]
                 ).first()
-                
-                if not existing_assessment:
+                if not assessment:
                     assessment = EmployeeAssessment(
                         employee_id=employee.id,
                         assessment_type=assessment_data["type"],
                         assessment_date=assessment_data["date"],
-                        source_filename=file_path.name,
-                        status="active"
+                        source_filename=file_path.name
                     )
                     db.add(assessment)
                     db.flush()
-                else:
-                    assessment = existing_assessment
-
-                # Flatten and insert scores
+                # Handle scores based on assessment type
+                scores = assessment_data.get("scores", {})
                 if assessment_data["type"] == "IDI":
-                    for category, dimensions in assessment_data["scores"].items():
-                        for dimension, score_value in dimensions.items():
-                            score = IDIScore(
-                                assessment_id=assessment.id,
-                                category=category,
-                                dimension=dimension,
-                                score=score_value
-                            )
-                            db.add(score)
-                elif assessment_data["type"] == "Hogan":
-                    for trait, score_value in assessment_data["scores"].items():
-                        score = HoganScore(
-                            assessment_id=assessment.id,
-                            trait=trait,
-                            score=score_value
-                        )
-                        db.add(score)
-
+                    existing_scores = db.query(IDIScore).filter_by(assessment_id=assessment.id).count()
+                    if existing_scores == 0:
+                        for category, dimensions in scores.items():
+                            for dimension, score_value in dimensions.items():
+                                idi_score = IDIScore(
+                                    assessment_id=assessment.id,
+                                    category=category,
+                                    dimension=dimension,
+                                    score=score_value
+                                )
+                                db.add(idi_score)
+                elif assessment_data["type"] in ["HPI", "HDS", "MVPI", "Hogan"]:
+                    existing_scores = db.query(HoganScore).filter_by(assessment_id=assessment.id).count()
+                    if existing_scores == 0:
+                        if isinstance(scores, dict):
+                            for trait, score_value in scores.items():
+                                hogan_score = HoganScore(
+                                    assessment_id=assessment.id,
+                                    trait=trait,
+                                    score=score_value
+                                )
+                                db.add(hogan_score)
+                        elif isinstance(scores, list):
+                            for score_dict in scores:
+                                trait = score_dict.get('trait')
+                                score_value = score_dict.get('score')
+                                if trait is not None and score_value is not None:
+                                    hogan_score = HoganScore(
+                                        assessment_id=assessment.id,
+                                        trait=trait,
+                                        score=score_value
+                                    )
+                                    db.add(hogan_score)
+                        else:
+                            logger.warning(f"Unexpected Hogan scores format: {scores}")
             db.commit()
             return True
         except Exception as e:
             db.rollback()
             logger.error(f"Error handling assessment data: {str(e)}")
-            return False
+            return None
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Ingest data files")

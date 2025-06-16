@@ -110,6 +110,17 @@ CREATE TABLE embedding_runs (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Create employee_cvs table
+CREATE TABLE employee_cvs (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    employee_id UUID NOT NULL REFERENCES employees(id) ON DELETE CASCADE,
+    filename TEXT NOT NULL,
+    upload_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    source TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Create embedding_documents table
 CREATE TABLE embedding_documents (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -120,20 +131,22 @@ CREATE TABLE embedding_documents (
     source_filename TEXT NOT NULL,
     title TEXT,
     
-    document_id UUID,  -- Optional: links to original document
-    document_origin TEXT,  -- Optional: e.g. 'assessment_source', 'cv_import', 'json_upload'
+    external_document_id UUID NOT NULL,  -- Links to employee_cvs.id or employee_assessments.id
+    parsed_source_id UUID,  -- For tracking the parsed source
+    source_type TEXT,  -- Type of the source document
     
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     
-    -- Add unique constraint to prevent duplicate processing
-    CONSTRAINT uix_source_run UNIQUE (source_filename, embedding_run_id)
+    -- Add unique constraints
+    CONSTRAINT uix_source_run UNIQUE (source_filename, embedding_run_id),
+    CONSTRAINT uix_external_doc UNIQUE (external_document_id)
 );
 
 -- Create embedding_chunks table
 CREATE TABLE embedding_chunks (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    document_id UUID NOT NULL REFERENCES embedding_documents(id) ON DELETE CASCADE,
+    external_document_id UUID NOT NULL REFERENCES embedding_documents(external_document_id) ON DELETE CASCADE,
     chunk_index INTEGER NOT NULL,
     
     content TEXT NOT NULL,
@@ -152,5 +165,6 @@ CREATE TABLE embedding_chunks (
 CREATE INDEX idx_embedding_docs_employee ON embedding_documents(employee_id);
 CREATE INDEX idx_embedding_docs_run ON embedding_documents(embedding_run_id);
 CREATE INDEX idx_embedding_docs_type ON embedding_documents(document_type);
-CREATE INDEX idx_embedding_chunks_doc ON embedding_chunks(document_id);
+CREATE INDEX idx_embedding_docs_external ON embedding_documents(external_document_id);
+CREATE INDEX idx_embedding_chunks_doc ON embedding_chunks(external_document_id);
 CREATE INDEX idx_embedding_chunks_vector ON embedding_chunks USING ivfflat(embedding);

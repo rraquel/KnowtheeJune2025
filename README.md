@@ -5,20 +5,24 @@
 ```
 /app/                           # Main application code
 ├── main.py                     # App entry point (FastAPI backend)
-├── database/                   # Database config and migrations
+├── database/                   # Database config and models
 │   ├── __init__.py            # DB engine and session setup
-│   ├── models.py              # SQLAlchemy ORM models
-│   ├── alembic.ini            # Alembic config file
-│   └── alembic/               # Alembic migration folder
-│       └── versions/          # Auto-generated migration scripts
-├── services/                   # Business logic layer
+│   └── models.py              # SQLAlchemy ORM models
+├── ingestion/                  # Data ingestion and processing
 │   ├── __init__.py
-│   ├── parser/                # Parsers for CV and assessments
+│   ├── ingest.py              # Main ingestion service
+│   ├── parsers/               # Parsers for CV and assessments
 │   │   ├── __init__.py
 │   │   ├── cv_parser.py
 │   │   └── assessment_parser.py
-│   └── vector/                # For chunking & embedding logic
-│       └── chunker.py
+│   ├── vector/                # For chunking & embedding logic
+│   │   └── chunker.py
+│   ├── migrations/            # Database migrations
+│   │   ├── __init__.py
+│   │   ├── env.py
+│   │   ├── script.py.mako
+│   │   └── versions/         # Auto-generated migration scripts
+│   └── alembic.ini           # Alembic config file
 ├── api/                        # REST endpoints
 │   ├── __init__.py
 │   └── talent.py
@@ -58,7 +62,7 @@ DATABASE_URL=postgresql://postgres:postgres@localhost:5432/knowthee
 
 4. Run database migrations:
 ```bash
-cd app/database
+cd backend/ingestion
 alembic revision --autogenerate -m "Initial migration"
 alembic upgrade head
 ```
@@ -390,13 +394,13 @@ export DATABASE_URL="postgresql://postgres:postgres@localhost:5432/knowthee"
 2. Run the ingestion process:
 ```bash
 # Process all files
-python -m backend.services.ingest ingest all
+python -m backend.ingestion.ingest ingest all
 
 # Process a single file
-python -m backend.services.ingest ingest single filename.pdf
+python -m backend.ingestion.ingest ingest single filename.pdf
 
 # Specify custom directories
-python -m backend.services.ingest ingest all --source /path/to/source --processed-dir /path/to/processed
+python -m backend.ingestion.ingest ingest all --source /path/to/source --processed-dir /path/to/processed
 ```
 
 ### Running with Docker

@@ -2,8 +2,8 @@ from dotenv import load_dotenv
 load_dotenv()
 import unittest
 import numpy as np
-from backend.services.vector.storage import PostgresVectorStore
-from backend.services.vector.models import DocumentEmbedding
+from backend.ingestion.vector.storage import PostgresVectorStore
+from backend.ingestion.vector.models import DocumentEmbedding
 
 class TestPostgresVectorStore(unittest.TestCase):
     @classmethod

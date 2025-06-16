@@ -3,7 +3,7 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 import click
-from backend.services.ingest import IngestService
+from backend.ingestion.ingest import IngestService
 from backend.services.db.session import init_db
 
 @click.group()

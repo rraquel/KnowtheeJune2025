@@ -171,6 +171,6 @@ class EmbeddingChunk(Base, TimestampMixin):
     chunk_index = Column(Integer, nullable=False)
     content = Column(Text, nullable=False)
     embedding = Column(Vector(1536), nullable=False)
-
+    
     # Relationships
     document = relationship("EmbeddingDocument", back_populates="chunks")

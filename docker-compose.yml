@@ -27,7 +27,7 @@ services:
     volumes:
       - .:/app
     working_dir: /app
-    entrypoint: ["python", "-m", "backend.services.ingest"]
+    entrypoint: ["python", "-m", "backend.ingestion.ingest"]
     command: ["all"]
     environment:
       - DATABASE_URL=postgresql+psycopg2://postgres:postgres@db:5432/knowthee

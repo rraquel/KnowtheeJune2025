@@ -3,7 +3,7 @@ load_dotenv()
 import unittest
 from unittest.mock import patch, MagicMock
 import numpy as np
-from backend.services.vector.embedders import BaseEmbedder, OpenAIEmbedder
+from backend.ingestion.vector.embedders import BaseEmbedder, OpenAIEmbedder
 
 class TestBaseEmbedder(unittest.TestCase):
     def test_abstract_methods(self):

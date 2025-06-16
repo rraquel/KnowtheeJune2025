@@ -8,10 +8,10 @@ import unittest
 from unittest.mock import patch
 from dotenv import load_dotenv
 
-from backend.services.vector.pipeline import DocumentPipeline
-from backend.services.vector.chunkers import SectionChunker
-from backend.services.vector.embedders import OpenAIEmbedder
-from backend.services.vector.storage import PostgresVectorStore
+from backend.ingestion.vector.pipeline import DocumentPipeline
+from backend.ingestion.vector.chunkers import SectionChunker
+from backend.ingestion.vector.embedders import OpenAIEmbedder
+from backend.ingestion.vector.storage import PostgresVectorStore
 
 # Configure logging
 logging.basicConfig(

@@ -3,7 +3,7 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 from backend.services.db.session import init_db, SessionLocal
-from backend.services.ingest import clear_all_tables
+from backend.ingestion.ingest import clear_all_tables
 
 def main():
     """Clear all tables in the database"""

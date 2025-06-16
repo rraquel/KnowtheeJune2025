@@ -5,14 +5,15 @@ import logging
 from pathlib import Path
 from datetime import datetime
 from sqlalchemy import or_, and_, func
+import argparse
 
-from backend.services.db.session import init_db, SessionLocal
+from backend.db.session import init_db, SessionLocal
 from backend.ingestion.parsers.cv_parser import parse_cv
 from backend.ingestion.parsers.assessment_parser import parse_assessment
 from backend.utils.validators import validate_file
 from backend.utils.common import slugify
 
-from backend.services.db.models import (
+from backend.db.models import (
     Employee,
     EmployeeContact,
     EmployeeExperience,
@@ -70,7 +71,7 @@ class IngestService:
 
                 elif file_path.stem.startswith(("IDI_", "Hogan_")):
                     parsed_data = parse_assessment(file_path)
-                    self._handle_assessment_data(parsed_data, db)
+                    self._handle_assessment_data(parsed_data, db, file_path)
 
                 db.commit()
                 dst_path = self.processed_dir / file_path.name
@@ -225,11 +226,9 @@ class IngestService:
             logger.error(f"Error handling CV data: {str(e)}")
             return False
 
-    def _handle_assessment_data(self, parsed_data, db):
+    def _handle_assessment_data(self, parsed_data, db, file_path):
         """Handle parsed assessment data and create/update database records."""
         try:
-            # Find employee by name (case-insensitive and ignoring extra spaces)
-            # Use the same name format as CV parser (replace underscores with spaces)
             employee_name = parsed_data["name"].strip().replace("_", " ")
             employee = db.query(Employee).filter(
                 func.lower(Employee.full_name) == func.lower(employee_name)
@@ -238,9 +237,7 @@ class IngestService:
                 logger.warning(f"Employee not found for assessment: {employee_name}")
                 return False
 
-            # Handle each assessment
             for assessment_data in parsed_data.get("assessments", []):
-                # Check if assessment already exists
                 existing_assessment = db.query(EmployeeAssessment).filter_by(
                     employee_id=employee.id,
                     assessment_type=assessment_data["type"],
@@ -248,36 +245,37 @@ class IngestService:
                 ).first()
                 
                 if not existing_assessment:
-                    # Create assessment record
                     assessment = EmployeeAssessment(
                         employee_id=employee.id,
                         assessment_type=assessment_data["type"],
                         assessment_date=assessment_data["date"],
-                        source_filename=parsed_data.get("source_filename", ""),
-                        status='active'
+                        source_filename=file_path.name,
+                        status="active"
                     )
                     db.add(assessment)
-                    db.flush()  # Get assessment ID
+                    db.flush()
+                else:
+                    assessment = existing_assessment
 
-                    # Handle scores based on assessment type
-                    if assessment_data["type"] == "IDI":
-                        for category, dimensions in assessment_data["scores"].items():
-                            for dimension, score_value in dimensions.items():
-                                idi_score = IDIScore(
-                                    assessment_id=assessment.id,
-                                    category=category,
-                                    dimension=dimension,
-                                    score=score_value
-                                )
-                                db.add(idi_score)
-                    elif assessment_data["type"] == "Hogan":
-                        for trait, score_value in assessment_data["scores"].items():
-                            hogan_score = HoganScore(
+                # Flatten and insert scores
+                if assessment_data["type"] == "IDI":
+                    for category, dimensions in assessment_data["scores"].items():
+                        for dimension, score_value in dimensions.items():
+                            score = IDIScore(
                                 assessment_id=assessment.id,
-                                trait=trait,
+                                category=category,
+                                dimension=dimension,
                                 score=score_value
                             )
-                            db.add(hogan_score)
+                            db.add(score)
+                elif assessment_data["type"] == "Hogan":
+                    for trait, score_value in assessment_data["scores"].items():
+                        score = HoganScore(
+                            assessment_id=assessment.id,
+                            trait=trait,
+                            score=score_value
+                        )
+                        db.add(score)
 
             db.commit()
             return True
@@ -287,13 +285,18 @@ class IngestService:
             return False
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Ingest data files")
+    parser.add_argument('--input-dir', type=str, default='backend/data/imports', help='Directory containing files to ingest')
+    parser.add_argument('--processed-dir', type=str, default='backend/data/processed', help='Directory to move processed files')
+    args = parser.parse_args()
+    
     # Initialize database
     init_db()
     
     # Set up directories
-    source_dir = Path("backend/data/imports")
-    processed_dir = Path("backend/data/processed")
+    source_dir = Path(args.input_dir)
+    processed_dir = Path(args.processed_dir)
     
     # Create and run ingest service
-    service = IngestService(source_dir, processed_dir)
-    service.process_all()
+    ingest_service = IngestService(source_dir=source_dir, processed_dir=processed_dir)
+    ingest_service.process_all()

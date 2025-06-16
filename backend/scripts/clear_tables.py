@@ -2,7 +2,7 @@ import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
-from backend.services.db.session import init_db, SessionLocal
+from backend.db.session import init_db, SessionLocal
 from backend.ingestion.ingest import clear_all_tables
 
 def main():

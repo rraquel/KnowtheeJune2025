@@ -1,143 +1,144 @@
 {
-    "name": "KnowThee.AI Ruleset",
-    "description": "Rules to ensure consistency, maintainability, and modularity across the KnowThee Talent Intelligence Platform.",
-    "rules": [
-      {
-        "pattern": ".*",
-        "description": "Avoid using wildcard imports (e.g., `from module import *`).",
-        "severity": "error",
-        "condition": "contains('import *')"
-      },
-      {
-        "pattern": ".*",
-        "description": "Restrict each module to a single responsibility.",
-        "severity": "warning",
-        "condition": "function_count > 10 || class_count > 3"
-      },
-      {
-        "pattern": ".*\\.py",
-        "description": "All Python files must use snake_case for filenames.",
-        "severity": "error",
-        "condition": "not snake_case(filename)"
-      },
-      {
-        "pattern": ".*",
-        "description": "Public functions and classes must have docstrings.",
-        "severity": "error",
-        "condition": "missing_docstrings(public_functions_and_classes)"
-      },
-      {
-        "pattern": ".*",
-        "description": "Backend logic must be split into `/app/api`, `/app/services`, and `/app/models`.",
-        "severity": "error",
-        "condition": "not in_folder('app/api') and not in_folder('app/services') and not in_folder('app/models') and uses('fastapi')"
-      },
-      {
-        "pattern": ".*",
-        "description": "Parsing logic must live under `backend/app/services/parser/`.",
-        "severity": "error",
-        "condition": "contains('parse_cv') and not in_folder('app/services/parser')"
-      },
-      {
-        "pattern": ".*",
-        "description": "Use async functions for I/O operations.",
-        "severity": "warning",
-        "condition": "uses_io and not is_async"
-      },
-      {
-        "pattern": ".*",
-        "description": "Embed chunking must respect OpenAI token limits (<=1000 tokens per chunk).",
-        "severity": "error",
-        "condition": "function_name == 'chunk_text' and not limits_tokens(1000)"
-      },
-      {
-        "pattern": ".*",
-        "description": "All database insertions must go through a model or ORM interface.",
-        "severity": "error",
-        "condition": "uses_raw_sql_insertion"
-      },
-      {
-        "pattern": ".*",
-        "description": "Frontend components (Streamlit) must live in `/frontend/ui/`.",
-        "severity": "error",
-        "condition": "uses('streamlit') and not in_folder('frontend/ui')"
-      },
-      {
-        "pattern": ".*",
-        "description": "Document each folder with a README.md if it contains more than 2 modules.",
-        "severity": "warning",
-        "condition": "module_count > 2 and missing('README.md')"
-      },
-      {
-        "pattern": ".*",
-        "description": "Every database schema must include primary keys and timestamps (created_at, updated_at).",
-        "severity": "error",
-        "condition": "file_contains('CREATE TABLE') and (missing('PRIMARY KEY') or missing('created_at'))"
-      },
-      {
-        "pattern": ".*",
-        "description": "Restrict maximum line length to 100 characters.",
-        "severity": "warning",
-        "condition": "line_length > 100"
-      },
-      {
-        "pattern": ".*",
-        "description": "Code must not include unused imports.",
-        "severity": "warning",
-        "condition": "has_unused_imports"
-      },
-      {
-        "pattern": ".*",
-        "description": "Chunking logic must be reusable and live in a separate module.",
-        "severity": "error",
-        "condition": "contains('chunk') and not in_file('chunker.py') and not imported_from('chunker')"
-      },
-      {
-        "pattern": ".*",
-        "description": "Ensure all vector DB operations are abstracted through a dedicated service.",
-        "severity": "error",
-        "condition": "calls('chroma') and not in_folder('app/services/vector')"
-      },
-      {
-        "pattern": ".*",
-        "description": "Only use OpenAI embeddings via centralized embed service.",
-        "severity": "error",
-        "condition": "calls('openai.Embedding') and not in_file('embed_service.py')"
-      },
-      {
-        "pattern": ".*",
-        "description": "Tests must be included for each service under `tests/`.",
-        "severity": "warning",
-        "condition": "in_folder('app/services') and missing_corresponding_test('tests/')"
-      },
-
-      {
-        "pattern": "app/models/.*\\.py",
-        "description": "Any changes to SQLAlchemy models must trigger an Alembic migration script update.",
-        "severity": "error",
-        "condition": "has_sqlalchemy_model_change and not has_recent_alembic_migration"
-      },
-      {
-        "pattern": ".*",
-        "description": "Ensure full project structure is respected, including frontend and backend modules.",
-        "severity": "error",
-        "condition": "not has_folders(['backend/database', 'backend/services/parser', 'backend/services/vector', 'backend/api', 'backend/utils', 'frontend', 'tests', 'data/imports'])"
-      },
-      {
-        "pattern": ".*",
-        "description": "Ensure strict backend folder and file structure is followed for consistency and maintainability.",
-        "severity": "error",
-        "condition": "not has_structure({'backend': {'main.py': 'file','database': {'__init__.py': 'file','models.py': 'file','alembic.ini': 'file','alembic': {'versions': 'folder'}},'services': {'__init__.py': 'file','parser': {'__init__.py': 'file','cv_parser.py': 'file','assessment_parser.py': 'file'},'vector': {'chunker.py': 'file'}},'api': {'talent.py': 'file'},'utils': {'__init__.py': 'file','validators.py': 'file'}},'data': {'imports': 'folder'},'tests': 'folder','frontend': 'folder'})"
-      },
-      {
-        "pattern": ".*",
-        "description": "Only perform the tasks that are explicitly specified. If an additional improvement, change, or refactor is identified, suggest it or ask for confirmation before proceeding.",
-        "severity": "error",
-        "condition": "performs_unspecified_action"
-      }
-      
-      
-      
-    ]
-  }
-  
+  "name": "KnowThee.AI Ruleset",
+  "description": "Rules to ensure consistency, maintainability, and modularity across the KnowThee Talent Intelligence Platform.",
+  "rules": [
+    {
+      "pattern": ".*",
+      "description": "Avoid using wildcard imports (e.g., `from module import *`).",
+      "severity": "error",
+      "condition": "contains('import *')"
+    },
+    {
+      "pattern": ".*",
+      "description": "Restrict each module to a single responsibility.",
+      "severity": "warning",
+      "condition": "function_count > 10 || class_count > 3"
+    },
+    {
+      "pattern": ".*\\.py",
+      "description": "All Python files must use snake_case for filenames.",
+      "severity": "error",
+      "condition": "not snake_case(filename)"
+    },
+    {
+      "pattern": ".*",
+      "description": "Public functions and classes must have docstrings.",
+      "severity": "error",
+      "condition": "missing_docstrings(public_functions_and_classes)"
+    },
+    {
+      "pattern": ".*",
+      "description": "Backend logic must be split into `/app/api`, `/app/services`, and `/app/models`.",
+      "severity": "error",
+      "condition": "not in_folder('app/api') and not in_folder('app/services') and not in_folder('app/models') and uses('fastapi')"
+    },
+    {
+      "pattern": ".*",
+      "description": "Parsing logic must live under `backend/app/services/parser/`.",
+      "severity": "error",
+      "condition": "contains('parse_cv') and not in_folder('app/services/parser')"
+    },
+    {
+      "pattern": ".*",
+      "description": "Use async functions for I/O operations.",
+      "severity": "warning",
+      "condition": "uses_io and not is_async"
+    },
+    {
+      "pattern": ".*",
+      "description": "Embed chunking must respect OpenAI token limits (<=1000 tokens per chunk).",
+      "severity": "error",
+      "condition": "function_name == 'chunk_text' and not limits_tokens(1000)"
+    },
+    {
+      "pattern": ".*",
+      "description": "All database insertions must go through a model or ORM interface.",
+      "severity": "error",
+      "condition": "uses_raw_sql_insertion"
+    },
+    {
+      "pattern": ".*",
+      "description": "Frontend components (Streamlit) must live in `/frontend/ui/`.",
+      "severity": "error",
+      "condition": "uses('streamlit') and not in_folder('frontend/ui')"
+    },
+    {
+      "pattern": ".*",
+      "description": "Document each folder with a README.md if it contains more than 2 modules.",
+      "severity": "warning",
+      "condition": "module_count > 2 and missing('README.md')"
+    },
+    {
+      "pattern": ".*",
+      "description": "Every database schema must include primary keys and timestamps (created_at, updated_at).",
+      "severity": "error",
+      "condition": "file_contains('CREATE TABLE') and (missing('PRIMARY KEY') or missing('created_at'))"
+    },
+    {
+      "pattern": ".*",
+      "description": "Restrict maximum line length to 100 characters.",
+      "severity": "warning",
+      "condition": "line_length > 100"
+    },
+    {
+      "pattern": ".*",
+      "description": "Code must not include unused imports.",
+      "severity": "warning",
+      "condition": "has_unused_imports"
+    },
+    {
+      "pattern": ".*",
+      "description": "Chunking logic must be reusable and live in a separate module.",
+      "severity": "error",
+      "condition": "contains('chunk') and not in_file('chunker.py') and not imported_from('chunker')"
+    },
+    {
+      "pattern": ".*",
+      "description": "Ensure all vector DB operations are abstracted through a dedicated service.",
+      "severity": "error",
+      "condition": "calls('chroma') and not in_folder('app/services/vector')"
+    },
+    {
+      "pattern": ".*",
+      "description": "Only use OpenAI embeddings via centralized embed service.",
+      "severity": "error",
+      "condition": "calls('openai.Embedding') and not in_file('embed_service.py')"
+    },
+    {
+      "pattern": ".*",
+      "description": "Tests must be included for each service under `tests/`.",
+      "severity": "warning",
+      "condition": "in_folder('app/services') and missing_corresponding_test('tests/')"
+    },
+    {
+      "pattern": "app/models/.*\\.py",
+      "description": "Any changes to SQLAlchemy models must trigger an Alembic migration script update.",
+      "severity": "error",
+      "condition": "has_sqlalchemy_model_change and not has_recent_alembic_migration"
+    },
+    {
+      "pattern": ".*",
+      "description": "Ensure full project structure is respected, including frontend and backend modules.",
+      "severity": "error",
+      "condition": "not has_folders(['backend/database', 'backend/services/parser', 'backend/services/vector', 'backend/api', 'backend/utils', 'frontend', 'tests', 'data/imports'])"
+    },
+    {
+      "pattern": ".*",
+      "description": "Ensure strict backend folder and file structure is followed for consistency and maintainability.",
+      "severity": "error",
+      "condition": "not has_structure({'backend': {'main.py': 'file','database': {'__init__.py': 'file','models.py': 'file','alembic.ini': 'file','alembic': {'versions': 'folder'}},'services': {'__init__.py': 'file','parser': {'__init__.py': 'file','cv_parser.py': 'file','assessment_parser.py': 'file'},'vector': {'chunker.py': 'file'}},'api': {'talent.py': 'file'},'utils': {'__init__.py': 'file','validators.py': 'file'}},'data': {'imports': 'folder'},'tests': 'folder','frontend': 'folder'})"
+    },
+    {
+      "pattern": ".*",
+      "description": "Only perform the tasks that are explicitly specified. If an additional improvement, change, or refactor is identified, suggest it or ask for confirmation before proceeding.",
+      "severity": "error",
+      "condition": "performs_unspecified_action"
+    },
+    {
+      "pattern": ".*",
+      "description": "Environment variables, including OpenAI API keys, must be loaded using `dotenv` from the project's root `.env` file.",
+      "severity": "error",
+      "condition": "requires_env_vars and not uses_dotenv"
+    }
+  ]
+}

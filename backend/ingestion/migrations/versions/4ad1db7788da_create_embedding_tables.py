@@ -33,15 +33,13 @@ def upgrade() -> None:
     op.create_table('embedding_documents',
     sa.Column('id', sa.UUID(), nullable=False),
     sa.Column('employee_id', sa.UUID(), nullable=False),
-    sa.Column('assessment_id', sa.UUID(), nullable=True),
     sa.Column('embedding_run_id', sa.UUID(), nullable=False),
     sa.Column('type', sa.Text(), nullable=False),
     sa.Column('filename', sa.Text(), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
     sa.Column('updated_at', sa.DateTime(timezone=True), nullable=True),
-    sa.ForeignKeyConstraint(['assessment_id'], ['employee_assessments.id'], ondelete='SET NULL'),
-    sa.ForeignKeyConstraint(['embedding_run_id'], ['embedding_runs.id'], ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['employee_id'], ['employees.id'], ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['embedding_run_id'], ['embedding_runs.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('embedding_chunks',

@@ -1,0 +1,49 @@
+Name: Hassan Al-Zahra
+Email: hassanal-zahra@yahoo.com
+Phone: (423) 669-6785
+Location: Chicago, IL
+LinkedIn: linkedin.com/in/hassan-al-zahra-772
+
+
+PERSONAL STATEMENT
+Accomplished Senior Marketing Manager professional bringing 8+ years of strategic experience to complex retail challenges. Recognized for optimizing customer acquisition costs through effective application of Swift, Flask and strong Change Management, Scrum abilities.
+
+EMPLOYMENT HISTORY
+Marketing Director | Booking.com
+Apr 2025 - May 2028
+• Increased brand awareness by 31% through strategic campaigns
+• Increased brand awareness by 48% through strategic campaigns
+• Increased brand awareness by 58% through strategic campaigns
+• Led SEO optimization improving organic traffic by 37%
+• Implemented marketing automation reducing costs by 35%
+
+Chief Design Officer | Ford
+Feb 2021 - Sep 2026
+• Created 777 design prototypes for new features
+• Mentored 526 junior designers in design best practices
+• Led design system implementation across 702 products
+• Created 316 design prototypes for new features
+• Mentored 269 junior designers in design best practices
+
+Junior Consultant | Lockheed Martin
+Mar 2015 - Sep 2015
+• Led architecture design for digital product using Vue.js technologies
+• Mentored junior developers in Docker best practices
+• Developed and maintained AWS applications serving 47 users
+• Optimized database queries reducing response time by 13%
+• Developed and maintained Kubernetes applications serving 7 users
+
+VP of Technology | Costco
+Feb 2018 - Oct 2022
+• Developed and maintained MATLAB applications serving 543 users
+• Implemented Tableau solutions that improved system performance by 79%
+• Developed and maintained scikit-learn applications serving 749 users
+
+
+EDUCATION
+University of Chicago
+MBA, 2019
+
+
+SKILLS
+Azure, Docker, DynamoDB, Ruby, PHP, MySQL, Problem Solving, Leadership, Creativity, Budgeting, Financial Modeling, Portfolio Management

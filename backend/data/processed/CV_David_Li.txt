@@ -1,0 +1,45 @@
+Name: David Li
+Email: david.li@outlook.com
+Phone: (639) 440-6776
+Location: Charlotte, NC
+LinkedIn: linkedin.com/in/david-li-602
+
+
+ABOUT ME
+Seasoned Marketing Director leader with 9+ years guiding teams and initiatives in financial services. Consistent record of orchestrating successful product launches through expertise in MySQL, ASP.NET and commitment to market analysis.
+
+PROFESSIONAL EXPERIENCE
+Head of Content | Mastercard
+Apr 2024 - Oct 2026
+• Analyzed customer data to identify 206 new market segments
+• Coordinated 378 product launches across global markets
+• Implemented marketing automation reducing costs by 48%
+• Analyzed customer data to identify 421 new market segments
+
+Senior Finance Manager | Columbia University
+Oct 2019 - Jun 2023
+• Optimized cash flow management saving $6M annually
+• Implemented financial controls improving accuracy by 30%
+• Implemented financial controls improving accuracy by 43%
+
+Principal Designer | Mayo Clinic
+Nov 2019 - Present
+• Improved user satisfaction scores by 54% through redesign
+• Created 403 design prototypes for new features
+• Designed user interfaces for market expansion used by 348 customers
+
+Practice Lead | Meta
+Jan 2014 - Mar 2017
+• Optimized database queries reducing response time by 52%
+• Optimized database queries reducing response time by 48%
+• Implemented Docker solutions that improved system performance by 54%
+• Automated deployment processes using pandas reducing manual effort by 48%
+
+
+QUALIFICATIONS
+University of North Carolina at Chapel Hill
+B.A. in Marketing, 1991
+
+
+CORE COMPETENCIES
+Excel, Node.js, Confluence, Spring Boot, Java, Strategic Planning, Decision Making, Westlaw, Negotiation, OpenCV

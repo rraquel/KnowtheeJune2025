@@ -1,0 +1,49 @@
+Name: Terrell Moore
+Email: tmoore@yahoo.com
+Phone: (269) 291-3259
+Location: San Diego, CA
+LinkedIn: linkedin.com/in/terrell-moore-757
+
+
+PERSONAL STATEMENT
+Budget Analyst professional with a diverse background spanning 7+ years in education. Consistently recognized for streamlining accounting processes and abilities in CircleCI, PostgreSQL. Known for strategic planning.
+
+CAREER HISTORY
+Finance Intern | Roche
+Jul 2022 - Mar 2023
+• Performed due diligence for $305K M&A transactions
+• Optimized cash flow management saving $245K annually
+• Managed $265K investment portfolio with 23% annual returns
+• Performed due diligence for $184K M&A transactions
+
+Lab Technician | Intuit
+Oct 2015 - Apr 2017
+• Developed methodology improving research accuracy by 17%
+• Conducted research studies with 8 participants
+• Published 44 peer-reviewed papers in top-tier journals
+
+Business Analyst | Honeywell
+May 2020 - Apr 2022
+• Mentored junior developers in Python best practices
+• Mentored junior developers in Angular best practices
+• Led architecture design for software system using AWS technologies
+• Developed and maintained OpenCV applications serving 30 users
+• Optimized database queries reducing response time by 5%
+
+Marketing Intern | Airbnb
+Jan 2019 - Present
+• Implemented marketing automation reducing costs by 5%
+• Developed content strategy resulting in 13% engagement increase
+• Developed content strategy resulting in 15% engagement increase
+
+
+ACADEMIC HISTORY
+University of Illinois at Urbana-Champaign
+B.S. in Engineering, 2019
+
+Harvard University
+B.A. in Economics, 2008
+
+
+TECHNICAL SKILLS
+MongoDB, Excel, Vue.js, Swift, AWS, OpenCV, Git, Kanban, Budget Management, Customer Service, HVAC, Fluid Dynamics, Circuit Design, scikit-learn, AutoCAD

@@ -1,0 +1,78 @@
+Name: Michael Rodriguez
+Email: michaelrodriguez@yahoo.com
+Phone: (322) 611-9619
+Location: San Jose, CA
+LinkedIn: linkedin.com/in/michael-rodriguez-875
+
+
+EXECUTIVE SUMMARY
+Executive Director of Sales Operations leader with proven success guiding organizations through expanding into new territories and negotiation. 22+ years of experience leveraging CircleCI, Node.js to drive sustainable growth in competitive markets.
+
+CAREER HISTORY
+Sales Associate | Hilton
+Mar 2024 - Present
+• Expanded territory coverage resulting in 21 new customers
+• Negotiated contracts worth $188K with Fortune 500 companies
+• Developed strategic partnerships resulting in 43 new accounts
+• Developed strategic partnerships resulting in 16 new accounts
+• Conducted product demonstrations to C-level executives
+
+Lab Technician | Johnson & Johnson
+Jul 2021 - Aug 2022
+• Conducted research studies with 34 participants
+• Published 24 peer-reviewed papers in top-tier journals
+• Secured $223K in research funding from government grants
+• Published 19 peer-reviewed papers in top-tier journals
+
+Design Assistant | Airbnb
+May 2014 - Present
+• Led design sprints resulting in 11% faster development
+• Designed user interfaces for mobile app used by 20 customers
+• Led design system implementation across 28 products
+• Conducted user testing with 38 participants
+• Mentored 36 junior designers in design best practices
+
+Production Assistant | Unilever
+Jul 2016 - Apr 2018
+• Reduced operational waste by 21% through process improvements
+• Coordinated logistics for 49 shipments monthly
+• Implemented lean methodologies improving efficiency by 6%
+• Coordinated logistics for 27 shipments monthly
+
+Benefits Administrator | AstraZeneca
+Apr 2011 - Sep 2012
+• Reduced turnover rate by 13% through retention strategies
+• Recruited 37 candidates with 6% retention rate
+• Conducted performance reviews for 15 team members
+• Designed compensation program for 9 employees
+• Designed compensation program for 16 employees
+
+Associate Developer | Duke Energy
+Mar 2015 - May 2016
+• Implemented React solutions that improved system performance by 12%
+• Implemented Redis solutions that improved system performance by 17%
+• Built scalable microservices architecture using Vue.js
+• Implemented Azure solutions that improved system performance by 9%
+
+Legal Assistant | Pfizer
+Mar 2013 - Oct 2014
+• Managed litigation cases with 13% success rate
+• Reduced legal costs by 10% through process optimization
+• Provided legal counsel for web platform product launches
+• Conducted legal training for 20 employees
+• Negotiated 27 contracts reducing legal risks by 11%
+
+
+ACADEMIC BACKGROUND
+New York University
+Ph.D. in Computer Science, 2023
+
+University of Michigan
+M.S. in Data Science, 2004
+
+University of Chicago
+B.A. in Communication, 1998
+
+
+CAPABILITIES
+Docker, Confluence, R, Terraform, C#, AWS, Ruby, MATLAB, Swift, Communication, Public Speaking, Adaptability, Budget Management, Brand Management, HubSpot, Social Media Marketing, A/B Testing, Time Management

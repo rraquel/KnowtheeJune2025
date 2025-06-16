@@ -1,0 +1,45 @@
+Name: Isabella Rodriguez
+Email: isabella.rodriguez@yahoo.com
+Phone: (246) 287-7611
+LinkedIn: linkedin.com/in/isabella-rodriguez-680
+
+
+PERSONAL STATEMENT
+Process Improvement Analyst professional with a diverse background spanning 7+ years in manufacturing. Consistently recognized for optimizing supply chain efficiency and abilities in AWS, Swift. Known for vendor management.
+
+WORK HISTORY
+Production Assistant | Hyatt
+Jan 2024 - Oct 2025
+• Managed operations for 22 facilities across 22 regions
+• Implemented lean methodologies improving efficiency by 17%
+• Led vendor negotiations securing $91K in savings
+• Managed operations for 21 facilities across 21 regions
+
+Paralegal | Novartis
+May 2018 - Jun 2019
+• Conducted legal training for 30 employees
+• Managed legal matters for transactions worth $246K
+• Conducted legal training for 35 employees
+• Managed legal matters for transactions worth $143K
+• Conducted legal training for 9 employees
+
+Data Analyst | Johnson & Johnson
+Dec 2016 - Mar 2018
+• Led architecture design for mobile app using MySQL technologies
+• Developed and maintained Docker applications serving 40 users
+• Optimized database queries reducing response time by 6%
+
+Digital Marketing Specialist | General Motors
+Jan 2016 - May 2017
+• Analyzed customer data to identify 20 new market segments
+• Implemented marketing automation reducing costs by 16%
+• Coordinated 30 product launches across global markets
+
+
+QUALIFICATIONS
+University of Chicago
+Ph.D. in Engineering, 2000
+
+
+SKILLS
+Confluence, NumPy, BERT, GCP, Spring Boot, Kubernetes, Java, Public Speaking, Analytical Thinking, Negotiation, Legal Writing, Westlaw, LexisNexis, Adaptability, SEO/SEM

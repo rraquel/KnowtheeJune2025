@@ -260,60 +260,132 @@ Required environment variables:
 streamlit run main.py
 ```
 
-## Docker Setup and Ingest Process
+## Docker Setup and Data Ingestion
 
 ### Prerequisites
-- Docker and Docker Compose installed on your system
+- Docker and Docker Compose installed
 - Git repository cloned locally
+- OpenAI API key (for embeddings)
 
-### Building and Running with Docker
+### Initial Setup
 
-1. Build and start the containers:
+1. Create a `.env` file in the project root:
 ```bash
-# From the project root directory
+# Database configuration
+DATABASE_URL=postgresql://postgres:postgres@postgres:5432/knowthee
+OPENAI_API_KEY=your_api_key_here
+```
+
+2. Build and start the containers:
+```bash
+# Build and start all services
+docker compose up --build
+
+# Or in detached mode
+docker compose up --build -d
+```
+
+### Database Initialization
+
+The database will be automatically initialized when the containers start. If you need to reinitialize:
+
+```bash
+# Stop and remove all containers and volumes
+docker compose down -v
+
+# Rebuild and start
 docker compose up --build
 ```
 
-2. To rebuild and force recreate containers (if you've made changes):
+### Data Ingestion Process
+
+1. Place your files in the correct directories:
+   - CV files: `backend/data/imports/cv/`
+   - Assessment files: `backend/data/imports/assessments/`
+
+2. Run the ingestion pipeline:
 ```bash
-docker compose down --volumes  # Removes all containers and volumes
-docker compose up --build --force-recreate
+# Run the ingestion service
+docker compose run --rm ingest python -m backend.ingestion.ingest
+
+# Run the embedding pipeline
+docker compose run --rm ingest python -m backend.ingestion.run_embedding --input-dir backend/data/processed
 ```
 
-### Ingest Process
+### Monitoring the Process
 
-The system includes an automated ingest service that processes text files placed in the `data/imports/` directory. The ingest process:
-
-1. Automatically starts when the Docker containers are launched
-2. Processes all `.txt` files in the `data/imports/` directory
-3. Creates embeddings and stores them in the database
-4. Logs the processing status for each file
-
-To monitor the ingest process:
+1. Check ingestion logs:
 ```bash
-# View logs from the ingest service
 docker compose logs -f ingest
+```
+
+2. Verify database tables:
+```bash
+# Connect to the database
+docker compose exec postgres psql -U postgres -d knowthee
+
+# List tables
+\dt
+
+# Check embedding tables
+SELECT COUNT(*) FROM embedding_documents;
+SELECT COUNT(*) FROM embedding_chunks;
 ```
 
 ### Troubleshooting
 
-If you encounter issues with the ingest process:
+If you encounter issues:
 
-1. Check the logs:
+1. Check container status:
+```bash
+docker compose ps
+```
+
+2. View detailed logs:
 ```bash
 docker compose logs ingest
+docker compose logs postgres
 ```
 
-2. Verify file permissions:
+3. Common issues:
+   - Database connection errors: Check DATABASE_URL in .env
+   - Empty tables: Verify file permissions and input directory
+   - Embedding errors: Check OPENAI_API_KEY
+
+4. Reset everything:
 ```bash
-# Ensure the data/imports directory is readable
-ls -l data/imports
+# Stop and remove everything
+docker compose down -v
+
+# Rebuild and start fresh
+docker compose up --build
 ```
 
-3. Restart the ingest service:
-```bash
-docker compose restart ingest
-```
+### File Requirements
+
+1. CV Files:
+   - Format: `.txt` or `.json`
+   - Naming: `CV_FirstName_LastName.txt`
+   - Content: Structured text with sections
+
+2. Assessment Files:
+   - Format: `.txt`
+   - Naming: `IDI_FirstName_LastName.txt` or `Hogan_FirstName_LastName.txt`
+   - Content: Assessment results in specified format
+
+### Database Schema
+
+The system uses the following main tables:
+- `employees`: Employee information
+- `employee_cvs`: CV documents
+- `employee_assessments`: Assessment records
+- `embedding_documents`: Document metadata
+- `embedding_chunks`: Document chunks with embeddings
+
+Each table includes:
+- UUID primary keys
+- Timestamps (created_at, updated_at)
+- Appropriate foreign key relationships
 
 ## Usage Guide
 

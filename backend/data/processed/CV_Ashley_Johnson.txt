@@ -1,0 +1,56 @@
+Name: Ashley Johnson
+Email: ashleyjohnson@hotmail.com
+Phone: (797) 319-9356
+Location: Boston, MA
+LinkedIn: linkedin.com/in/ashley-johnson-868
+
+
+PROFILE
+Senior Brand Strategist with over 15+ years of leadership experience in healthcare. Expert in Terraform, Go with a demonstrated history of optimizing customer acquisition costs and optimizing customer acquisition costs. Adept at strategic campaign planning while fostering team growth.
+
+RELEVANT EXPERIENCE
+Director of Marketing Operations | Volkswagen
+Sep 2024 - Jul 2030
+• Led SEO optimization improving organic traffic by 59%
+• Developed content strategy resulting in 74% engagement increase
+• Coordinated 810 product launches across global markets
+• Managed $267M marketing budget across digital channels
+
+CTO | General Motors
+Dec 2016 - Jul 2021
+• Mentored junior developers in Docker best practices
+• Implemented Python solutions that improved system performance by 99%
+• Automated deployment processes using Node.js reducing manual effort by 80%
+
+Content Creator | AstraZeneca
+Jun 2016 - Jan 2018
+• Analyzed customer data to identify 36 new market segments
+• Developed content strategy resulting in 25% engagement increase
+• Implemented marketing automation reducing costs by 12%
+• Increased brand awareness by 18% through strategic campaigns
+• Developed content strategy resulting in 9% engagement increase
+
+Research Intern | Procter & Gamble
+Jul 2012 - Apr 2013
+• Secured $327K in research funding from government grants
+• Collaborated with 29 universities on joint research projects
+• Led research team of 16 scientists and analysts
+• Presented findings at 38 international conferences
+• Presented findings at 32 international conferences
+
+Brand Manager | Cisco
+Oct 2017 - Jun 2020
+• Developed content strategy resulting in 18% engagement increase
+• Analyzed customer data to identify 169 new market segments
+• Coordinated 181 product launches across global markets
+• Managed $984K marketing budget across digital channels
+• Managed $562K marketing budget across digital channels
+
+
+EDUCATION
+Boston University
+B.A. in Political Science, 2019
+
+
+SKILL SET
+CircleCI, Git, NumPy, Excel, R, Resource Allocation, Analytical Thinking, Salesforce, Email Marketing, HIPAA Compliance

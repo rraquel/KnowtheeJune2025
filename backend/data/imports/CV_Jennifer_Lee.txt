@@ -1,0 +1,66 @@
+Name: Jennifer Lee
+Email: jennifer.lee@gmail.com
+Phone: (511) 897-3961
+Location: Denver, CO
+
+
+CAREER OBJECTIVE
+Dynamic VP of Operations executive offering 30+ years of leadership excellence in technology. Track record of reducing operational costs through strategic vision, logistics coordination, and innovative application of Excel, C#.
+
+CAREER HISTORY
+Production Assistant | Airbus
+Aug 2024 - Sep 2025
+• Managed operations for 35 facilities across 35 regions
+• Coordinated logistics for 48 shipments monthly
+• Led vendor negotiations securing $175K in savings
+
+Procurement Specialist | YouTube
+Jan 2023 - Oct 2024
+• Managed operations for 24 facilities across 24 regions
+• Reduced operational waste by 35% through process improvements
+• Implemented lean methodologies improving efficiency by 18%
+• Coordinated logistics for 183 shipments monthly
+
+Facilities Director | Walmart
+Oct 2013 - Jul 2016
+• Implemented quality control systems achieving 48% accuracy
+• Managed operations for 91 facilities across 91 regions
+• Implemented lean methodologies improving efficiency by 55%
+• Managed operations for 128 facilities across 128 regions
+• Managed 380 person operations team
+
+Chief Supply Chain Officer | Lockheed Martin
+Dec 2015 - Sep 2021
+• Optimized supply chain reducing costs by 84%
+• Managed 967 person operations team
+• Managed operations for 593 facilities across 593 regions
+• Led vendor negotiations securing $331M in savings
+
+Head of Global Operations | Airbnb
+Jun 2009 - Jul 2013
+• Optimized supply chain reducing costs by 81%
+• Implemented quality control systems achieving 71% accuracy
+• Optimized supply chain reducing costs by 70%
+• Managed operations for 287 facilities across 287 regions
+• Implemented lean methodologies improving efficiency by 97%
+
+Operational Excellence Director | Enbridge
+Jun 2007 - May 2011
+• Coordinated logistics for 200 shipments monthly
+• Optimized supply chain reducing costs by 72%
+• Led vendor negotiations securing $329M in savings
+
+
+ACADEMIC BACKGROUND
+New York University
+M.A. in Marketing, 2007
+
+Cornell University
+Ph.D. in Computer Science, 2003
+
+Boston University
+M.S. in Finance, 1997
+
+
+SKILL SET
+Flask, NLP, DynamoDB, GCP, TensorFlow, Node.js, SVN, Time Management, Change Management, Creativity, PCB Design, AutoCAD, MATLAB, Budgeting

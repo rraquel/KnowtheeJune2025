@@ -21,7 +21,9 @@ from backend.services.db.models import (
     EmployeeAssessment,
     IDIScore,
     HoganScore,
-    DocumentEmbedding
+    EmbeddingRun,
+    EmbeddingDocument,
+    EmbeddingChunk
 )
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
@@ -71,7 +73,10 @@ class IngestService:
                     self._handle_assessment_data(parsed_data, db)
 
                 db.commit()
-                shutil.move(str(file_path), str(self.processed_dir / (file_path.name + ".done")))
+                dst_path = self.processed_dir / file_path.name
+                if dst_path.exists():
+                    raise FileExistsError(f"Processed file already exists: {dst_path}")
+                shutil.move(str(file_path), str(dst_path))
                 logger.info(f"Successfully processed {file_path.name}")
             except Exception as e:
                 db.rollback()

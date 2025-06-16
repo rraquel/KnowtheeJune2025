@@ -256,6 +256,61 @@ Required environment variables:
 streamlit run main.py
 ```
 
+## Docker Setup and Ingest Process
+
+### Prerequisites
+- Docker and Docker Compose installed on your system
+- Git repository cloned locally
+
+### Building and Running with Docker
+
+1. Build and start the containers:
+```bash
+# From the project root directory
+docker compose up --build
+```
+
+2. To rebuild and force recreate containers (if you've made changes):
+```bash
+docker compose down --volumes  # Removes all containers and volumes
+docker compose up --build --force-recreate
+```
+
+### Ingest Process
+
+The system includes an automated ingest service that processes text files placed in the `data/imports/` directory. The ingest process:
+
+1. Automatically starts when the Docker containers are launched
+2. Processes all `.txt` files in the `data/imports/` directory
+3. Creates embeddings and stores them in the database
+4. Logs the processing status for each file
+
+To monitor the ingest process:
+```bash
+# View logs from the ingest service
+docker compose logs -f ingest
+```
+
+### Troubleshooting
+
+If you encounter issues with the ingest process:
+
+1. Check the logs:
+```bash
+docker compose logs ingest
+```
+
+2. Verify file permissions:
+```bash
+# Ensure the data/imports directory is readable
+ls -l data/imports
+```
+
+3. Restart the ingest service:
+```bash
+docker compose restart ingest
+```
+
 ## Usage Guide
 
 ### Leader Insights

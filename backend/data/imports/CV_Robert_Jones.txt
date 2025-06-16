@@ -1,0 +1,49 @@
+Name: Robert Jones
+Email: rjones@yahoo.com
+Phone: (336) 514-6287
+
+
+SUMMARY
+Results-driven Budget Analyst with expertise in MongoDB, SQL and Negotiation, Coaching. 6+ years of experience delivering reducing operational costs by 20% for organizations in the healthcare sector. Particularly skilled at strategic planning.
+
+EXPERIENCE
+Treasury Analyst | Expedia
+Oct 2022 - Sep 2023
+• Implemented financial controls improving accuracy by 23%
+• Performed due diligence for $3156K M&A transactions
+• Optimized cash flow management saving $2850K annually
+• Conducted risk analysis for 58 investment opportunities
+
+Systems Analyst | Marathon Petroleum
+May 2015 - May 2016
+• Implemented MongoDB solutions that improved system performance by 32%
+• Developed and maintained Java applications serving 196 users
+• Optimized database queries reducing response time by 28%
+• Implemented MATLAB solutions that improved system performance by 33%
+
+Strategy Consultant | Marriott
+Oct 2013 - Dec 2014
+• Collaborated with cross-functional teams to deliver customer solution features
+• Built scalable microservices architecture using TensorFlow
+• Led architecture design for enterprise platform using CircleCI technologies
+• Automated deployment processes using Vue.js reducing manual effort by 18%
+• Implemented JavaScript solutions that improved system performance by 19%
+
+Product Marketing Manager | Northrop Grumman
+Oct 2017 - Jul 2019
+• Implemented marketing automation reducing costs by 38%
+• Launched product suite marketing campaign generating 136 leads
+• Coordinated 170 product launches across global markets
+• Coordinated 29 product launches across global markets
+
+
+ACADEMIC QUALIFICATIONS
+Columbia University
+M.A. in Psychology, 2018
+
+Ohio State University
+M.A. in Economics, 2018
+
+
+CORE COMPETENCIES
+Jira, Docker, Django, TensorFlow, Flask, Python, BERT, Cassandra, Change Management, Negotiation, Problem Solving, Resource Allocation, PCB Design, Fluid Dynamics, HVAC, Circuit Design, Project Management

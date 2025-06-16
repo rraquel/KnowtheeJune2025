@@ -33,7 +33,7 @@ class Employee(Base, TimestampMixin):
     experiences = relationship("EmployeeExperience", back_populates="employee", cascade="all, delete-orphan")
     skills = relationship("EmployeeSkill", back_populates="employee", cascade="all, delete-orphan")
     assessments = relationship("EmployeeAssessment", back_populates="employee", cascade="all, delete-orphan")
-    embeddings = relationship('DocumentEmbedding', back_populates='employee', cascade='all, delete-orphan')
+    embedding_documents = relationship("EmbeddingDocument", back_populates="employee", cascade="all, delete-orphan")
 
 class EmployeeContact(Base, TimestampMixin):
     """Model for employee contact information."""
@@ -106,6 +106,7 @@ class EmployeeAssessment(Base, TimestampMixin):
     employee = relationship("Employee", back_populates="assessments")
     idi_scores = relationship("IDIScore", back_populates="assessment", cascade="all, delete-orphan")
     hogan_scores = relationship("HoganScore", back_populates="assessment", cascade="all, delete-orphan")
+    embedding_documents = relationship("EmbeddingDocument", back_populates="assessment", cascade="all, delete-orphan")
 
 class IDIScore(Base, TimestampMixin):
     """Model for IDI assessment scores."""
@@ -132,14 +133,44 @@ class HoganScore(Base, TimestampMixin):
     # Relationship
     assessment = relationship("EmployeeAssessment", back_populates="hogan_scores")
 
-class DocumentEmbedding(Base, TimestampMixin):
-    """Model for storing document embeddings."""
-    __tablename__ = 'document_embeddings'
+class EmbeddingRun(Base, TimestampMixin):
+    """Model for tracking embedding generation runs."""
+    __tablename__ = 'embedding_runs'
+
+    id = Column(PG_UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    name = Column(Text, nullable=False)
+    chunking_method = Column(Text, nullable=False)
+    embedding_model = Column(Text, nullable=False)
+
+    # Relationships
+    documents = relationship("EmbeddingDocument", back_populates="embedding_run", cascade="all, delete-orphan")
+
+class EmbeddingDocument(Base, TimestampMixin):
+    """Model for tracking documents that have been embedded."""
+    __tablename__ = 'embedding_documents'
 
     id = Column(PG_UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     employee_id = Column(PG_UUID(as_uuid=True), ForeignKey('employees.id', ondelete='CASCADE'), nullable=False)
-    source = Column(String(50), nullable=False)  # e.g. 'CV', 'Assessment'
-    embedding = Column(Vector(1536), nullable=False)  # pgvector type
-    
+    assessment_id = Column(PG_UUID(as_uuid=True), ForeignKey('employee_assessments.id', ondelete='SET NULL'), nullable=True)
+    embedding_run_id = Column(PG_UUID(as_uuid=True), ForeignKey('embedding_runs.id', ondelete='CASCADE'), nullable=False)
+    type = Column(Text, nullable=False)  # 'CV', 'IDI', 'Hogan'
+    filename = Column(Text, nullable=False)
+
     # Relationships
-    employee = relationship('Employee', back_populates='embeddings')
+    employee = relationship("Employee", back_populates="embedding_documents")
+    assessment = relationship("EmployeeAssessment", back_populates="embedding_documents")
+    embedding_run = relationship("EmbeddingRun", back_populates="documents")
+    chunks = relationship("EmbeddingChunk", back_populates="document", cascade="all, delete-orphan")
+
+class EmbeddingChunk(Base, TimestampMixin):
+    """Model for storing document chunks and their embeddings."""
+    __tablename__ = 'embedding_chunks'
+
+    id = Column(PG_UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    document_id = Column(PG_UUID(as_uuid=True), ForeignKey('embedding_documents.id', ondelete='CASCADE'), nullable=False)
+    chunk_index = Column(Integer, nullable=False)
+    content = Column(Text, nullable=False)
+    embedding = Column(Vector(1536), nullable=False)
+
+    # Relationships
+    document = relationship("EmbeddingDocument", back_populates="chunks")

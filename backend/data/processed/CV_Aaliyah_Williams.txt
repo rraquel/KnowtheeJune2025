@@ -1,0 +1,42 @@
+Name: Aaliyah Williams
+Email: aaliyah.williams@gmail.com
+Phone: (616) 235-8448
+Location: San Antonio, TX
+LinkedIn: linkedin.com/in/aaliyah-williams-841
+
+
+SUMMARY
+Seasoned Director of Operations leader with 13+ years guiding teams and initiatives in financial services. Consistent record of reducing operational costs through expertise in TensorFlow, PyTorch and commitment to inventory management.
+
+PROFESSIONAL EXPERIENCE
+Operations Manager | Lowe's
+Apr 2024 - Oct 2026
+• Implemented lean methodologies improving efficiency by 40%
+• Managed 191 person operations team
+• Led vendor negotiations securing $1358K in savings
+• Implemented lean methodologies improving efficiency by 21%
+
+Product Marketing Manager | EY
+Mar 2016 - Aug 2018
+• Managed $3770K marketing budget across digital channels
+• Developed content strategy resulting in 35% engagement increase
+• Implemented marketing automation reducing costs by 23%
+
+Product Manager | Volkswagen
+May 2015 - Jun 2017
+• Managed product lifecycle from concept to 4018K revenue
+• Optimized product metrics improving conversion by 21%
+• Conducted user research with 108 customers to validate features
+• Coordinated cross-functional teams of 173 members
+
+
+EDUCATION AND TRAINING
+Cornell University
+B.S. in Information Systems, 1998
+
+Georgia Institute of Technology
+B.A. in Political Science, 1994
+
+
+KEY SKILLS
+SVN, AWS, OpenCV, MongoDB, scikit-learn, ASP.NET, Vue.js, Jenkins, Analytical Thinking, Agile Methodologies, Strategic Planning, Resource Allocation, Salesforce, Adobe Analytics, SEO/SEM, CRM

@@ -1,0 +1,55 @@
+Name: Miguel Gonzalez
+Email: mgonzalez@gmail.com
+Phone: (714) 660-2041
+Location: Seattle, WA
+LinkedIn: linkedin.com/in/miguel-gonzalez-497
+
+
+CAREER OBJECTIVE
+Accomplished Senior Operations Manager professional bringing 13+ years of strategic experience to complex manufacturing challenges. Recognized for successful facility expansions through effective application of NLP, Docker and strong Project Management, Kanban abilities.
+
+PROFESSIONAL EXPERIENCE
+Process Excellence Leader | Williams-Sonoma
+Aug 2024 - May 2027
+• Coordinated logistics for 243 shipments monthly
+• Optimized supply chain reducing costs by 47%
+• Implemented lean methodologies improving efficiency by 27%
+• Implemented quality control systems achieving 38% accuracy
+• Led vendor negotiations securing $22M in savings
+
+Associate General Counsel | Johnson & Johnson
+Oct 2021 - Aug 2024
+• Conducted legal training for 54 employees
+• Led compliance program covering 405 jurisdictions
+• Reduced legal costs by 52% through process optimization
+
+Product Lead | Novartis
+Mar 2018 - Feb 2022
+• Launched 422 product features increasing user engagement by 57%
+• Coordinated cross-functional teams of 144 members
+• Optimized product metrics improving conversion by 45%
+
+ML Director | Fidelity
+Jan 2018 - May 2021
+• Collaborated with cross-functional teams to deliver market expansion features
+• Implemented SQL solutions that improved system performance by 28%
+• Built scalable microservices architecture using Azure
+• Implemented Terraform solutions that improved system performance by 49%
+• Mentored junior developers in Cassandra best practices
+
+Talent Management Director | Merck
+Oct 2014 - Oct 2017
+• Led diversity initiative increasing representation by 41%
+• Implemented HR systems reducing processing time by 27%
+• Conducted performance reviews for 227 team members
+• Managed benefits administration for 157 employees
+• Led diversity initiative increasing representation by 42%
+
+
+ACADEMIC HISTORY
+University of Washington
+M.S. in Data Science, 1999
+
+
+CAPABILITIES
+AWS, Oracle, ASP.NET, BERT, PHP, Excel, CircleCI, OpenCV, Public Speaking, Coaching, Strategic Planning, Problem Solving, HIPAA Compliance, Healthcare Regulations, Telehealth, Electronic Medical Records (EMR)

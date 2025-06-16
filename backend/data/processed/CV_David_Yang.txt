@@ -1,0 +1,65 @@
+Name: David Yang
+Email: david.yang@hotmail.com
+Phone: (506) 476-4050
+LinkedIn: linkedin.com/in/david-yang-744
+
+
+EXECUTIVE SUMMARY
+Dynamic Head of People Operations executive offering 27+ years of leadership excellence in technology. Track record of improving employee engagement scores through strategic vision, change management, and innovative application of Redis, PyTorch.
+
+WORK HISTORY
+Talent Management Director | Cleveland Clinic
+Apr 2023 - Present
+• Reduced turnover rate by 43% through retention strategies
+• Implemented HR systems reducing processing time by 59%
+• Implemented HR systems reducing processing time by 25%
+• Managed benefits administration for 344 employees
+
+Head of Analytics | Northrop Grumman
+Nov 2016 - Present
+• Implemented R solutions that improved system performance by 44%
+• Collaborated with cross-functional teams to deliver enterprise solution features
+• Optimized database queries reducing response time by 42%
+• Automated deployment processes using Vue.js reducing manual effort by 32%
+
+Tax Manager | Shell
+Jul 2018 - Jun 2021
+• Optimized cash flow management saving $17M annually
+• Prepared financial reports for 433 business units
+• Managed $44M investment portfolio with 29% annual returns
+• Conducted risk analysis for 55 investment opportunities
+• Performed due diligence for $41M M&A transactions
+
+Senior Researcher | American Express
+Jul 2016 - Sep 2019
+• Led research team of 323 scientists and analysts
+• Led research team of 126 scientists and analysts
+• Developed methodology improving research accuracy by 32%
+• Implemented data collection processes for 127 studies
+
+Senior Consultant | MIT
+Jul 2009 - Apr 2012
+• Built scalable microservices architecture using MongoDB
+• Mentored junior developers in R best practices
+• Collaborated with cross-functional teams to deliver strategic initiative features
+
+Growth Marketing Lead | MIT
+Nov 2012 - Present
+• Analyzed customer data to identify 305 new market segments
+• Increased brand awareness by 49% through strategic campaigns
+• Led SEO optimization improving organic traffic by 52%
+
+
+EDUCATION AND TRAINING
+University of Minnesota
+B.S. in Engineering, 2017
+
+University of Virginia
+M.S. in Statistics, 2006
+
+Cornell University
+Ph.D. in Engineering, 2004
+
+
+SKILL SET
+Ruby, React, Swift, SQL, Terraform, Node.js, PHP, pandas, Decision Making, Problem Solving, Coaching, Client Relations, Clinical Workflows, Medical Terminology, Healthcare Informatics, Telehealth, Scrum

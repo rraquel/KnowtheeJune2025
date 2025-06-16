@@ -1,0 +1,74 @@
+Name: Amanda Miller
+Email: amandamiller@gmail.com
+Phone: (340) 871-9672
+Location: San Diego, CA
+
+
+PERSONAL STATEMENT
+Executive Talent Acquisition Director leader with proven success guiding organizations through reducing turnover rates and talent development. 16+ years of experience leveraging Tableau, C++ to drive sustainable growth in competitive markets.
+
+EXPERIENCE
+Compensation Analyst | IKEA
+Apr 2024 - Mar 2025
+• Developed training programs improving employee satisfaction by 36%
+• Conducted performance reviews for 29 team members
+• Managed benefits administration for 41 employees
+• Managed benefits administration for 90 employees
+• Reduced turnover rate by 31% through retention strategies
+
+Management Consultant | PNC Bank
+Aug 2020 - Jun 2023
+• Optimized database queries reducing response time by 22%
+• Mentored junior developers in SVN best practices
+• Automated deployment processes using Confluence reducing manual effort by 39%
+• Mentored junior developers in PHP best practices
+
+Brand Manager | AstraZeneca
+Nov 2018 - Present
+• Developed content strategy resulting in 32% engagement increase
+• Launched enterprise platform marketing campaign generating 65 leads
+• Coordinated 65 product launches across global markets
+
+Research Analyst | Raytheon
+Jun 2016 - Dec 2017
+• Published 168 peer-reviewed papers in top-tier journals
+• Published 107 peer-reviewed papers in top-tier journals
+• Published 173 peer-reviewed papers in top-tier journals
+• Implemented data collection processes for 68 studies
+• Led research team of 44 scientists and analysts
+
+Corporate Counsel | McKinsey & Company
+Nov 2012 - Sep 2015
+• Reduced legal costs by 27% through process optimization
+• Managed legal matters for transactions worth $4704K
+• Managed litigation cases with 34% success rate
+
+UX Designer | Cleveland Clinic
+Jun 2008 - Nov 2010
+• Mentored 198 junior designers in design best practices
+• Mentored 112 junior designers in design best practices
+• Led design sprints resulting in 36% faster development
+• Mentored 170 junior designers in design best practices
+
+Sales Manager | Comcast
+Aug 2013 - Present
+• Developed strategic partnerships resulting in 68 new accounts
+• Managed portfolio of 189 enterprise clients worth $4070K
+• Managed portfolio of 147 enterprise clients worth $3393K
+• Developed strategic partnerships resulting in 55 new accounts
+• Conducted product demonstrations to C-level executives
+
+
+ACADEMIC BACKGROUND
+University of Michigan
+M.S. in Computer Science, 2019
+
+University of Washington
+Ph.D. in Biology, 2016
+
+University of North Carolina at Chapel Hill
+M.A. in Psychology, 2007
+
+
+CAPABILITIES
+Docker, Go, Git, ASP.NET, TensorFlow, Scrum, Negotiation, Mergers & Acquisitions, Bloomberg Terminal, Fluid Dynamics

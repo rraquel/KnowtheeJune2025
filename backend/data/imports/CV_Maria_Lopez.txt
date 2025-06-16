@@ -1,0 +1,50 @@
+Name: Maria Lopez
+Email: marialopez@yahoo.com
+Phone: (597) 691-4397
+Location: Austin, TX
+LinkedIn: linkedin.com/in/maria-lopez-879
+
+
+PERSONAL STATEMENT
+Strategic Strategic Account Manager with 17+ years of progressive experience in healthcare. Proven track record of growing market share by 25% through application of MySQL, Docker expertise and relationship building.
+
+CAREER HISTORY
+Director of Sales Operations | NextEra Energy
+Jul 2022 - Jan 2028
+• Negotiated contracts worth $323M with Fortune 500 companies
+• Led organizational change sales team achieving 97% increase in market share
+• Expanded territory coverage resulting in 710 new customers
+• Developed strategic partnerships resulting in 552 new accounts
+• Expanded territory coverage resulting in 755 new customers
+
+QA Engineer | AstraZeneca
+Feb 2020 - Sep 2021
+• Developed and maintained GCP applications serving 158 users
+• Built scalable microservices architecture using SVN
+• Optimized database queries reducing response time by 31%
+• Optimized database queries reducing response time by 38%
+• Led architecture design for digital transformation using Git technologies
+
+Territory Sales Manager | Nordstrom
+Jan 2014 - Dec 2014
+• Led digital transformation sales team achieving 35% increase in market share
+• Expanded territory coverage resulting in 94 new customers
+• Developed strategic partnerships resulting in 95 new accounts
+• Managed portfolio of 179 enterprise clients worth $3129K
+• Implemented CRM system improving sales efficiency by 29%
+
+Digital Marketing Specialist | Siemens
+Oct 2017 - Dec 2018
+• Increased brand awareness by 20% through strategic campaigns
+• Implemented marketing automation reducing costs by 10%
+• Analyzed customer data to identify 5 new market segments
+• Managed $377K marketing budget across digital channels
+
+
+EDUCATION
+Georgia Institute of Technology
+Ph.D. in Business Administration, 2010
+
+
+PROFESSIONAL SKILLS
+R, Go, SQL, MongoDB, Swift, Mentoring, Project Management, A/B Testing, Google Analytics, Critical Thinking

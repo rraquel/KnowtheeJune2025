@@ -1,0 +1,25 @@
+Name: DeShawn Brown
+Email: dbrown@outlook.com
+Phone: (663) 225-8541
+Location: San Francisco, CA
+
+
+ABOUT ME
+Entry-level Engineering Intern with academic training in marketing and hands-on experience with BERT, Docker. Quick learner committed to professional growth in the media sector.
+
+PROFESSIONAL BACKGROUND
+QA Tester | Stripe
+May 2025 - Present
+• Collaborated with cross-functional teams to deliver software system features
+• Built scalable microservices architecture using MySQL
+• Built scalable microservices architecture using Ruby
+• Led architecture design for web platform using Ruby technologies
+
+
+EDUCATIONAL BACKGROUND
+University of Texas at Austin
+M.S. in Statistics, 2014
+
+
+CAPABILITIES
+Swift, PyTorch, OpenCV, NumPy, Angular, Scrum, Public Speaking, Google Analytics, SEO/SEM, Git, TensorFlow

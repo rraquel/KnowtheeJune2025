@@ -1,0 +1,58 @@
+Name: Tamika Jones
+Email: tamikajones@hotmail.com
+Phone: (578) 653-9991
+LinkedIn: linkedin.com/in/tamika-jones-838
+
+
+ABOUT ME
+Accomplished Compensation Manager professional bringing 10+ years of strategic experience to complex energy challenges. Recognized for developing leadership programs through effective application of BERT, Kubernetes and strong Stakeholder Management, Cross-functional Collaboration abilities.
+
+EXPERIENCE
+HR Generalist | Four Seasons
+Dec 2022 - Present
+• Developed training programs improving employee satisfaction by 16%
+• Conducted performance reviews for 120 team members
+• Reduced turnover rate by 25% through retention strategies
+
+Compensation Manager | Stanford University
+Dec 2019 - Oct 2023
+• Conducted performance reviews for 141 team members
+• Recruited 270 candidates with 40% retention rate
+• Implemented HR systems reducing processing time by 43%
+
+Chief People Officer | Yale University
+Nov 2021 - Present
+• Led diversity initiative increasing representation by 47%
+• Reduced turnover rate by 41% through retention strategies
+• Managed benefits administration for 163 employees
+• Developed training programs improving employee satisfaction by 42%
+
+Chief People Officer | Volkswagen
+May 2015 - Feb 2020
+• Developed training programs improving employee satisfaction by 69%
+• Developed training programs improving employee satisfaction by 41%
+• Managed benefits administration for 553 employees
+• Led diversity initiative increasing representation by 91%
+
+CHRO | EY
+Jun 2009 - Jul 2014
+• Managed benefits administration for 813 employees
+• Implemented HR systems reducing processing time by 62%
+• Developed training programs improving employee satisfaction by 81%
+• Managed benefits administration for 601 employees
+• Recruited 858 candidates with 97% retention rate
+
+
+EDUCATIONAL BACKGROUND
+University of Chicago
+M.S. in Computer Science, 2014
+
+University of Minnesota
+Ph.D. in Finance, 2005
+
+Boston University
+B.A. in Marketing, 1993
+
+
+TECHNICAL SKILLS
+PyTorch, Python, SVN, Vue.js, Django, Power BI, C#, Flask, Mentoring, Time Management, Creativity, Coaching, Capital Markets, Forecasting, Bloomberg Terminal, Investment Analysis

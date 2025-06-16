@@ -1,0 +1,38 @@
+Name: John Wilson
+Email: jwilson@outlook.com
+Phone: (377) 781-5959
+Location: San Jose, CA
+LinkedIn: linkedin.com/in/john-wilson-308
+
+
+ABOUT ME
+Territory Sales Manager professional with a diverse background spanning 3+ years in retail. Consistently recognized for expanding into new territories and abilities in Confluence, C#. Known for negotiation.
+
+PROFESSIONAL BACKGROUND
+VP of Sales | Raytheon
+Jun 2025 - Sep 2028
+• Managed portfolio of 219 enterprise clients worth $44M
+• Developed strategic partnerships resulting in 237 new accounts
+• Developed strategic partnerships resulting in 509 new accounts
+
+Director of Development | Merck
+Jan 2015 - Sep 2018
+• Collaborated with cross-functional teams to deliver market leadership features
+• Automated deployment processes using PostgreSQL reducing manual effort by 71%
+• Built scalable microservices architecture using pandas
+• Collaborated with cross-functional teams to deliver organizational change features
+
+Legal Director | Disney
+Jul 2014 - Jun 2016
+• Provided legal counsel for business transformation product launches
+• Led compliance program covering 487 jurisdictions
+• Conducted legal training for 76 employees
+
+
+ACADEMIC HISTORY
+University of North Carolina at Chapel Hill
+M.A. in Economics, 1998
+
+
+COMPETENCIES
+SVN, pandas, Go, Cassandra, React, Kubernetes, GCP, MATLAB, Change Management, Problem Solving, Leadership, Innovation, Population Health Management, Healthcare Regulations, Telehealth, ICD-10 Coding, Oracle

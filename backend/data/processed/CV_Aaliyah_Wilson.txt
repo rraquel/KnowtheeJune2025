@@ -1,0 +1,49 @@
+Name: Aaliyah Wilson
+Email: awilson@outlook.com
+Phone: (233) 567-1506
+Location: Jacksonville, FL
+LinkedIn: linkedin.com/in/aaliyah-wilson-114
+
+
+ABOUT ME
+Strategic Director of Finance with 11+ years of progressive experience in technology. Proven track record of securing favorable funding through application of Terraform, BERT expertise and risk assessment.
+
+PROFESSIONAL BACKGROUND
+Bookkeeper | Yale University
+Dec 2022 - Apr 2024
+• Performed due diligence for $378K M&A transactions
+• Implemented financial controls improving accuracy by 18%
+• Managed $299K investment portfolio with 19% annual returns
+
+Senior Accountant | UnitedHealth Group
+Sep 2017 - Apr 2020
+• Managed $4906K investment portfolio with 28% annual returns
+• Led budget planning process for $3047K annual budget
+• Led financial planning reducing operational costs by 20%
+
+Tax Manager | Caterpillar
+Feb 2013 - Present
+• Implemented financial controls improving accuracy by 28%
+• Optimized cash flow management saving $36M annually
+• Prepared financial reports for 65 business units
+
+Finance Director | NextEra Energy
+Aug 2015 - May 2021
+• Led financial planning reducing operational costs by 75%
+• Conducted risk analysis for 595 investment opportunities
+• Conducted risk analysis for 650 investment opportunities
+
+
+ACADEMIC HISTORY
+Ohio State University
+M.S. in Information Systems, 2019
+
+University of Washington
+B.A. in Communication, 2017
+
+Columbia University
+B.S. in Accounting, 2013
+
+
+CORE COMPETENCIES
+Django, CircleCI, Ruby, React, Python, Angular, Node.js, Critical Thinking, Leadership, Scrum, Contract Law, Negotiation, Intellectual Property, Mentoring

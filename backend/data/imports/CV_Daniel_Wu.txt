@@ -1,0 +1,38 @@
+Name: Daniel Wu
+Email: danielwu@yahoo.com
+Phone: (834) 977-6050
+Location: San Diego, CA
+
+
+ABOUT ME
+Seasoned Brand Strategist leader with 8+ years guiding teams and initiatives in technology. Consistent record of orchestrating successful product launches through expertise in Node.js, Ruby and commitment to brand positioning.
+
+WORK HISTORY
+Senior Marketing Manager | McKinsey & Company
+Aug 2025 - Present
+• Implemented marketing automation reducing costs by 41%
+• Launched business transformation marketing campaign generating 141 leads
+• Developed content strategy resulting in 44% engagement increase
+• Led SEO optimization improving organic traffic by 48%
+• Led SEO optimization improving organic traffic by 42%
+
+Head of Brand | Bain & Company
+Jun 2016 - Mar 2021
+• Analyzed customer data to identify 398 new market segments
+• Launched organizational change marketing campaign generating 223 leads
+• Managed $364M marketing budget across digital channels
+
+Director of Marketing Operations | Hyatt
+Jan 2014 - Nov 2018
+• Led SEO optimization improving organic traffic by 94%
+• Managed $290M marketing budget across digital channels
+• Implemented marketing automation reducing costs by 63%
+
+
+ACADEMIC QUALIFICATIONS
+Princeton University
+Ph.D. in Chemistry, 2009
+
+
+CAPABILITIES
+Git, Swift, Jira, Tableau, Confluence, pandas, Public Speaking, Innovation, Adaptability, Materials Science, PCB Design, MATLAB

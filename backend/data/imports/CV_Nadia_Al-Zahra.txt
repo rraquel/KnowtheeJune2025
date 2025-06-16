@@ -1,0 +1,39 @@
+Name: Nadia Al-Zahra
+Email: nadiaal-zahra@hotmail.com
+Phone: (401) 658-2265
+LinkedIn: linkedin.com/in/nadia-al-zahra-112
+
+
+PROFILE
+Versatile Process Improvement Analyst with 5+ years of experience and a solid foundation in Python, AWS. Proven ability to quality control implementation and quality control implementation while delivering implementing lean methodologies in fast-paced environments.
+
+PROFESSIONAL EXPERIENCE
+Operations Assistant | Toyota
+May 2023 - Feb 2024
+• Led vendor negotiations securing $367K in savings
+• Managed operations for 11 facilities across 11 regions
+• Implemented lean methodologies improving efficiency by 16%
+
+COO | Hilton
+Jul 2020 - Jul 2024
+• Managed 900 person operations team
+• Coordinated logistics for 259 shipments monthly
+• Coordinated logistics for 320 shipments monthly
+
+Senior Designer | Valero Energy
+Oct 2015 - Nov 2017
+• Led design sprints resulting in 47% faster development
+• Led design system implementation across 331 products
+• Improved user satisfaction scores by 51% through redesign
+
+
+EDUCATION AND TRAINING
+Georgia Institute of Technology
+M.S. in Computer Science, 1999
+
+University of North Carolina at Chapel Hill
+B.S. in Biology, 1999
+
+
+COMPETENCIES
+Docker, CircleCI, C#, Jenkins, C++, Git, Team Management, Creativity, Leadership, Negotiation, Dispute Resolution, Due Diligence

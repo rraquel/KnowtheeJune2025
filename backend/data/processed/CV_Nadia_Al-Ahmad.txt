@@ -1,0 +1,37 @@
+Name: Nadia Al-Ahmad
+Email: nadiaal-ahmad@gmail.com
+Phone: (928) 383-8277
+Location: Jacksonville, FL
+
+
+SUMMARY
+Budget Analyst professional with a diverse background spanning 6+ years in energy. Consistently recognized for implementing financial controls and abilities in MATLAB, SVN. Known for process improvement.
+
+PROFESSIONAL EXPERIENCE
+Treasury Analyst | Marathon Petroleum
+Jul 2025 - Sep 2026
+• Prepared financial reports for 166 business units
+• Managed $3604K investment portfolio with 22% annual returns
+• Led budget planning process for $4229K annual budget
+
+Recruiter | KPMG
+Apr 2016 - Apr 2018
+• Led diversity initiative increasing representation by 23%
+• Developed training programs improving employee satisfaction by 24%
+• Led diversity initiative increasing representation by 20%
+• Led diversity initiative increasing representation by 35%
+
+Management Consultant | Novartis
+Aug 2015 - Nov 2016
+• Led architecture design for digital transformation using TensorFlow technologies
+• Developed and maintained Vue.js applications serving 20 users
+• Collaborated with cross-functional teams to deliver product suite features
+
+
+ACADEMIC BACKGROUND
+University of Chicago
+M.S. in Data Science, 2014
+
+
+COMPETENCIES
+C++, ASP.NET, Vue.js, Django, SVN, Tableau, Adaptability, Team Management, Mentoring, Patient Care, HIPAA Compliance, ICD-10 Coding, Forecasting

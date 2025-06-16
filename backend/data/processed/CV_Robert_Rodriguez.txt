@@ -1,0 +1,29 @@
+Name: Robert Rodriguez
+Email: rrodriguez@yahoo.com
+Phone: (739) 790-1284
+Location: Columbus, OH
+
+
+PERSONAL STATEMENT
+Recent Economics graduate with strong Communication, Creativity skills seeking to leverage academic knowledge and PostgreSQL, DynamoDB expertise in a Junior Developer role. Passionate about energy with a keen interest in optimization.
+
+CAREER HISTORY
+Lead Developer | Airbus
+Feb 2022 - Sep 2024
+• Built scalable microservices architecture using Kotlin
+• Built scalable microservices architecture using Jira
+• Implemented Tableau solutions that improved system performance by 25%
+• Developed and maintained Spring Boot applications serving 469 users
+• Automated deployment processes using CircleCI reducing manual effort by 35%
+
+
+ACADEMIC QUALIFICATIONS
+University of Wisconsin-Madison
+B.S. in Accounting, 2018
+
+Purdue University
+Ph.D. in Psychology, 2007
+
+
+COMPETENCIES
+CircleCI, PostgreSQL, PHP, Power BI, Jenkins, Excel, GCP, React, Kanban, Mentoring, Innovation, Emotional Intelligence, CRM, Content Marketing, Salesforce, Adobe Analytics

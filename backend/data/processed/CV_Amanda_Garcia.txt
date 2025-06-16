@@ -1,0 +1,44 @@
+Name: Amanda Garcia
+Email: amanda.garcia@outlook.com
+Phone: (958) 562-5369
+LinkedIn: linkedin.com/in/amanda-garcia-979
+
+
+PROFESSIONAL SUMMARY
+Accomplished Principal Engineer professional bringing 14+ years of strategic experience to complex healthcare challenges. Recognized for improving system performance by 40% through effective application of NLP, CircleCI and strong Budget Management, Strategic Planning abilities.
+
+PROFESSIONAL BACKGROUND
+Systems Analyst | Macy's
+Sep 2022 - Jan 2025
+• Built scalable microservices architecture using Docker
+• Led architecture design for digital transformation using Django technologies
+• Led architecture design for product suite using TensorFlow technologies
+
+Systems Analyst | PNC Bank
+Sep 2023 - Jun 2026
+• Developed and maintained CircleCI applications serving 26 users
+• Implemented Jira solutions that improved system performance by 39%
+• Optimized database queries reducing response time by 26%
+
+Senior Product Manager | Harvard University
+Feb 2020 - Feb 2023
+• Led product roadmap for business transformation with 365 active users
+• Optimized product metrics improving conversion by 48%
+• Conducted user research with 323 customers to validate features
+• Managed product lifecycle from concept to 28M revenue
+• Led product launch generating $22M in first-year revenue
+
+
+ACADEMIC HISTORY
+New York University
+B.A. in Political Science, 2008
+
+University of Washington
+B.A. in Communication, 2007
+
+Columbia University
+B.A. in Business Administration, 2007
+
+
+SKILLS
+Azure, Spring Boot, AWS, Vue.js, Angular, PostgreSQL, MySQL, C#, CircleCI, Customer Service, Kanban, Project Management, Client Relations, HubSpot, SEO/SEM, Content Marketing, Salesforce, Git

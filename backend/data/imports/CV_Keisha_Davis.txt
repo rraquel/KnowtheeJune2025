@@ -1,0 +1,56 @@
+Name: Keisha Davis
+Email: keisha.davis@hotmail.com
+Phone: (428) 794-1826
+Location: San Diego, CA
+LinkedIn: linkedin.com/in/keisha-davis-645
+
+
+CAREER PROFILE
+Accomplished Financial Controller professional bringing 18+ years of strategic experience to complex healthcare challenges. Recognized for streamlining accounting processes through effective application of Redis, C++ and strong Client Relations, Resource Allocation abilities.
+
+CAREER HISTORY
+VP of Finance | Roche
+Jul 2022 - Oct 2026
+• Optimized cash flow management saving $234M annually
+• Implemented financial controls improving accuracy by 89%
+• Conducted risk analysis for 578 investment opportunities
+
+Head of Design | Cigna
+Jul 2021 - Present
+• Led design sprints resulting in 94% faster development
+• Designed user interfaces for organizational change used by 916 customers
+• Created 589 design prototypes for new features
+• Led design system implementation across 613 products
+• Led design system implementation across 877 products
+
+QA Tester | McKinsey & Company
+Feb 2018 - Sep 2018
+• Mentored junior developers in NumPy best practices
+• Implemented SVN solutions that improved system performance by 12%
+• Collaborated with cross-functional teams to deliver software system features
+• Automated deployment processes using Confluence reducing manual effort by 22%
+
+CLO | Marriott
+Jan 2018 - Nov 2023
+• Provided legal counsel for organizational change product launches
+• Reduced legal costs by 96% through process optimization
+• Conducted legal training for 658 employees
+• Developed legal policies for 489 business units
+• Provided legal counsel for market leadership product launches
+
+Principal Engineer | Boston Consulting Group
+Jul 2010 - Dec 2013
+• Collaborated with cross-functional teams to deliver enterprise solution features
+• Optimized database queries reducing response time by 51%
+• Implemented SVN solutions that improved system performance by 43%
+• Implemented SQL solutions that improved system performance by 35%
+• Led architecture design for business transformation using Git technologies
+
+
+ACADEMIC QUALIFICATIONS
+University of Virginia
+Ph.D. in Statistics, 2012
+
+
+SKILLS
+BERT, Jenkins, Spring Boot, SVN, NumPy, Git, Coaching, Client Relations, Change Management, Negotiation, Compliance, Regulatory Affairs

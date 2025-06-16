@@ -1,0 +1,38 @@
+Name: Ahmed Mahmoud
+Email: ahmed.mahmoud@outlook.com
+Phone: (986) 728-3009
+Location: Phoenix, AZ
+LinkedIn: linkedin.com/in/ahmed-mahmoud-299
+
+
+PERSONAL STATEMENT
+Experienced Training Specialist professional with 5+ years of proven success in energy. Skilled in OpenCV, NLP with a track record of implementing effective talent acquisition strategies. Adept at benefits administration and benefits administration.
+
+PROFESSIONAL BACKGROUND
+Talent Management Director | Northrop Grumman
+Nov 2024 - Present
+• Designed compensation program for 421 employees
+• Implemented HR systems reducing processing time by 49%
+• Led diversity initiative increasing representation by 42%
+• Conducted performance reviews for 59 team members
+• Recruited 409 candidates with 52% retention rate
+
+Practice Lead | Boeing
+Oct 2018 - May 2021
+• Mentored junior developers in SQL best practices
+• Built scalable microservices architecture using ASP.NET
+• Automated deployment processes using BERT reducing manual effort by 29%
+• Implemented NumPy solutions that improved system performance by 54%
+• Developed and maintained Excel applications serving 304 users
+
+
+EDUCATIONAL BACKGROUND
+Carnegie Mellon University
+B.A. in Communication, 2016
+
+University of North Carolina at Chapel Hill
+M.S. in Information Systems, 2002
+
+
+KEY SKILLS
+OpenCV, Oracle, TensorFlow, Excel, Go, Git, Stakeholder Management, Conflict Resolution, Time Management, Revit, Materials Science, AutoCAD, Redis

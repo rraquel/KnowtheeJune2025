@@ -1,0 +1,27 @@
+Name: Jose Hernandez
+Email: jose.hernandez@hotmail.com
+Phone: (889) 795-4432
+Location: San Diego, CA
+LinkedIn: linkedin.com/in/jose-hernandez-853
+
+
+ABOUT ME
+Recent Economics graduate with strong Resource Allocation, Emotional Intelligence skills seeking to leverage academic knowledge and BERT, Kubernetes expertise in a Benefits Administrator role. Passionate about healthcare with a keen interest in problem-solving.
+
+WORK HISTORY
+HR Assistant | Valero Energy
+Oct 2024 - Apr 2025
+• Reduced turnover rate by 8% through retention strategies
+• Implemented HR systems reducing processing time by 14%
+• Implemented HR systems reducing processing time by 20%
+• Managed benefits administration for 18 employees
+• Conducted performance reviews for 50 team members
+
+
+ACADEMIC HISTORY
+Carnegie Mellon University
+M.A. in Communication, 1998
+
+
+SKILLS
+Python, TensorFlow, Power BI, Terraform, Ruby, PyTorch, Public Speaking, Coaching, Decision Making, Westlaw, Legal Research, Compliance

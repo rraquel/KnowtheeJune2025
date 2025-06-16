@@ -1,0 +1,68 @@
+Name: Layla Al-Zahra
+Email: lal-zahra@outlook.com
+Phone: (343) 323-4379
+Location: Chicago, IL
+LinkedIn: linkedin.com/in/layla-al-zahra-606
+
+
+PROFESSIONAL SUMMARY
+Dynamic CMO executive offering 16+ years of leadership excellence in technology. Track record of increasing conversion rates by 35% through strategic vision, digital marketing optimization, and innovative application of NumPy, Flask.
+
+EMPLOYMENT HISTORY
+Marketing Assistant | AstraZeneca
+Aug 2023 - Present
+• Implemented marketing automation reducing costs by 12%
+• Launched software system marketing campaign generating 11 leads
+• Led SEO optimization improving organic traffic by 6%
+• Analyzed customer data to identify 20 new market segments
+
+Data Scientist | Mayo Clinic
+Feb 2019 - May 2020
+• Led research team of 84 scientists and analysts
+• Presented findings at 39 international conferences
+• Presented findings at 76 international conferences
+• Implemented data collection processes for 26 studies
+
+Accountant | Anthem
+Feb 2016 - Nov 2016
+• Led budget planning process for $398K annual budget
+• Led financial planning reducing operational costs by 10%
+• Performed due diligence for $364K M&A transactions
+• Conducted risk analysis for 41 investment opportunities
+• Optimized cash flow management saving $354K annually
+
+L&D Manager | Toyota
+Sep 2015 - Feb 2018
+• Managed benefits administration for 59 employees
+• Developed training programs improving employee satisfaction by 30%
+• Recruited 214 candidates with 35% retention rate
+• Implemented HR systems reducing processing time by 39%
+
+Process Improvement Analyst | Warner Bros
+Oct 2016 - Present
+• Optimized supply chain reducing costs by 22%
+• Coordinated logistics for 135 shipments monthly
+• Managed 90 person operations team
+• Managed 58 person operations team
+
+Partner | Oracle
+Apr 2007 - Present
+• Implemented Azure solutions that improved system performance by 54%
+• Built scalable microservices architecture using Kotlin
+• Developed and maintained MATLAB applications serving 986 users
+• Implemented Jira solutions that improved system performance by 56%
+
+
+QUALIFICATIONS
+University of Chicago
+M.S. in Engineering, 2016
+
+University of Minnesota
+Ph.D. in Chemistry, 2014
+
+University of Illinois at Urbana-Champaign
+B.A. in Business Administration, 2007
+
+
+SKILL SET
+R, SVN, DynamoDB, SQL, ASP.NET, C#, Time Management, Customer Service, Change Management, Structural Analysis, SolidWorks, PLC Programming

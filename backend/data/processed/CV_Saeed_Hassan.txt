@@ -1,0 +1,36 @@
+Name: Saeed Hassan
+Email: saeedhassan@gmail.com
+Phone: (588) 866-7011
+LinkedIn: linkedin.com/in/saeed-hassan-551
+
+
+CAREER OBJECTIVE
+Detail-oriented Operations Assistant with excellent Scrum, Agile Methodologies abilities and a passion for strategy development. Seeking to apply my knowledge of Node.js, OpenCV to solve real-world problems in technology.
+
+WORK EXPERIENCE
+Operations Intern | Harvard University
+Feb 2025 - Jan 2026
+• Optimized supply chain reducing costs by 9%
+• Implemented quality control systems achieving 22% accuracy
+• Implemented lean methodologies improving efficiency by 20%
+• Implemented lean methodologies improving efficiency by 5%
+• Implemented quality control systems achieving 8% accuracy
+
+Facilities Manager | Yale University
+Apr 2015 - Aug 2016
+• Led vendor negotiations securing $1521K in savings
+• Managed 175 person operations team
+• Reduced operational waste by 34% through process improvements
+• Optimized supply chain reducing costs by 23%
+
+
+EDUCATION
+University of California, Los Angeles
+Ph.D. in Engineering, 2023
+
+University of North Carolina at Chapel Hill
+Ph.D. in Economics, 2017
+
+
+CAPABILITIES
+Swift, Spring Boot, Python, PyTorch, AWS, Team Management, Innovation, ICD-10 Coding, Healthcare Regulations, Email Marketing

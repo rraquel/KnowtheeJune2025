@@ -1,0 +1,56 @@
+Name: Amy Liu
+Email: amyliu@hotmail.com
+Phone: (796) 601-4250
+Location: Charlotte, NC
+LinkedIn: linkedin.com/in/amy-liu-678
+
+
+PROFILE
+Dynamic Head of People Operations executive offering 27+ years of leadership excellence in retail. Track record of designing competitive compensation structures through strategic vision, talent development, and innovative application of MATLAB, Redis.
+
+WORK HISTORY
+Recruiting Coordinator | Princeton University
+Jan 2024 - Dec 2024
+• Developed training programs improving employee satisfaction by 23%
+• Implemented HR systems reducing processing time by 14%
+• Managed benefits administration for 13 employees
+
+Compensation Analyst | TikTok
+Nov 2016 - Present
+• Designed compensation program for 138 employees
+• Conducted performance reviews for 168 team members
+• Developed training programs improving employee satisfaction by 36%
+• Recruited 97 candidates with 38% retention rate
+• Implemented HR systems reducing processing time by 26%
+
+HR Manager | Slack
+Sep 2021 - Present
+• Led diversity initiative increasing representation by 36%
+• Designed compensation program for 441 employees
+• Managed benefits administration for 133 employees
+• Recruited 64 candidates with 60% retention rate
+
+Talent Acquisition Director | TJX Companies
+Apr 2019 - Nov 2023
+• Recruited 324 candidates with 85% retention rate
+• Recruited 377 candidates with 97% retention rate
+• Designed compensation program for 156 employees
+• Designed compensation program for 180 employees
+
+Talent Acquisition Director | Northrop Grumman
+Aug 2009 - Feb 2015
+• Managed benefits administration for 847 employees
+• Conducted performance reviews for 156 team members
+• Managed benefits administration for 814 employees
+
+
+EDUCATION AND TRAINING
+Massachusetts Institute of Technology
+M.A. in Psychology, 2001
+
+University of Minnesota
+B.A. in Psychology, 1995
+
+
+CAPABILITIES
+OpenCV, Django, Vue.js, Cassandra, Node.js, TensorFlow, Spring Boot, MATLAB, Budget Management, Innovation, Team Management, Change Management, Financial Reporting, Financial Analysis, Forecasting, FactSet, Compliance

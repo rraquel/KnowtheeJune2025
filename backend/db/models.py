@@ -191,6 +191,9 @@ class EmbeddingChunk(Base, TimestampMixin):
     chunk_index = Column(Integer, nullable=False)
     content = Column(Text, nullable=False)
     embedding = Column(Vector(1536), nullable=False)
+    token_count = Column(Integer, nullable=True)
+    char_count = Column(Integer, nullable=True)
+    chunk_label = Column(Text, nullable=True)
     
     # Relationships
     document = relationship("EmbeddingDocument", back_populates="chunks", foreign_keys=[external_document_id])

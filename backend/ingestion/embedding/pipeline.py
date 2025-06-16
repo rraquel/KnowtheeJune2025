@@ -39,6 +39,10 @@ class EmbeddingPipeline:
         self.db = db
         self.chunker = TextChunker()
         self.embedder = OpenAIEmbedder(model=embedding_model)
+        # Register bound methods
+        registry._methods["cv"] = self.chunker._chunk_cv
+        registry._methods["assessment"] = self.chunker._chunk_assessment
+        registry._methods["generic"] = self.chunker._chunk_generic
         logger.info(f"Initialized pipeline with model: {embedding_model}")
         
     def _check_document_exists(self, filename: str, employee_id: str) -> bool:
@@ -388,49 +392,70 @@ class EmbeddingPipeline:
                 logger.error(f"Could not find external document ID for {file_path.name}")
                 return
 
+            # Map document type to allowed DB value
+            mapped_doc_type = self._map_document_type(doc_type)
+            logger.info(f"Processing document {file_path.name} as type {mapped_doc_type}")
+
             # Create embedding document
             doc = EmbeddingDocument(
                 employee_id=employee_id,
                 embedding_run_id=embedding_run_id,
-                document_type=doc_type.lower(),
+                document_type=mapped_doc_type,
                 source_filename=file_path.name,
                 external_document_id=external_document_id,
-                source_type=doc_type.lower()
+                source_type=mapped_doc_type
             )
             self.db.add(doc)
             self.db.flush()
+            logger.info(f"Created embedding document with ID: {doc.id}")
 
             # Read and chunk content
             with open(file_path, 'r', encoding='utf-8') as f:
                 content = f.read()
+            logger.info(f"Read {len(content)} characters from {file_path.name}")
 
             # Get appropriate chunking method
-            chunking_method = registry.get_method(doc_type.lower())
+            chunking_method = registry.get_method(mapped_doc_type)
             if not chunking_method:
                 chunking_method = registry.get_method("generic")
+                logger.warning(f"No specific chunking method found for {mapped_doc_type}, using generic")
 
-            chunks = chunking_method(content)
+            # For CVs, chunker may require 'text' argument
+            import inspect
+            if mapped_doc_type == "cv" and 'text' in inspect.signature(chunking_method).parameters:
+                chunks = chunking_method(text=content)
+            else:
+                chunks = chunking_method(content)
+            # Wrap string chunks as dicts if needed
+            if chunks and isinstance(chunks[0], str):
+                chunks = [{"content": c} for c in chunks]
             logger.info(f"Generated {len(chunks)} chunks for {file_path.name}")
 
             # Process each chunk
+            chunk_count = 0
             for i, chunk in enumerate(chunks):
-                # Generate embedding
-                embedding = self.embedder.embed(chunk["content"])
-                
-                # Create chunk record
-                chunk_record = EmbeddingChunk(
-                    external_document_id=external_document_id,
-                    chunk_index=i,
-                    content=chunk["content"],
-                    embedding=embedding,
-                    token_count=chunk.get("token_count"),
-                    char_count=chunk.get("char_count"),
-                    chunk_label=chunk.get("label")
-                )
-                self.db.add(chunk_record)
+                try:
+                    # Generate embedding
+                    embedding = self.embedder.embed(chunk["content"])
+                    
+                    # Create chunk record
+                    chunk_record = EmbeddingChunk(
+                        external_document_id=external_document_id,
+                        chunk_index=i,
+                        content=chunk["content"],
+                        embedding=embedding,
+                        token_count=chunk.get("token_count"),
+                        char_count=chunk.get("char_count"),
+                        chunk_label=chunk.get("label")
+                    )
+                    self.db.add(chunk_record)
+                    chunk_count += 1
+                except Exception as e:
+                    logger.error(f"Error processing chunk {i} for {file_path.name}: {str(e)}")
+                    continue
 
             self.db.commit()
-            logger.info(f"Successfully processed {file_path.name}")
+            logger.info(f"Successfully processed {file_path.name}: created {chunk_count} chunks")
 
         except Exception as e:
             self.db.rollback()

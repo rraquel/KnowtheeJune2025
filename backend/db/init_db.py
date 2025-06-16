@@ -66,6 +66,9 @@ def init_db():
                     chunk_index INTEGER NOT NULL,
                     content TEXT NOT NULL,
                     embedding vector(1536),
+                    token_count INTEGER,
+                    char_count INTEGER,
+                    chunk_label TEXT,
                     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
                     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
                 );

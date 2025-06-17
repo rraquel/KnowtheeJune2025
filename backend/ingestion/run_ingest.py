@@ -3,9 +3,11 @@ import re
 import shutil
 import logging
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy import or_, and_, func
 import argparse
+from uuid import uuid4
+from typing import Dict, Any
 
 from backend.db.session import init_db, SessionLocal
 from backend.ingestion.parsers.cv_parser import parse_cv
@@ -256,7 +258,10 @@ class IngestService:
                         employee_id=employee.id,
                         assessment_type=assessment_data["type"],
                         assessment_date=assessment_data["date"],
-                        source_filename=file_path.name
+                        source_filename=file_path.name,
+                        status='active',
+                        notes=assessment_data.get('notes'),
+                        updated_at=datetime.now(timezone.utc)
                     )
                     db.add(assessment)
                     db.flush()

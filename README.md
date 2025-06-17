@@ -10,7 +10,7 @@
 │   └── models.py              # SQLAlchemy ORM models
 ├── ingestion/                  # Data ingestion and processing
 │   ├── __init__.py
-│   ├── ingest.py              # Main ingestion service
+│   ├── run_ingest.py          # Main ingestion service
 │   ├── parsers/               # Parsers for CV and assessments
 │   │   ├── __init__.py
 │   │   ├── cv_parser.py
@@ -260,12 +260,12 @@ Required environment variables:
 streamlit run main.py
 ```
 
-## Docker Setup and Data Ingestion
+## Docker Setup and Usage
 
 ### Prerequisites
 - Docker and Docker Compose installed
-- Git repository cloned locally
 - OpenAI API key (for embeddings)
+- Git repository cloned locally
 
 ### Initial Setup
 
@@ -279,113 +279,165 @@ OPENAI_API_KEY=your_api_key_here
 2. Build and start the containers:
 ```bash
 # Build and start all services
-docker compose up --build
-
-# Or in detached mode
-docker compose up --build -d
+docker-compose up -d
 ```
 
-### Database Initialization
+This will start the following services:
+- PostgreSQL database
+- Ingestion service
+- API service
 
-The database will be automatically initialized when the containers start. If you need to reinitialize:
+### Common Docker Commands
 
+1. **View running containers**:
 ```bash
-# Stop and remove all containers and volumes
-docker compose down -v
-
-# Rebuild and start
-docker compose up --build
+docker-compose ps
 ```
 
-### Data Ingestion Process
-
-1. Place your files in the correct directories:
-   - CV files: `backend/data/imports/cv/`
-   - Assessment files: `backend/data/imports/assessments/`
-
-2. Run the ingestion pipeline:
+2. **View logs**:
 ```bash
-# Run the ingestion service
-docker compose run --rm ingest python -m backend.ingestion.ingest
+# All services
+docker-compose logs
 
-# Run the embedding pipeline
-docker compose run --rm ingest python -m backend.ingestion.run_embedding --input-dir backend/data/processed
+# Specific service
+docker-compose logs ingest
+docker-compose logs postgres
+
+# Follow logs in real-time
+docker-compose logs -f ingest
 ```
 
-### Monitoring the Process
-
-1. Check ingestion logs:
+3. **Stop services**:
 ```bash
-docker compose logs -f ingest
+# Stop all services
+docker-compose down
+
+# Stop and remove volumes (clears database)
+docker-compose down -v
 ```
 
-2. Verify database tables:
+4. **Restart services**:
 ```bash
-# Connect to the database
-docker compose exec postgres psql -U postgres -d knowthee
+# Restart all services
+docker-compose restart
 
-# List tables
+# Restart specific service
+docker-compose restart ingest
+```
+
+### Running the Ingestion Pipeline
+
+The ingestion process consists of two main steps:
+
+1. **Initial Document Processing**
+```bash
+# Run the initial ingestion script
+docker exec knowtheejune2025-ingest-1 python backend/ingestion/run_ingest.py
+```
+
+This script will:
+- Process raw documents from the `backend/data/raw` directory
+- Parse and structure the content
+- Store the processed files in `backend/data/processed`
+
+2. **Generate Embeddings**
+```bash
+# Run the embedding generation script
+docker exec knowtheejune2025-ingest-1 python backend/ingestion/run_embedding.py --input-dir backend/data/processed
+```
+
+This script will:
+- Process the documents from the specified input directory
+- Generate embeddings for each document chunk
+- Store the embeddings in the database
+
+### Database Management
+
+1. **Connect to the database**:
+```bash
+docker exec -it knowtheejune2025-postgres-1 psql -U postgres -d knowthee
+```
+
+2. **Common database commands**:
+```sql
+-- List all tables
 \dt
 
-# Check embedding tables
+-- Check embedding tables
 SELECT COUNT(*) FROM embedding_documents;
 SELECT COUNT(*) FROM embedding_chunks;
+
+-- Check employee data
+SELECT * FROM employees LIMIT 5;
 ```
 
 ### Troubleshooting
 
-If you encounter issues:
-
-1. Check container status:
+1. **Container Issues**:
 ```bash
-docker compose ps
+# Check container status
+docker-compose ps
+
+# View detailed logs
+docker-compose logs ingest
+docker-compose logs postgres
+
+# Restart problematic container
+docker-compose restart ingest
 ```
 
-2. View detailed logs:
+2. **Database Issues**:
 ```bash
-docker compose logs ingest
-docker compose logs postgres
+# Reset database (WARNING: This will delete all data)
+docker-compose down -v
+docker-compose up -d
 ```
 
-3. Common issues:
-   - Database connection errors: Check DATABASE_URL in .env
-   - Empty tables: Verify file permissions and input directory
-   - Embedding errors: Check OPENAI_API_KEY
+3. **Common Problems**:
+- Database connection errors: Check DATABASE_URL in .env
+- Empty tables: Verify file permissions and input directory
+- Embedding errors: Check OPENAI_API_KEY
+- Container not starting: Check logs for specific errors
 
-4. Reset everything:
+### File Organization
+
+The system expects files to be organized as follows:
+- `backend/data/raw/`: Place your raw input files here
+- `backend/data/processed/`: Processed files will be stored here
+- `backend/data/embeddings/`: Generated embeddings will be stored here
+
+### Supported File Types
+
+The system can process the following file types:
+- CV files (format: `CV_[FirstName]_[LastName].txt`)
+- IDI assessment files (format: `IDI_[FirstName]_[LastName].txt`)
+- Hogan assessment files (format: `Hogan_[FirstName]_[LastName].txt`)
+
+### Complete Workflow Example
+
+1. **Start fresh**:
 ```bash
 # Stop and remove everything
-docker compose down -v
+docker-compose down -v
 
-# Rebuild and start fresh
-docker compose up --build
+# Start services
+docker-compose up -d
 ```
 
-### File Requirements
+2. **Process documents**:
+```bash
+# Run ingestion
+docker exec knowtheejune2025-ingest-1 python backend/ingestion/run_ingest.py
 
-1. CV Files:
-   - Format: `.txt` or `.json`
-   - Naming: `CV_FirstName_LastName.txt`
-   - Content: Structured text with sections
+# Generate embeddings
+docker exec knowtheejune2025-ingest-1 python backend/ingestion/run_embedding.py --input-dir backend/data/processed
+```
 
-2. Assessment Files:
-   - Format: `.txt`
-   - Naming: `IDI_FirstName_LastName.txt` or `Hogan_FirstName_LastName.txt`
-   - Content: Assessment results in specified format
-
-### Database Schema
-
-The system uses the following main tables:
-- `employees`: Employee information
-- `employee_cvs`: CV documents
-- `employee_assessments`: Assessment records
-- `embedding_documents`: Document metadata
-- `embedding_chunks`: Document chunks with embeddings
-
-Each table includes:
-- UUID primary keys
-- Timestamps (created_at, updated_at)
-- Appropriate foreign key relationships
+3. **Verify results**:
+```bash
+# Check database
+docker exec -it knowtheejune2025-postgres-1 psql -U postgres -d knowthee -c "SELECT COUNT(*) FROM embedding_documents;"
+```
 
 ## Usage Guide
 
@@ -466,32 +518,32 @@ export DATABASE_URL="postgresql://postgres:postgres@localhost:5432/knowthee"
 2. Run the ingestion process:
 ```bash
 # Process all files
-python -m backend.ingestion.ingest ingest all
+python -m backend.ingestion.run_ingest ingest all
 
 # Process a single file
-python -m backend.ingestion.ingest ingest single filename.pdf
+python -m backend.ingestion.run_ingest ingest single filename.pdf
 
 # Specify custom directories
-python -m backend.ingestion.ingest ingest all --source /path/to/source --processed-dir /path/to/processed
+python -m backend.ingestion.run_ingest ingest all --source /path/to/source --processed-dir /path/to/processed
 ```
 
 ### Running with Docker
 
 1. Build and run the ingestion service:
 ```bash
-docker-compose run --rm ingest ingest all
+docker-compose run --rm ingest run_ingest all
 ```
 
 2. Process a single file:
 ```bash
-docker-compose run --rm ingest ingest single filename.pdf
+docker-compose run --rm ingest run_ingest single filename.pdf
 ```
 
 ### Scheduled Ingestion
 
 To run the ingestion process nightly at 2 AM, add this to your crontab:
 ```bash
-0 2 * * * cd /path/to/project && docker-compose run --rm ingest ingest all >> /var/log/knowthee/ingest.log 2>&1
+0 2 * * * cd /path/to/project && docker-compose run --rm ingest run_ingest all >> /var/log/knowthee/ingest.log 2>&1
 ```
 
 ### Output

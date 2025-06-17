@@ -403,7 +403,9 @@ class EmbeddingPipeline:
                 document_type=mapped_doc_type,
                 source_filename=file_path.name,
                 external_document_id=external_document_id,
-                source_type=mapped_doc_type
+                source_type=mapped_doc_type,
+                created_at=datetime.utcnow(),
+                updated_at=datetime.utcnow()
             )
             self.db.add(doc)
             self.db.flush()

@@ -120,4 +120,25 @@
       "pattern": ".*",
       "description": "Ensure full project structure is respected, including frontend and backend modules.",
       "severity": "error",
-      "condition": "not has_folders(['backend/database', 'backend/services/parser', 'backend/services/vector', 'backend/api',]()_
+      "condition": "not has_folders(['backend/database', 'backend/services/parser', 'backend/services/vector', 'backend/api', 'backend/utils', 'frontend', 'tests', 'data/imports'])"
+    },
+    {
+      "pattern": ".*",
+      "description": "Ensure strict backend folder and file structure is followed for consistency and maintainability.",
+      "severity": "error",
+      "condition": "not has_structure({'backend': {'main.py': 'file','database': {'__init__.py': 'file','models.py': 'file','alembic.ini': 'file','alembic': {'versions': 'folder'}},'services': {'__init__.py': 'file','parser': {'__init__.py': 'file','cv_parser.py': 'file','assessment_parser.py': 'file'},'vector': {'chunker.py': 'file'}},'api': {'talent.py': 'file'},'utils': {'__init__.py': 'file','validators.py': 'file'}},'data': {'imports': 'folder'},'tests': 'folder','frontend': 'folder'})"
+    },
+    {
+      "pattern": ".*",
+      "description": "Only perform the tasks that are explicitly specified. If an additional improvement, change, or refactor is identified, suggest it or ask for confirmation before proceeding.",
+      "severity": "error",
+      "condition": "performs_unspecified_action"
+    },
+    {
+      "pattern": ".*",
+      "description": "Environment variables, including OpenAI API keys, must be loaded using `dotenv` from the project's root `.env` file.",
+      "severity": "error",
+      "condition": "requires_env_vars and not uses_dotenv"
+    }
+  ]
+}

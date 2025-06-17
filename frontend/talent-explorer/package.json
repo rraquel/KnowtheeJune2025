@@ -1,0 +1,27 @@
+{
+  "name": "talent-explorer",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev --host",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "@tanstack/react-query": "^4.29.12",
+    "axios": "^1.6.8"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.14",
+    "@types/react-dom": "^18.2.7",
+    "typescript": "^5.4.2",
+    "vite": "^5.2.0",
+    "@vitejs/plugin-react": "^4.2.0",
+    "tailwindcss": "^3.4.1",
+    "postcss": "^8.4.38",
+    "autoprefixer": "^10.4.17"
+  }
+} 

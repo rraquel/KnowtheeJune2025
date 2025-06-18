@@ -267,45 +267,45 @@ CRITICAL SOURCE VALIDATION: NEVER reference sources that do not exist in the pro
 
     def process_complex_query(self, query: str, context_type: str = "general", conversation_id: str = "default") -> Dict[str, Any]:
         """
-        Process complex queries with RAG: embed, search, fetch structured data, build prompt, call LLM.
-        Maintains chat context for each session_id (conversation_id).
+        Orchestrate the full RAG pipeline: embed, search, extract employee IDs, fetch structured data, assemble context, call LLM.
         """
         try:
-            # 1. Embed the user prompt (embedding handled in vector search)
             user_prompt = query.strip()
-
-            # --- Context Management ---
             session_id = conversation_id or "default"
             if session_id not in self.session_memory:
                 self.session_memory[session_id] = []
-            # Append the new user message
             self.session_memory[session_id].append(("user", user_prompt))
-            # Keep only the last N messages
             self.session_memory[session_id] = self.session_memory[session_id][-self.max_context_messages:]
-            # Build chat history for prompt
             chat_history = "\n".join([
                 f"{role.capitalize()}: {msg}" for role, msg in self.session_memory[session_id]
             ])
 
-            # 2. Vector similarity search for top document chunks
-            try:
-                vector_chunks = self.vector_store.get_relevant_chunks(user_prompt, n_results=8)
-            except Exception as e:
-                vector_chunks = []
-                logger.error(f"Vector search failed: {e}")
+            # 1. Embed the user prompt
+            embedding = self.vector_store._generate_embedding(user_prompt)
 
-            # 3. Retrieve employee profiles (all or specific)
-            try:
-                employees = self.employee_db.get_all_employees()
-            except Exception as e:
-                employees = []
-                logger.error(f"Employee DB fetch failed: {e}")
+            # 2. Query vector store for top chunks and employee_ids
+            search_results = self.vector_store.search_employees(user_prompt, n_results=8)
+            top_chunks = []
+            relevant_employee_ids = set()
+            for result in search_results:
+                relevant_employee_ids.add(str(result['employee_id']))
+                top_chunks.extend(result['matches'])
 
-            # 4. Build the full prompt
-            context_section = "\n\n".join(vector_chunks)
+            # 3. Fetch structured data for those employees (or fallback)
+            structured_employees = []
+            if relevant_employee_ids:
+                for emp_id in relevant_employee_ids:
+                    emp_data = self.employee_db.get_employee(emp_id)
+                    if emp_data:
+                        structured_employees.append(emp_data)
+            else:
+                structured_employees = self.employee_db.get_all_employees()
+
+            # 4. Assemble context
+            context_section = "\n\n".join(top_chunks)
             employees_section = "\n\n".join([
-                f"Employee: {emp['name']} | Position: {emp.get('current_position', '')} | Department: {emp.get('department', '')}"
-                for emp in employees[:5]
+                f"Employee: {emp['name']} | Position: {emp.get('current_position', '')} | Department: {emp.get('department', '')}\nProfile: {json.dumps(emp, indent=2)[:500]}..."
+                for emp in structured_employees
             ])
             full_prompt = f"""
 You are a talent intelligence assistant. Use the following context and chat history to answer the user's question.
@@ -319,7 +319,7 @@ User question:
 Relevant document context:
 {context_section}
 
-Employee directory (sample):
+Employee profiles:
 {employees_section}
 
 If you don't know the answer, say so. Be concise and cite context if possible.
@@ -339,15 +339,14 @@ If you don't know the answer, say so. Be concise and cite context if possible.
                 logger.error(f"OpenAI API error: {e}")
                 answer = "Sorry, I couldn't generate a response due to an internal error."
 
-            # Add assistant response to session memory
             self.session_memory[session_id].append(("assistant", answer))
             self.session_memory[session_id] = self.session_memory[session_id][-self.max_context_messages:]
 
             return {
                 "query": query,
                 "response": answer,
-                "context_sources": len(vector_chunks),
-                "employees_sampled": [emp['name'] for emp in employees[:5]],
+                "context_sources": len(top_chunks),
+                "employees_sampled": [emp['name'] for emp in structured_employees],
                 "conversation_id": conversation_id
             }
         except Exception as e:

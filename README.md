@@ -280,6 +280,8 @@ OPENAI_API_KEY=your_api_key_here
 ```bash
 # Build and start all services
 docker-compose up -d
+# Rebuild the containers with content
+docker-compose build --no-cache
 ```
 
 This will start the following services:

@@ -5,12 +5,22 @@ from backend.db.session import get_db_dep
 from backend.db.models import Employee
 from sqlalchemy.orm import Session
 from backend.services.rag.query_service import RAGQuerySystem
-from backend.services.employee.employee_database import EmployeeDatabase
+from backend.services.data_access.employee_database import EmployeeDatabase
 
 router = APIRouter()
 
 # In-memory session context (for demonstration; use Redis/DB for production)
 session_memory: Dict[str, dict] = {}
+
+# Lazy initialization of RAG system
+_rag_system = None
+
+def get_rag_system():
+    """Get or create the RAG system instance"""
+    global _rag_system
+    if _rag_system is None:
+        _rag_system = RAGQuerySystem(employee_db=EmployeeDatabase())
+    return _rag_system
 
 class ChatRequest(BaseModel):
     message: str
@@ -19,9 +29,6 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     response: str
     session_id: str
-
-# Instantiate the RAG system with a real EmployeeDatabase
-rag_system = RAGQuerySystem(employee_db=EmployeeDatabase())
 
 @router.get("/employees")
 def get_employees(db: Session = Depends(get_db_dep)):
@@ -33,6 +40,9 @@ def chat_endpoint(request: ChatRequest):
     # Retrieve or initialize session history/context
     session_context = session_memory.setdefault(request.session_id, {})
     try:
+        # Get the RAG system (initialized lazily)
+        rag_system = get_rag_system()
+        
         # Use the RAG system to process the query with context
         rag_result = rag_system.process_complex_query(
             query=request.message,

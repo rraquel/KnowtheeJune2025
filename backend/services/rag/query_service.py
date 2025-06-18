@@ -8,17 +8,23 @@ import tiktoken
 from typing import List, Dict, Any, Optional
 from openai import OpenAI
 import streamlit as st
+import logging
 
 from backend.services.rag.vector_store import VectorStore
-from backend.services.employee.employee_database import EmployeeDatabase
+from backend.services.data_access.employee_database import EmployeeDatabase
+
+logger = logging.getLogger(__name__)
 
 class RAGQuerySystem:
     def __init__(self, vector_store=None, employee_db=None):
         """Initialize the RAG query system with intelligent context management"""
         api_key = os.getenv("OPENAI_API_KEY")
-        if not api_key:
-            raise ValueError("OPENAI_API_KEY environment variable is not set.")
-        self.client = OpenAI(api_key=api_key)
+        if api_key:
+            self.client = OpenAI(api_key=api_key)
+        else:
+            # For testing purposes, allow initialization without API key
+            self.client = None
+            print("Warning: OPENAI_API_KEY not set. Some features may be limited.")
         
         # Use provided instances or create new ones (for backward compatibility)
         if vector_store is not None:
@@ -261,91 +267,417 @@ CRITICAL SOURCE VALIDATION: NEVER reference sources that do not exist in the pro
     def process_complex_query(self, query: str, context_type: str = "general", 
                              conversation_id: str = "default") -> Dict[str, Any]:
         """
-        Process complex queries with intelligent conversation context management
-        
-        Args:
-            query: The user's question
-            context_type: Type of analysis ("individual", "team", "comparison", "general")
-            conversation_id: Unique identifier for this conversation thread
+        Process complex queries with AI-driven query planning and execution
         """
         
-        # Step 1: Resolve contextual references in the query
-        resolved_query, context_employees = self._resolve_contextual_query(query)
+        # Step 1: Use AI to plan the query execution
+        plan = self._plan_query_with_ai(query)
         
-        # Step 2: Analyze the resolved query to understand what type of response is needed
-        query_analysis = self._analyze_query_intent(resolved_query, context_employees)
+        # Step 2: Execute the query plan
+        result = self._execute_query_plan(plan)
         
-        # Step 2.5: Check for numerical ranking queries and handle them specially
-        ranking_info = self._detect_numerical_ranking_query(resolved_query)
-        if ranking_info['is_numerical_ranking']:
-            print(f"DEBUG: Detected numerical ranking query - {ranking_info}")
-            try:
-                ranking_response = self._handle_numerical_ranking_query(resolved_query, ranking_info)
-                if ranking_response:
-                    print(f"DEBUG: Successfully generated numerical ranking response: {ranking_response[:100]}...")
-                    
-                    # IMPORTANT: Update conversation history before returning early
-                    # This ensures follow-up options will be available
-                    query_analysis = self._analyze_query_intent(resolved_query, context_employees)
-                    self._update_conversation_history(query, resolved_query, ranking_response, context_employees, query_analysis)
-                    
-                    # Return early with the numerical ranking response
-                    return {
-                        "query": query,
-                        "resolved_query": resolved_query,
-                        "analysis": query_analysis,
-                        "response": ranking_response,
-                        "context_sources": 0,
-                        "context_employees": [],
-                        "employee_limits": {"max": 5, "priority": 5},
-                        "conversation_status": self.get_conversation_status(),
-                        "conversation_id": conversation_id,
-                        "special_handling": "numerical_ranking"
-                    }
-                else:
-                    print(f"DEBUG: Numerical ranking handler returned None, falling back to regular processing")
-            except Exception as e:
-                print(f"DEBUG: Error in numerical ranking handler: {e}")
-                import traceback
-                traceback.print_exc()
-                # Continue with regular processing as fallback
+        # Step 3: Update conversation tracking
+        self._update_conversation_history(query, query, result["response"], [], {
+            "query_type": plan.get("intent", "general"),
+            "scope": "ai_query_plan"
+        })
         
-        # Step 3: Get intelligent limits for this query type
-        employee_limits = self._get_employee_limit_for_query(
-            query_analysis.get("query_type", "general_guidance"),
-            query_analysis.get("scope", "single_employee")
-        )
-        
-        # Step 4: Gather relevant context with intelligent limits
-        context_chunks = self._gather_relevant_context(
-            resolved_query, query_analysis, context_employees, employee_limits
-        )
-        
-        # Step 5: Generate intelligent response with conversation awareness
-        response = self._generate_intelligent_response(
-            resolved_query, context_chunks, query_analysis, query
-        )
-        
-        # Step 6: Update conversation tracking with token management
-        self._update_conversation_history(query, resolved_query, response, context_employees, query_analysis)
-        
-        # Step 7: Update context employees with intelligent scoring
-        self._update_context_employees(response, context_employees, query_analysis)
-        
-        # Step 8: Manage memory based on token limits
-        self._manage_conversation_memory()
-        
+        # Step 4: Return the result
         return {
             "query": query,
-            "resolved_query": resolved_query,
-            "analysis": query_analysis,
-            "response": response,
-            "context_sources": len(context_chunks),
-            "context_employees": [emp["name"] if isinstance(emp, dict) else emp for emp in self.context_employees],
-            "employee_limits": employee_limits,
+            "resolved_query": query,
+            "analysis": {"query_type": plan.get("intent", "general"), "scope": "ai_query_plan"},
+            "response": result["response"],
+            "context_sources": 0,
+            "context_employees": result.get("employees", []),
+            "employee_limits": {"max": 5, "priority": 3},
             "conversation_status": self.get_conversation_status(),
-            "conversation_id": conversation_id
+            "conversation_id": conversation_id,
+            "source": result["source"],
+            "confidence": result["confidence"]
         }
+
+    def _plan_query_with_ai(self, query: str) -> dict:
+        """
+        Simulate AI query planning. For now, use hardcoded rules to parse the query.
+        In the future, this would call an LLM to understand intent and extract parameters.
+        """
+        query_lower = query.lower()
+        
+        # Check for specific score queries
+        if "score" in query_lower or "hogan" in query_lower or "idi" in query_lower:
+            # Extract employee names
+            employees = self._extract_employee_names_from_query(query)
+            
+            # Extract trait/assessment type
+            trait = self._extract_trait_from_query(query)
+            assessment_type = self._extract_assessment_type_from_query(query)
+            
+            if employees and trait:
+                return {
+                    "intent": "get_score",
+                    "trait": trait,
+                    "assessment_type": assessment_type,
+                    "employees": employees
+                }
+            elif employees:
+                return {
+                    "intent": "get_all_scores",
+                    "assessment_type": assessment_type,
+                    "employees": employees
+                }
+        
+        # Check for comparison queries
+        comparison_indicators = ["compare", "highest", "lowest", "better", "worse", "among", "between"]
+        if any(indicator in query_lower for indicator in comparison_indicators):
+            employees = self._extract_employee_names_from_query(query)
+            trait = self._extract_trait_from_query(query)
+            assessment_type = self._extract_assessment_type_from_query(query)
+            
+            if employees and trait:
+                return {
+                    "intent": "compare_scores",
+                    "trait": trait,
+                    "assessment_type": assessment_type,
+                    "employees": employees
+                }
+        
+        # Check for ranking queries
+        ranking_indicators = ["top", "best", "worst", "rank", "ranking"]
+        if any(indicator in query_lower for indicator in ranking_indicators):
+            trait = self._extract_trait_from_query(query)
+            assessment_type = self._extract_assessment_type_from_query(query)
+            
+            if trait:
+                return {
+                    "intent": "rank_scores",
+                    "trait": trait,
+                    "assessment_type": assessment_type,
+                    "limit": 5  # Default to top 5
+                }
+        
+        # Default fallback
+        return {
+            "intent": "general_query",
+            "query": query
+        }
+
+    def _execute_query_plan(self, plan: dict) -> dict:
+        """
+        Execute the query plan using structured database queries.
+        """
+        intent = plan.get("intent")
+        
+        if intent == "get_score":
+            return self._execute_get_score(plan)
+        elif intent == "get_all_scores":
+            return self._execute_get_all_scores(plan)
+        elif intent == "compare_scores":
+            return self._execute_compare_scores(plan)
+        elif intent == "rank_scores":
+            return self._execute_rank_scores(plan)
+        else:
+            return {
+                "response": "I understand your query, but I need more specific information about what assessment scores you'd like to see. Please specify the employee name and assessment trait (e.g., 'What is Ahmed's Prudence score?').",
+                "source": "ai_query_plan",
+                "confidence": "low"
+            }
+
+    def _execute_get_score(self, plan: dict) -> dict:
+        """Execute a specific score query for one or more employees."""
+        trait = plan.get("trait")
+        assessment_type = plan.get("assessment_type", "Hogan")
+        employees = plan.get("employees", [])
+        
+        if not employees or not trait:
+            return {
+                "response": "I need both an employee name and a specific trait to look up scores.",
+                "source": "ai_query_plan",
+                "confidence": "low"
+            }
+        
+        results = []
+        found_employees = []
+        
+        for employee_name in employees:
+            employee_data = self._get_employee_by_name(employee_name)
+            if not employee_data:
+                results.append(f"Employee '{employee_name}' not found in the database.")
+                continue
+            
+            found_employees.append(employee_name)
+            score = self._get_specific_score(employee_data, trait, assessment_type)
+            
+            if score is not None:
+                results.append(f"{employee_name}'s {trait} score is {score}.")
+            else:
+                results.append(f"No {trait} score found for {employee_name}.")
+        
+        response = "\n".join(results)
+        return {
+            "response": response,
+            "source": "ai_query_plan",
+            "confidence": "high" if found_employees else "low",
+            "employees": found_employees
+        }
+
+    def _execute_get_all_scores(self, plan: dict) -> dict:
+        """Execute a query to get all scores for one or more employees."""
+        assessment_type = plan.get("assessment_type", "Hogan")
+        employees = plan.get("employees", [])
+        
+        if not employees:
+            return {
+                "response": "I need an employee name to look up their scores.",
+                "source": "ai_query_plan",
+                "confidence": "low"
+            }
+        
+        results = []
+        found_employees = []
+        
+        for employee_name in employees:
+            employee_data = self._get_employee_by_name(employee_name)
+            if not employee_data:
+                results.append(f"Employee '{employee_name}' not found in the database.")
+                continue
+            
+            found_employees.append(employee_name)
+            scores = self._get_all_scores_for_employee(employee_data, assessment_type)
+            
+            if scores:
+                results.append(f"\n{employee_name}'s {assessment_type} scores:")
+                for trait, score in scores.items():
+                    results.append(f"- {trait}: {score}")
+            else:
+                results.append(f"No {assessment_type} scores found for {employee_name}.")
+        
+        response = "\n".join(results)
+        return {
+            "response": response,
+            "source": "ai_query_plan",
+            "confidence": "high" if found_employees else "low",
+            "employees": found_employees
+        }
+
+    def _execute_compare_scores(self, plan: dict) -> dict:
+        """Execute a comparison query between employees for a specific trait."""
+        trait = plan.get("trait")
+        assessment_type = plan.get("assessment_type", "Hogan")
+        employees = plan.get("employees", [])
+        
+        if not employees or not trait:
+            return {
+                "response": "I need both employee names and a specific trait to compare scores.",
+                "source": "ai_query_plan",
+                "confidence": "low"
+            }
+        
+        employee_scores = []
+        found_employees = []
+        
+        for employee_name in employees:
+            employee_data = self._get_employee_by_name(employee_name)
+            if not employee_data:
+                continue
+            
+            found_employees.append(employee_name)
+            score = self._get_specific_score(employee_data, trait, assessment_type)
+            
+            if score is not None:
+                employee_scores.append((employee_name, score))
+        
+        if not employee_scores:
+            return {
+                "response": f"No {trait} scores found for the specified employees.",
+                "source": "ai_query_plan",
+                "confidence": "low",
+                "employees": found_employees
+            }
+        
+        # Sort by score (highest first)
+        employee_scores.sort(key=lambda x: x[1], reverse=True)
+        
+        # Generate comparison response
+        results = [f"Comparison of {trait} scores:"]
+        for i, (name, score) in enumerate(employee_scores):
+            if i == 0:
+                results.append(f"1. {name} has the highest {trait} score: {score}")
+            else:
+                results.append(f"{i+1}. {name}: {score}")
+        
+        response = "\n".join(results)
+        return {
+            "response": response,
+            "source": "ai_query_plan",
+            "confidence": "high",
+            "employees": found_employees
+        }
+
+    def _execute_rank_scores(self, plan: dict) -> dict:
+        """Execute a ranking query to find top/bottom scores for a trait."""
+        trait = plan.get("trait")
+        assessment_type = plan.get("assessment_type", "Hogan")
+        limit = plan.get("limit", 5)
+        
+        if not trait:
+            return {
+                "response": "I need a specific trait to rank employees.",
+                "source": "ai_query_plan",
+                "confidence": "low"
+            }
+        
+        # Get all employees and their scores for the trait
+        all_employees = self.employee_db.get_all_employees()
+        employee_scores = []
+        
+        for emp in all_employees:
+            employee_data = self._get_employee_by_name(emp["name"])
+            if employee_data:
+                score = self._get_specific_score(employee_data, trait, assessment_type)
+                if score is not None:
+                    employee_scores.append((emp["name"], score))
+        
+        if not employee_scores:
+            return {
+                "response": f"No {trait} scores found in the database.",
+                "source": "ai_query_plan",
+                "confidence": "low",
+                "employees": []
+            }
+        
+        # Sort by score (highest first)
+        employee_scores.sort(key=lambda x: x[1], reverse=True)
+        
+        # Take top N results
+        top_results = employee_scores[:limit]
+        
+        # Generate ranking response
+        results = [f"Top {len(top_results)} employees with highest {trait} scores:"]
+        for i, (name, score) in enumerate(top_results):
+            results.append(f"{i+1}. {name}: {score}")
+        
+        response = "\n".join(results)
+        return {
+            "response": response,
+            "source": "ai_query_plan",
+            "confidence": "high",
+            "employees": [name for name, _ in top_results]
+        }
+
+    def _extract_employee_names_from_query(self, query: str) -> List[str]:
+        """Extract employee names from the query using pattern matching."""
+        # Get all employees from database
+        all_employees = self.employee_db.get_all_employees()
+        found_employees = []
+        
+        query_lower = query.lower()
+        
+        for emp in all_employees:
+            emp_name = emp["name"].lower()
+            if emp_name in query_lower:
+                found_employees.append(emp["name"])
+            else:
+                # Check for partial matches (first name or last name)
+                name_parts = emp_name.split()
+                for part in name_parts:
+                    if len(part) > 2 and part in query_lower:
+                        # Avoid common words
+                        common_words = {'the', 'and', 'for', 'are', 'but', 'not', 'you', 'all', 'can', 'her', 'was', 'one', 'our', 'out', 'day', 'get', 'use', 'man', 'new', 'now', 'way', 'may', 'say', 'has', 'his', 'their', 'what', 'when', 'where', 'why', 'how'}
+                        if part not in common_words:
+                            found_employees.append(emp["name"])
+                            break
+        
+        return list(set(found_employees))  # Remove duplicates
+
+    def _extract_trait_from_query(self, query: str) -> str:
+        """Extract assessment trait from the query."""
+        query_lower = query.lower()
+        
+        # Hogan HPI traits
+        hpi_traits = [
+            'adjustment', 'ambition', 'sociability', 'interpersonal sensitivity', 
+            'prudence', 'inquisitive', 'learning approach'
+        ]
+        
+        # Hogan HDS traits
+        hds_traits = [
+            'excitable', 'skeptical', 'sceptical', 'cautious', 'reserved', 'leisurely',
+            'bold', 'mischievous', 'colorful', 'colourful', 'imaginative', 'diligent', 'dutiful'
+        ]
+        
+        # Hogan MVPI traits
+        mvpi_traits = [
+            'recognition', 'power', 'hedonism', 'altruistic', 'affiliation', 'tradition',
+            'security', 'commerce', 'aesthetics', 'science'
+        ]
+        
+        # IDI dimensions
+        idi_traits = [
+            'giving', 'receiving', 'belonging', 'expressing', 'stature', 'entertaining',
+            'creating', 'interpreting', 'excelling', 'enduring', 'structuring',
+            'maneuvering', 'winning', 'controlling', 'stability', 'independence', 'irreproachability'
+        ]
+        
+        all_traits = hpi_traits + hds_traits + mvpi_traits + idi_traits
+        
+        for trait in all_traits:
+            if trait in query_lower:
+                return trait
+        
+        return None
+
+    def _extract_assessment_type_from_query(self, query: str) -> str:
+        """Extract assessment type from the query."""
+        query_lower = query.lower()
+        
+        if 'hogan' in query_lower:
+            return 'Hogan'
+        elif 'idi' in query_lower:
+            return 'IDI'
+        else:
+            return 'Hogan'  # Default to Hogan
+
+    def _get_employee_by_name(self, employee_name: str) -> dict:
+        """Get employee data by name."""
+        all_employees = self.employee_db.get_all_employees()
+        
+        for emp in all_employees:
+            if emp["name"].lower() == employee_name.lower():
+                # Get full employee data including scores
+                return self.employee_db.get_employee(emp["id"])
+        
+        return None
+
+    def _get_specific_score(self, employee_data: dict, trait: str, assessment_type: str) -> float:
+        """Get a specific score for an employee."""
+        if assessment_type == 'Hogan':
+            hogan_scores = employee_data.get('hogan_scores', [])
+            for score_entry in hogan_scores:
+                if score_entry['trait'].lower() == trait.lower():
+                    return score_entry['score']
+        elif assessment_type == 'IDI':
+            idi_scores = employee_data.get('idi_scores', [])
+            for score_entry in idi_scores:
+                if score_entry['dimension'].lower() == trait.lower():
+                    return score_entry['score']
+        
+        return None
+
+    def _get_all_scores_for_employee(self, employee_data: dict, assessment_type: str) -> dict:
+        """Get all scores for an employee for a specific assessment type."""
+        scores = {}
+        
+        if assessment_type == 'Hogan':
+            hogan_scores = employee_data.get('hogan_scores', [])
+            for score_entry in hogan_scores:
+                scores[score_entry['trait']] = score_entry['score']
+        elif assessment_type == 'IDI':
+            idi_scores = employee_data.get('idi_scores', [])
+            for score_entry in idi_scores:
+                scores[score_entry['dimension']] = score_entry['score']
+        
+        return scores
 
     def _update_conversation_history(self, original_query: str, resolved_query: str, 
                                    response: str, context_employees: List[str], 
@@ -645,67 +977,63 @@ Return as JSON:
             return fallback_analysis
 
     def _gather_relevant_context(self, query: str, analysis: Dict[str, Any], 
-                               context_employees: List[str] = [], 
-                               employee_limits: Dict[str, int] = None) -> List[str]:
-        """Gather relevant context with intelligent employee limits and hybrid query support"""
+                               context_employees: List[str], 
+                               employee_limits: Dict[str, int]) -> List[str]:
+        """Gather relevant context with enhanced validation logging"""
         context_chunks = []
         
-        # Set default limits if not provided
-        if employee_limits is None:
-            employee_limits = {"max": 10, "priority": 5}
-        
-        max_employees = employee_limits["max"]
-        priority_employees = employee_limits["priority"]
-        
-        # Add interpretation guidelines if relevant
-        if analysis.get("query_type") in ["individual_profile", "succession_planning", "risk_assessment"]:
-            context_chunks.extend(self.interpretation_docs[:2])  # Top 2 interpretation docs
-        
-        # Check if hybrid query service is available
-        hybrid_service = self._get_hybrid_query_service()
-        
-        if hybrid_service:
-            print("Using hybrid query service for enhanced search")
-            context_chunks.extend(self._gather_context_with_hybrid_service(
-                query, analysis, context_employees, employee_limits, hybrid_service
-            ))
-        else:
-            print("Using legacy vector search")
-            context_chunks.extend(self._gather_context_legacy_method(
-                query, analysis, context_employees, employee_limits
-            ))
-        
-        # Intelligent context limiting based on token constraints
-        total_context_tokens = sum(self._count_tokens(chunk) for chunk in context_chunks)
-        max_context_tokens = self.max_context_tokens - self._get_conversation_token_limit()
-        
-        if total_context_tokens > max_context_tokens:
-            # Prioritize chunks - keep first chunks (usually most relevant)
-            cumulative_tokens = 0
-            trimmed_chunks = []
-            for chunk in context_chunks:
-                chunk_tokens = self._count_tokens(chunk)
-                if cumulative_tokens + chunk_tokens <= max_context_tokens:
-                    trimmed_chunks.append(chunk)
-                    cumulative_tokens += chunk_tokens
-                else:
-                    break
-            context_chunks = trimmed_chunks
-        
-        # CRITICAL SAFEGUARD: Ensure we have employee data for database queries
-        has_employee_data = any(
-            " - " in chunk and ("Profile Summary" in chunk or "Key Strengths" in chunk or "Leadership Style" in chunk)
-            for chunk in context_chunks
-        )
-        
-        if not has_employee_data:
-            print("DEBUG: No employee data found in context, applying emergency fallback")
-            emergency_context = self._emergency_employee_fallback(query, analysis, max_employees)
-            context_chunks.extend(emergency_context)
-            print(f"DEBUG: Emergency fallback added {len(emergency_context)} employee contexts")
-        
-        print(f"DEBUG: Final context - {len(context_chunks)} chunks, ~{total_context_tokens} tokens")
-        return context_chunks
+        try:
+            # Log the context gathering attempt
+            logger.info(f"Starting context gathering for query: '{query[:100]}...'")
+            logger.info(f"Analysis: {analysis}")
+            logger.info(f"Context employees: {context_employees}")
+            logger.info(f"Employee limits: {employee_limits}")
+            
+            # Try hybrid service first if available
+            try:
+                from backend.services.rag.hybrid_query import HybridQueryService
+                hybrid_service = HybridQueryService()
+                context_chunks = self._gather_context_with_hybrid_service(
+                    query, analysis, context_employees, employee_limits, hybrid_service
+                )
+                logger.info(f"Hybrid service returned {len(context_chunks)} chunks")
+            except ImportError:
+                logger.warning("HybridQueryService not available, using legacy method")
+                context_chunks = self._gather_context_legacy_method(
+                    query, analysis, context_employees, employee_limits
+                )
+                logger.info(f"Legacy method returned {len(context_chunks)} chunks")
+            
+            # Validate context quality
+            if not context_chunks:
+                logger.warning("No context chunks returned, using emergency fallback")
+                context_chunks = self._emergency_employee_fallback(query, analysis, employee_limits["max"])
+                logger.info(f"Emergency fallback returned {len(context_chunks)} chunks")
+            
+            # Log final context summary
+            total_tokens = sum(len(chunk.split()) for chunk in context_chunks)
+            logger.info(f"Final context: {len(context_chunks)} chunks, ~{total_tokens} tokens")
+            
+            # Check if we have real employee data
+            has_real_data = any(
+                any(indicator in chunk for indicator in ["Employee:", "Department:", "Experience:", "Assessment"])
+                for chunk in context_chunks
+            )
+            
+            if not has_real_data:
+                logger.warning("No real employee data found in context, using fallback")
+                # Get some employee names for context
+                all_employees = self.employee_db.get_all_employees()
+                if all_employees:
+                    employee_names = [emp['name'] for emp in all_employees[:5]]
+                    logger.info(f"Using fallback with {len(employee_names)} employees: {employee_names}")
+            
+            return context_chunks
+            
+        except Exception as e:
+            logger.error(f"Error in _gather_relevant_context: {e}")
+            # Return emergency fallback
+            return self._emergency_employee_fallback(query, analysis, employee_limits["max"])
     
     def _emergency_employee_fallback(self, query: str, analysis: Dict[str, Any], max_employees: int) -> List[str]:
         """Emergency fallback to ensure we always get some employee data for database queries"""
@@ -837,6 +1165,16 @@ Return as JSON:
         priority_employees = employee_limits["priority"]
         
         print(f"DEBUG: Starting context gathering - query: '{query}', scope: {analysis.get('scope')}")
+        
+        # PRIORITY 0 - Direct employee lookup for specific names
+        direct_employee = self._find_direct_employee_match(query)
+        if direct_employee:
+            print(f"DEBUG: Found direct employee match: {direct_employee['name']}")
+            employee_context = self._get_employee_context(direct_employee['id'], analysis)
+            context_chunks.extend(employee_context)
+            employees_added += 1
+            print(f"DEBUG: Added direct employee context for {direct_employee['name']}")
+            return context_chunks
         
         # PRIORITY 1: Context employees from conversation (highest priority)
         if context_employees:
@@ -1136,58 +1474,75 @@ Return as JSON:
         return priority_chunks
 
     def _get_employee_context(self, employee_id: str, analysis: Dict[str, Any]) -> List[str]:
-        """Get specific context for an employee based on what's needed"""
-        context = []
-        
-        # Get employee data
-        employee_data = self.employee_db.get_employee(employee_id)
-        if not employee_data:
-            return context
-        
-        # Parse profile to get relevant sections
+        """Get structured employee context for RAG queries."""
         try:
-            if isinstance(employee_data['profile'], str):
-                profile_data = json.loads(employee_data['profile'])
-            else:
-                profile_data = employee_data['profile']
+            # Get employee data from database
+            employee_data = self.employee_db.get_employee(employee_id)
+            if not employee_data:
+                logger.warning(f"Employee {employee_id} not found in database")
+                return []
             
-            # Check if this is an enhanced profile
-            if isinstance(profile_data, dict) and 'traditional_sections' in profile_data:
-                # Enhanced profile structure
-                required_data = analysis.get("required_data", [])
-                
-                # Always include traditional sections
-                for section in profile_data.get('traditional_sections', []):
-                    section_text = f"{employee_data['name']} - {section.get('section', '')}: {section.get('content', '')}"
-                    context.append(section_text)
-                
-                # Add enhanced sections based on requirements
-                if "skills_assessment" in required_data and profile_data.get('skills_assessment'):
-                    skills_data = profile_data['skills_assessment']
-                    context.append(f"{employee_data['name']} - Skills Assessment: {json.dumps(skills_data)}")
-                
-                if "performance_data" in required_data and profile_data.get('performance_metrics'):
-                    perf_data = profile_data['performance_metrics']
-                    context.append(f"{employee_data['name']} - Performance Metrics: {json.dumps(perf_data)}")
-                    
-                if "team_dynamics" in required_data and profile_data.get('team_dynamics'):
-                    team_data = profile_data['team_dynamics']
-                    context.append(f"{employee_data['name']} - Team Dynamics: {json.dumps(team_data)}")
-                    
-            else:
-                # Traditional profile structure
-                for section in profile_data:
-                    section_text = f"{employee_data['name']} - {section.get('section', '')}: {section.get('content', '')}"
-                    context.append(section_text)
+            # FIXED: Access employee data directly (no 'profile' key assumption)
+            context_sections = []
             
-            # Add metadata context
-            metadata_text = f"{employee_data['name']} - Metadata: {json.dumps(employee_data['metadata'])}"
-            context.append(metadata_text)
+            # Add basic employee info
+            if employee_data.get('name'):
+                context_sections.append(f"Employee: {employee_data['name']}")
+            
+            if employee_data.get('email'):
+                context_sections.append(f"Email: {employee_data['email']}")
+            
+            if employee_data.get('location'):
+                context_sections.append(f"Location: {employee_data['location']}")
+            
+            if employee_data.get('current_position'):
+                context_sections.append(f"Current Position: {employee_data['current_position']}")
+            
+            if employee_data.get('department'):
+                context_sections.append(f"Department: {employee_data['department']}")
+            
+            # Add education
+            if employee_data.get('education'):
+                context_sections.append("Education:")
+                for edu in employee_data['education']:
+                    edu_text = f"- {edu.get('institution', 'Unknown')}"
+                    if edu.get('degree'):
+                        edu_text += f", {edu['degree']}"
+                    if edu.get('field'):
+                        edu_text += f" in {edu['field']}"
+                    context_sections.append(edu_text)
+            
+            # Add experience
+            if employee_data.get('experiences'):
+                context_sections.append("Work Experience:")
+                for exp in employee_data['experiences']:
+                    exp_text = f"- {exp.get('title', 'Unknown')} at {exp.get('company', 'Unknown')}"
+                    if exp.get('start_date') or exp.get('end_date'):
+                        dates = []
+                        if exp.get('start_date'):
+                            dates.append(str(exp['start_date']))
+                        if exp.get('end_date'):
+                            dates.append(str(exp['end_date']))
+                        exp_text += f" ({' - '.join(dates)})"
+                    context_sections.append(exp_text)
+            
+            # Add skills
+            if employee_data.get('skills'):
+                context_sections.append("Skills:")
+                for skill in employee_data['skills']:
+                    context_sections.append(f"- {skill.get('skill', 'Unknown')} ({skill.get('type', 'technical')})")
+            
+            # Add assessment data
+            if employee_data.get('assessments'):
+                context_sections.append("Assessments:")
+                for assessment in employee_data['assessments']:
+                    context_sections.append(f"- {assessment.get('assessment_type', 'Unknown')} ({assessment.get('assessment_date', 'Unknown date')})")
+            
+            return context_sections
             
         except Exception as e:
-            print(f"Error processing employee context for {employee_id}: {e}")
-        
-        return context
+            logger.error(f"Error getting employee context for {employee_id}: {e}")
+            return []
 
     def _generate_intelligent_response(self, query: str, context_chunks: List[str], 
                                      analysis: Dict[str, Any], original_query: str) -> str:
@@ -1616,74 +1971,76 @@ Ensure your response is concise and focused, providing value that justifies the 
 
     def get_employee_numerical_scores(self, employee_name: str) -> Dict[str, Any]:
         """
-        Get exact numerical assessment scores directly from source files for an employee.
+        Get exact numerical assessment scores directly from the database for an employee.
         This bypasses the qualitative profile descriptions to get precise scores.
         """
-        # Find employee by name
-        employees = self.employee_db.get_all_employees()
-        target_employee = None
-        
-        for emp in employees:
-            if employee_name.lower() in emp['name'].lower():
-                target_employee = emp
-                break
-        
-        if not target_employee:
-            return {"error": f"Employee '{employee_name}' not found"}
-        
-        employee_id = target_employee['id']
-        numerical_scores = {
-            "employee_name": target_employee['name'],
-            "employee_id": employee_id,
-            "hogan_scores": {},
-            "idi_scores": {},
-            "assessment_files_found": []
-        }
-        
-        # Try to find and extract from raw Hogan file
-        hogan_file_path = f"employee_data_import/Hogan_{employee_name.replace(' ', '_')}.txt"
-        if os.path.exists(hogan_file_path):
-            try:
-                with open(hogan_file_path, 'r', encoding='utf-8') as f:
-                    hogan_text = f.read()
+        try:
+            from backend.db.session import SessionLocal
+            from backend.db.models import Employee, EmployeeAssessment, HoganScore, IDIScore
+            
+            db = SessionLocal()
+            
+            # Find employee by name
+            employee = db.query(Employee).filter(
+                Employee.full_name.ilike(f"%{employee_name}%")
+            ).first()
+            
+            if not employee:
+                return {"error": f"Employee '{employee_name}' not found"}
+            
+            numerical_scores = {
+                "employee_name": employee.full_name,
+                "employee_id": str(employee.id),
+                "hogan_scores": [],  # Always a flat list
+                "idi_scores": {},
+                "assessment_files_found": []
+            }
+            
+            # Get Hogan assessment scores (flattened)
+            hogan_assessments = db.query(EmployeeAssessment).filter(
+                EmployeeAssessment.employee_id == employee.id,
+                EmployeeAssessment.assessment_type.in_(['HPI', 'HDS', 'MVPI', 'Hogan'])  # Added 'Hogan'
+            ).all()
+            
+            for assessment in hogan_assessments:
+                hogan_scores = db.query(HoganScore).filter(
+                    HoganScore.assessment_id == assessment.id
+                ).all()
                 
-                # Extract numerical scores using the enhanced method
-                hogan_scores = self.employee_db._extract_hogan_measures(hogan_text)
+                if hogan_scores:
+                    for score in hogan_scores:
+                        numerical_scores["hogan_scores"].append({
+                            "trait": score.trait,
+                            "score": score.score
+                        })
+                    numerical_scores["assessment_files_found"].append(f"Hogan {assessment.assessment_type}")
+            
+            # Get IDI assessment scores
+            idi_assessments = db.query(EmployeeAssessment).filter(
+                EmployeeAssessment.employee_id == employee.id,
+                EmployeeAssessment.assessment_type == 'IDI'
+            ).all()
+            
+            for assessment in idi_assessments:
+                idi_scores = db.query(IDIScore).filter(
+                    IDIScore.assessment_id == assessment.id
+                ).all()
                 
-                # Organize by assessment type
-                hpi_scores = {k.replace('hogan_hpi_', ''): v for k, v in hogan_scores.items() 
-                             if k.startswith('hogan_hpi_') and isinstance(v, int)}
-                hds_scores = {k.replace('hogan_hds_', ''): v for k, v in hogan_scores.items() 
-                             if k.startswith('hogan_hds_') and isinstance(v, int)}
-                mvpi_scores = {k.replace('hogan_mvpi_', ''): v for k, v in hogan_scores.items() 
-                              if k.startswith('hogan_mvpi_') and isinstance(v, int)}
-                
-                numerical_scores["hogan_scores"] = {
-                    "HPI (Personality Inventory)": hpi_scores,
-                    "HDS (Development Survey)": hds_scores, 
-                    "MVPI (Values & Preferences)": mvpi_scores
-                }
-                numerical_scores["assessment_files_found"].append("Hogan Assessment")
-                
-            except Exception as e:
-                numerical_scores["hogan_error"] = f"Error reading Hogan file: {e}"
-        
-        # Try to find IDI file 
-        idi_file_path = f"employee_data_import/IDI_{employee_name.replace(' ', '_')}.txt"
-        if os.path.exists(idi_file_path):
-            try:
-                with open(idi_file_path, 'r', encoding='utf-8') as f:
-                    idi_text = f.read()
-                
-                # Extract IDI scores (these are usually qualitative, but we can try)
-                idi_scores = self.employee_db._extract_idi_measures(idi_text)
-                numerical_scores["idi_scores"] = idi_scores
-                numerical_scores["assessment_files_found"].append("IDI Assessment")
-                
-            except Exception as e:
-                numerical_scores["idi_error"] = f"Error reading IDI file: {e}"
-        
-        return numerical_scores
+                if idi_scores:
+                    assessment_scores = {}
+                    for score in idi_scores:
+                        key = f"{score.category}_{score.dimension}"
+                        assessment_scores[key] = score.score
+                    
+                    numerical_scores["idi_scores"][assessment.source_filename] = assessment_scores
+                    numerical_scores["assessment_files_found"].append(f"IDI Assessment")
+            
+            db.close()
+            return numerical_scores
+            
+        except Exception as e:
+            print(f"Error getting numerical scores: {e}")
+            return {"error": f"Database error: {str(e)}"}
 
     def _detect_numerical_ranking_query(self, query: str) -> Dict[str, Any]:
         """
@@ -1863,7 +2220,7 @@ Ensure your response is concise and focused, providing value that justifies the 
         
         try:
             # Import the hybrid service from the proper module
-            from hybrid_query_service import HybridQueryService
+            from backend.services.rag.hybrid_query import HybridQueryService
             print(f"DEBUG: Successfully imported HybridQueryService")
             
             # Initialize hybrid service
@@ -1886,42 +2243,39 @@ Ensure your response is concise and focused, providing value that justifies the 
                         break
                 
                 if target_emp:
-                    # Get all Hogan scores for this employee
-                    metadata = target_emp['metadata']
-                    hogan_scores = []
+                    # Get all Hogan scores for this employee from the database
+                    scores = self.get_employee_numerical_scores(target_emp['name'])
                     
-                    # Extract HPI scores
-                    hpi_scores = {k.replace('hogan_hpi_', '').title(): v for k, v in metadata.items() 
-                                 if k.startswith('hogan_hpi_') and isinstance(v, (int, float))}
-                    if hpi_scores:
-                        hogan_scores.append("**Hogan HPI (Bright Side) Scores:**")
-                        for measure, score in hpi_scores.items():
-                            hogan_scores.append(f"- {measure}: {score}")
+                    if 'error' in scores:
+                        return f"Error retrieving scores for {target_emp['name']}: {scores['error']}"
                     
-                    # Extract HDS scores
-                    hds_scores = {k.replace('hogan_hds_', '').title(): v for k, v in metadata.items() 
-                                 if k.startswith('hogan_hds_') and isinstance(v, (int, float))}
-                    if hds_scores:
-                        hogan_scores.append("\n**Hogan HDS (Dark Side) Scores:**")
-                        for measure, score in hds_scores.items():
-                            hogan_scores.append(f"- {measure}: {score}")
-                    
-                    # Extract MVPI scores
-                    mvpi_scores = {k.replace('hogan_mvpi_', '').title(): v for k, v in metadata.items() 
-                                  if k.startswith('hogan_mvpi_') and isinstance(v, (int, float))}
-                    if mvpi_scores:
-                        hogan_scores.append("\n**Hogan MVPI (Values) Scores:**")
-                        for measure, score in mvpi_scores.items():
-                            hogan_scores.append(f"- {measure}: {score}")
-                    
-                    if hogan_scores:
-                        response = f"Here are all the Hogan assessment scores for **{target_emp['name']}** from our employee database:\n\n"
-                        response += "\n".join(hogan_scores)
-                        response += f"\n\n**Department:** {metadata.get('department', 'Not specified')}"
-                        response += f"\n**Years of Experience:** {metadata.get('years_experience', 'Not specified')}"
-                        return response
-                    else:
+                    if not scores.get('hogan_scores') and not scores.get('idi_scores'):
                         return f"I found {target_emp['name']} in our database, but no Hogan assessment scores are available for this employee."
+                    
+                    response_parts = [f"Here are all the Hogan assessment scores for **{target_emp['name']}** from our employee database:\n"]
+                    
+                    # Format Hogan scores
+                    if scores.get('hogan_scores'):
+                        for assessment_type, traits in scores['hogan_scores'].items():
+                            response_parts.append(f"\n**Hogan {assessment_type} Scores:**")
+                            for trait, score in traits.items():
+                                response_parts.append(f"- {trait}: {score}")
+                    
+                    # Format IDI scores
+                    if scores.get('idi_scores'):
+                        response_parts.append("\n**IDI Assessment Scores:**")
+                        for filename, dimensions in scores['idi_scores'].items():
+                            response_parts.append(f"\n{filename}:")
+                            for dimension, score in dimensions.items():
+                                response_parts.append(f"- {dimension}: {score}")
+                    
+                    # Add employee info
+                    employee_data = self.employee_db.get_employee(target_emp['id'])
+                    if employee_data:
+                        response_parts.append(f"\n\n**Department:** {employee_data.get('department', 'Not specified')}")
+                        response_parts.append(f"**Position:** {employee_data.get('current_position', 'Not specified')}")
+                    
+                    return "\n".join(response_parts)
                 else:
                     return f"I couldn't find an employee named '{employee_name}' in our employee database. The employees I mentioned (Lisa Wu, Marcus Brown, Maria Martinez, Maria Hernandez, and Jasmine Anderson) are the ones with the highest adjustment scores in our system."
             
@@ -1998,6 +2352,10 @@ These employees exist in our employee database and have the highest adjustment s
             traceback.print_exc()
             # Return a meaningful error message instead of None
             return f"I apologize, but I encountered an error while processing your numerical ranking query: {str(e)}. Please try again or contact support if the issue persists."
+
+    # Legacy methods removed - replaced by AI-driven query planning architecture
+    # _find_direct_employee_match, _handle_specific_assessment_query, _extract_specific_score_request
+    # have been replaced by _plan_query_with_ai() and _execute_query_plan() methods
 
 # Note: The RAG system is now initialized in the modular app with proper data instances
 # instead of using a global instance here 

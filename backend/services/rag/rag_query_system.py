@@ -12,7 +12,7 @@ import logging
 load_dotenv()
 
 from backend.services.rag.vector_store import VectorStore
-from backend.services.employee.employee_database import EmployeeDatabase
+from backend.services.data_access.employee_database import EmployeeDatabase
 
 logger = logging.getLogger(__name__)
 

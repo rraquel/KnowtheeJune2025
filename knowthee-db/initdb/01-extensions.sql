@@ -17,6 +17,17 @@ CREATE TABLE employees (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Create employee_cvs table
+CREATE TABLE employee_cvs (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    employee_id UUID NOT NULL REFERENCES employees(id) ON DELETE CASCADE,
+    filename TEXT NOT NULL,
+    upload_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    source TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Create employee_contacts table
 CREATE TABLE employee_contacts (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -99,6 +110,7 @@ CREATE TABLE hogan_scores (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+
 -- Create embedding_runs table
 CREATE TABLE embedding_runs (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -106,17 +118,6 @@ CREATE TABLE embedding_runs (
     chunking_method TEXT,
     embedding_model TEXT,
     run_parameters JSONB,  -- Stores chunk size, overlap, etc.
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
--- Create employee_cvs table
-CREATE TABLE employee_cvs (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    employee_id UUID NOT NULL REFERENCES employees(id) ON DELETE CASCADE,
-    filename TEXT NOT NULL,
-    upload_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    source TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );

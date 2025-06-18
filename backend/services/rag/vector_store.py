@@ -159,9 +159,9 @@ class VectorStore:
         try:
             with SessionLocal() as session:
                 # Delete existing entries for this employee
-                session.query(EmbeddingChunk).filter(
-                    EmbeddingChunk.employee_id == employee_id
-                ).delete()
+                session.query(EmbeddingChunk).join(EmbeddingDocument).filter(
+                    EmbeddingDocument.employee_id == employee_id
+                ).delete(synchronize_session=False)
                 
                 # Store each section as a separate chunk
                 for i, section in enumerate(profile_sections):
@@ -189,15 +189,29 @@ class VectorStore:
                             else:
                                 section_metadata[key] = str(value)
                     
-                    profile = EmbeddingChunk(
-                        document_id=f"{employee_id}_{i}",
+                    # Create embedding document first
+                    doc = EmbeddingDocument(
                         employee_id=employee_id,
+                        embedding_run_id=employee_id,  # Use employee_id as run_id for profiles
+                        document_type="profile",
+                        source_filename=f"profile_{employee_id}_{i}",
+                        external_document_id=employee_id,
+                        source_type="profile"
+                    )
+                    session.add(doc)
+                    session.flush()
+                    
+                    # Create chunk
+                    chunk = EmbeddingChunk(
+                        external_document_id=doc.external_document_id,
+                        chunk_index=i,
                         content=section_text,
                         embedding=embedding,
-                        doc_metadata=section_metadata,
-                        tenant_id=self.DEFAULT_TENANT_ID
+                        token_count=len(section_text.split()),
+                        char_count=len(section_text),
+                        chunk_label=f"profile_section_{i}"
                     )
-                    session.add(profile)
+                    session.add(chunk)
                 
                 session.commit()
                 logger.info(f"Stored profile for employee {employee_id} with {len(profile_sections)} sections")
@@ -219,42 +233,41 @@ class VectorStore:
         try:
             with SessionLocal() as session:
                 # Delete existing document entries for this employee
-                session.query(EmbeddingChunk).filter(
-                    EmbeddingChunk.employee_id == employee_id
-                ).delete()
+                session.query(EmbeddingChunk).join(EmbeddingDocument).filter(
+                    EmbeddingDocument.employee_id == employee_id
+                ).delete(synchronize_session=False)
                 
                 if not documents:
                     session.commit()
                     return
                 
                 # Store each document chunk
-                for i, doc in enumerate(documents):
-                    embedding = self._generate_embedding(doc)
+                for i, doc_content in enumerate(documents):
+                    embedding = self._generate_embedding(doc_content)
                     
-                    # Create metadata for this document
-                    doc_metadata = {
-                        "employee_id": employee_id,
-                        "chunk_id": i
-                    }
-                    
-                    # Add employee metadata if provided
-                    if metadata:
-                        for key, value in metadata.items():
-                            # Handle list values by concatenating them
-                            if isinstance(value, list):
-                                doc_metadata[key] = ", ".join(str(item) for item in value)
-                            else:
-                                doc_metadata[key] = str(value)
-                    
-                    document = EmbeddingChunk(
-                        document_id=f"{employee_id}_doc_{i}",
+                    # Create embedding document
+                    doc = EmbeddingDocument(
                         employee_id=employee_id,
-                        content=doc,
-                        embedding=embedding,
-                        doc_metadata=doc_metadata,
-                        tenant_id=self.DEFAULT_TENANT_ID
+                        embedding_run_id=employee_id,  # Use employee_id as run_id for documents
+                        document_type="document",
+                        source_filename=f"document_{employee_id}_{i}",
+                        external_document_id=employee_id,
+                        source_type="document"
                     )
-                    session.add(document)
+                    session.add(doc)
+                    session.flush()
+                    
+                    # Create chunk
+                    chunk = EmbeddingChunk(
+                        external_document_id=doc.external_document_id,
+                        chunk_index=i,
+                        content=doc_content,
+                        embedding=embedding,
+                        token_count=len(doc_content.split()),
+                        char_count=len(doc_content),
+                        chunk_label=f"document_chunk_{i}"
+                    )
+                    session.add(chunk)
                 
                 session.commit()
                 logger.info(f"Stored {len(documents)} document chunks for employee {employee_id}")
@@ -267,14 +280,14 @@ class VectorStore:
         """Delete all vector entries for an employee."""
         try:
             with SessionLocal() as session:
-                # Delete from profiles
-                session.query(EmbeddingChunk).filter(
-                    EmbeddingChunk.employee_id == employee_id
-                ).delete()
+                # Delete from profiles and documents
+                session.query(EmbeddingChunk).join(EmbeddingDocument).filter(
+                    EmbeddingDocument.employee_id == employee_id
+                ).delete(synchronize_session=False)
                 
-                # Delete from documents
-                session.query(EmbeddingChunk).filter(
-                    EmbeddingChunk.employee_id == employee_id
+                # Delete embedding documents
+                session.query(EmbeddingDocument).filter(
+                    EmbeddingDocument.employee_id == employee_id
                 ).delete()
                 
                 session.commit()
@@ -301,12 +314,17 @@ class VectorStore:
                 employee_ids = [data.get('id') for data in employee_data_list if data.get('id')]
                 
                 # Delete existing entries for all employees
-                session.query(EmbeddingChunk).filter(
-                    EmbeddingChunk.employee_id.in_(employee_ids)
+                session.query(EmbeddingChunk).join(EmbeddingDocument).filter(
+                    EmbeddingDocument.employee_id.in_(employee_ids)
+                ).delete(synchronize_session=False)
+                
+                session.query(EmbeddingDocument).filter(
+                    EmbeddingDocument.employee_id.in_(employee_ids)
                 ).delete(synchronize_session=False)
                 
                 # Process all employees
-                profiles_to_add = []
+                docs_to_add = []
+                chunks_to_add = []
                 
                 for employee_data in employee_data_list:
                     employee_id = employee_data.get('id')
@@ -329,39 +347,46 @@ class VectorStore:
                             # Generate embedding
                             embedding = self._generate_embedding(section_text)
                             
-                            # Create metadata for this section
-                            section_metadata = {
-                                "employee_id": employee_id,
-                                "section_id": section_idx
-                            }
-                            
-                            # Add employee metadata if provided
-                            if metadata:
-                                for key, value in metadata.items():
-                                    if isinstance(value, list):
-                                        section_metadata[key] = ", ".join(str(item) for item in value)
-                                    else:
-                                        section_metadata[key] = str(value)
-                            
-                            profile = EmbeddingChunk(
-                                document_id=f"{employee_id}_{section_idx}",
+                            # Create embedding document
+                            doc = EmbeddingDocument(
                                 employee_id=employee_id,
+                                embedding_run_id=employee_id,
+                                document_type="profile",
+                                source_filename=f"profile_{employee_id}_{section_idx}",
+                                external_document_id=employee_id,
+                                source_type="profile"
+                            )
+                            docs_to_add.append(doc)
+                            
+                            # Create chunk
+                            chunk = EmbeddingChunk(
+                                external_document_id=employee_id,  # Will be updated after doc is created
+                                chunk_index=section_idx,
                                 content=section_text,
                                 embedding=embedding,
-                                doc_metadata=section_metadata,
-                                tenant_id=self.DEFAULT_TENANT_ID
+                                token_count=len(section_text.split()),
+                                char_count=len(section_text),
+                                chunk_label=f"profile_section_{section_idx}"
                             )
-                            profiles_to_add.append(profile)
+                            chunks_to_add.append(chunk)
                             
                     except Exception as e:
                         logger.error(f"Error processing employee {employee_id}: {e}")
                         continue
                 
-                # Batch insert all profiles
-                session.add_all(profiles_to_add)
+                # Batch insert all documents first
+                session.add_all(docs_to_add)
+                session.flush()
+                
+                # Update external_document_id references in chunks
+                for chunk in chunks_to_add:
+                    chunk.external_document_id = chunk.external_document_id
+                
+                # Batch insert all chunks
+                session.add_all(chunks_to_add)
                 session.commit()
                 
-                logger.info(f"Batch stored {len(profiles_to_add)} profile sections for {len(employee_ids)} employees")
+                logger.info(f"Batch stored {len(chunks_to_add)} profile sections for {len(employee_ids)} employees")
                 
         except Exception as e:
             logger.error(f"Failed to batch store employee profiles: {e}")
@@ -393,8 +418,8 @@ class VectorStore:
                     if query:
                         query_embedding = self._generate_embedding(query)
                         
-                        docs_query = session.query(EmbeddingChunk).filter(
-                            EmbeddingChunk.employee_id == employee_id
+                        docs_query = session.query(EmbeddingChunk).join(EmbeddingDocument).filter(
+                            EmbeddingDocument.employee_id == employee_id
                         ).order_by(
                             EmbeddingChunk.embedding.op('<->')(query_embedding)
                         ).limit(n_results)
@@ -407,8 +432,8 @@ class VectorStore:
                     if query:
                         query_embedding = self._generate_embedding(query)
                         
-                        profile_query = session.query(EmbeddingChunk).filter(
-                            EmbeddingChunk.employee_id == employee_id
+                        profile_query = session.query(EmbeddingChunk).join(EmbeddingDocument).filter(
+                            EmbeddingDocument.employee_id == employee_id
                         ).order_by(
                             EmbeddingChunk.embedding.op('<->')(query_embedding)
                         ).limit(n_results)
@@ -417,32 +442,28 @@ class VectorStore:
                         return [profile.content for profile in profile_results]
                     else:
                         # No query - return all for this employee
-                        all_docs = session.query(EmbeddingChunk).filter(
-                            EmbeddingChunk.employee_id == employee_id
+                        all_docs = session.query(EmbeddingChunk).join(EmbeddingDocument).filter(
+                            EmbeddingDocument.employee_id == employee_id
                         ).all()
                         
                         if all_docs:
                             return [doc.content for doc in all_docs]
                         
-                        all_profiles = session.query(EmbeddingChunk).filter(
-                            EmbeddingChunk.employee_id == employee_id
-                        ).all()
-                        
-                        return [profile.content for profile in all_profiles]
+                        return []
                 
                 else:
-                    # Search in leadership documents (single profile)
+                    # Search across all employees
                     if query:
                         query_embedding = self._generate_embedding(query)
                         
-                        results = session.query(EmbeddingDocument).order_by(
-                            EmbeddingDocument.embedding.op('<->')(query_embedding)
+                        results = session.query(EmbeddingChunk).join(EmbeddingDocument).order_by(
+                            EmbeddingChunk.embedding.op('<->')(query_embedding)
                         ).limit(n_results).all()
                         
                         return [doc.content for doc in results]
                     else:
-                        # Return all leadership documents
-                        all_docs = session.query(EmbeddingDocument).all()
+                        # Return all chunks
+                        all_docs = session.query(EmbeddingChunk).join(EmbeddingDocument).limit(n_results).all()
                         return [doc.content for doc in all_docs]
                 
         except Exception as e:
@@ -451,23 +472,19 @@ class VectorStore:
     
     def search_employees(self, query: str, filters: Dict[str, Any] = None, 
                          n_results: int = 10) -> List[Dict[str, Any]]:
-        """
-        Search for employees based on a natural language query and optional filters.
-        
-        Args:
-            query: Natural language query
-            filters: Dictionary of metadata filters
-            n_results: Maximum number of results to return
-            
-        Returns:
-            List of results with employee_id and matched text
-        """
+        """Search for employees based on a natural language query and optional filters."""
         try:
             with SessionLocal() as session:
                 query_embedding = self._generate_embedding(query)
                 
-                # Build base query
-                base_query = session.query(EmbeddingChunk).order_by(
+                # VALIDATION: Log the query being executed
+                logger.info(f"Executing search_employees query: '{query}' with {n_results} max results")
+                
+                # Build base query with proper joins
+                base_query = session.query(EmbeddingChunk, EmbeddingDocument).join(
+                    EmbeddingDocument, 
+                    EmbeddingChunk.external_document_id == EmbeddingDocument.external_document_id
+                ).order_by(
                     EmbeddingChunk.embedding.op('<->')(query_embedding)
                 )
                 
@@ -475,16 +492,14 @@ class VectorStore:
                 if filters:
                     filter_conditions = []
                     for key, value in filters.items():
-                        # Handle regex pattern filters
                         if isinstance(value, dict) and '$regex' in value:
                             pattern = value['$regex'].replace('.*', '')
                             filter_conditions.append(
-                                func.lower(func.cast(EmbeddingChunk.doc_metadata[key], text())).like(f'%{pattern.lower()}%')
+                                func.lower(func.cast(EmbeddingChunk.chunk_label, text())).like(f'%{pattern.lower()}%')
                             )
                         else:
-                            # Exact match
                             filter_conditions.append(
-                                EmbeddingChunk.doc_metadata[key].astext == str(value)
+                                EmbeddingChunk.chunk_label == str(value)
                             )
                     
                     if filter_conditions:
@@ -493,24 +508,33 @@ class VectorStore:
                 # Execute query
                 results = base_query.limit(n_results * 2).all()
                 
+                # VALIDATION: Log how many chunks were returned
+                logger.info(f"search_employees: Retrieved {len(results)} chunks from database")
+                
                 # Group results by employee
                 employee_results = {}
-                for result in results:
-                    employee_id = result.employee_id
+                for chunk, doc in results:
+                    employee_id = doc.employee_id
                     if employee_id not in employee_results:
                         employee_results[employee_id] = {
-                            'employee_id': employee_id,
+                            'employee_id': str(employee_id),
                             'match_count': 0,
                             'matches': [],
-                            'doc_metadata': result.doc_metadata
+                            'doc_metadata': {
+                                'document_type': doc.document_type,
+                                'source_filename': doc.source_filename
+                            }
                         }
                     
-                    employee_results[employee_id]['matches'].append(result.content)
+                    employee_results[employee_id]['matches'].append(chunk.content)
                     employee_results[employee_id]['match_count'] += 1
                 
                 # Convert to list and sort by match count
                 result_list = list(employee_results.values())
                 result_list.sort(key=lambda x: x['match_count'], reverse=True)
+                
+                # VALIDATION: Log final results
+                logger.info(f"search_employees: Found {len(result_list)} employees with {sum(len(r['matches']) for r in result_list)} total chunks")
                 
                 return result_list[:n_results]
                 
@@ -554,31 +578,37 @@ class VectorStore:
                 if hogan_profile:
                     for measure, level in hogan_profile.items():
                         filter_conditions.append(
-                            EmbeddingChunk.doc_metadata[measure].astext == level
+                            EmbeddingChunk.chunk_label.like(f'%{measure}%')
                         )
                 
                 if idi_profile:
                     for measure, level in idi_profile.items():
                         filter_conditions.append(
-                            EmbeddingChunk.doc_metadata[measure].astext == level
+                            EmbeddingChunk.chunk_label.like(f'%{measure}%')
                         )
                 
                 if not filter_conditions:
                     return []
                 
-                results = session.query(EmbeddingChunk).filter(
+                results = session.query(EmbeddingChunk, EmbeddingDocument).join(
+                    EmbeddingDocument, 
+                    EmbeddingChunk.external_document_id == EmbeddingDocument.external_document_id
+                ).filter(
                     and_(*filter_conditions)
                 ).limit(n_results).all()
                 
                 # Group by employee and calculate similarity scores
                 employee_results = {}
-                for result in results:
-                    employee_id = result.employee_id
+                for chunk, doc in results:
+                    employee_id = doc.employee_id
                     if employee_id not in employee_results:
                         employee_results[employee_id] = {
-                            'employee_id': employee_id,
+                            'employee_id': str(employee_id),
                             'similarity_score': 1.0,  # Simplified scoring
-                            'metadata': result.doc_metadata
+                            'metadata': {
+                                'document_type': doc.document_type,
+                                'source_filename': doc.source_filename
+                            }
                         }
                 
                 return list(employee_results.values())
@@ -592,7 +622,7 @@ class VectorStore:
         try:
             with SessionLocal() as session:
                 # Count total employees with profiles
-                total_employees = session.query(EmbeddingChunk.employee_id).distinct().count()
+                total_employees = session.query(EmbeddingDocument.employee_id).distinct().count()
                 
                 # Count total profile sections
                 total_sections = session.query(EmbeddingChunk).count()
@@ -612,3 +642,94 @@ class VectorStore:
             return {}
     
     # LEGACY COMPATIBILITY METHODS (for backward compatibility) 
+    
+    def search_all_content(self, query: str, n_results: int = 15, 
+                          employee_filter: str = None,
+                          document_type_filter: str = None) -> List[Dict[str, Any]]:
+        """Search across all content with optional filters."""
+        try:
+            with SessionLocal() as session:
+                query_embedding = self._generate_embedding(query)
+                
+                base_query = session.query(EmbeddingChunk, EmbeddingDocument).join(
+                    EmbeddingDocument, 
+                    EmbeddingChunk.external_document_id == EmbeddingDocument.external_document_id
+                ).order_by(
+                    EmbeddingChunk.embedding.op('<->')(query_embedding)
+                )
+                
+                # Apply filters
+                if employee_filter:
+                    base_query = base_query.filter(EmbeddingDocument.employee_id == employee_filter)
+                
+                if document_type_filter:
+                    base_query = base_query.filter(EmbeddingDocument.document_type == document_type_filter)
+                
+                results = base_query.limit(n_results).all()
+                
+                return [
+                    {
+                        'content': chunk.content,
+                        'score': 0.0,  # Simplified scoring
+                        'metadata': {
+                            'employee_id': str(doc.employee_id),
+                            'document_type': doc.document_type,
+                            'source_filename': doc.source_filename
+                        }
+                    }
+                    for chunk, doc in results
+                ]
+                
+        except Exception as e:
+            logger.error(f"Error in search_all_content: {e}")
+            return []
+    
+    def search_employee_documents(self, employee_name: str, query: str = None,
+                                document_type: str = None, n_results: int = 5) -> List[Dict[str, Any]]:
+        """Search within a specific employee's documents."""
+        try:
+            with SessionLocal() as session:
+                # First find the employee by name
+                from backend.db.models import Employee
+                employee = session.query(Employee).filter(
+                    func.lower(Employee.full_name) == func.lower(employee_name)
+                ).first()
+                
+                if not employee:
+                    return []
+                
+                # Search their documents
+                base_query = session.query(EmbeddingChunk, EmbeddingDocument).join(
+                    EmbeddingDocument, 
+                    EmbeddingChunk.external_document_id == EmbeddingDocument.external_document_id
+                ).filter(
+                    EmbeddingDocument.employee_id == employee.id
+                )
+                
+                if query:
+                    query_embedding = self._generate_embedding(query)
+                    base_query = base_query.order_by(
+                        EmbeddingChunk.embedding.op('<->')(query_embedding)
+                    )
+                
+                if document_type:
+                    base_query = base_query.filter(EmbeddingDocument.document_type == document_type)
+                
+                results = base_query.limit(n_results).all()
+                
+                return [
+                    {
+                        'content': chunk.content,
+                        'score': 0.0,  # Simplified scoring
+                        'metadata': {
+                            'employee_id': str(doc.employee_id),
+                            'document_type': doc.document_type,
+                            'source_filename': doc.source_filename
+                        }
+                    }
+                    for chunk, doc in results
+                ]
+                
+        except Exception as e:
+            logger.error(f"Error in search_employee_documents: {e}")
+            return [] 

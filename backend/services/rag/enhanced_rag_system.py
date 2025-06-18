@@ -5,11 +5,13 @@ import tiktoken
 from typing import List, Dict, Any, Optional
 from openai import OpenAI
 import streamlit as st
+import logging
 
 from backend.services.rag.enhanced_vector_store import EnhancedVectorStore
 from backend.services.rag.document_loader import DocumentLoader
-from backend.services.employee.employee_database import EmployeeDatabase
-from frontend.utils.error_handler import logger, handle_database_operations, UserFriendlyError
+from backend.services.data_access.employee_database import EmployeeDatabase
+
+logger = logging.getLogger(__name__)
 
 class EnhancedRAGSystem:
     """Enhanced RAG system with access to both processed profiles and original documents"""

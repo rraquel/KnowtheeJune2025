@@ -40,6 +40,14 @@ def get_db() -> Generator[Session, None, None]:
     finally:
         db.close()
 
+def get_db_dep() -> Generator[Session, None, None]:
+    """FastAPI dependency version of get_db (not a context manager)."""
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
 def init_db() -> None:
     """Initialize the database by creating all tables."""
     from .models import Base

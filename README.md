@@ -70,7 +70,7 @@ alembic upgrade head
 5. Run the API server:
 ```bash
 cd app
-uvicorn main:app --reload
+uvicorn backend.api.api:app --reload
 ```
 
 ## API Endpoints

@@ -272,6 +272,67 @@ CRITICAL SOURCE VALIDATION: NEVER reference sources that do not exist in the pro
         
         # Step 1: Use AI to plan the query execution
         plan = self._plan_query_with_ai(query)
+        plan["query"] = query  # Always include the original query for downstream logic
+
+        # Name disambiguation step
+        employees = plan.get("employees", [])
+        print(f"DEBUG: [disambiguation] Employees from plan: {employees}")
+        if employees:
+            employee_name_counts = {}
+            employee_name_to_ids = {}
+            relevant_employee_ids = []
+            for emp_name in employees:
+                print(f"DEBUG: [disambiguation] Processing employee name: {emp_name}")
+                # Find all employees matching this name (partial or full)
+                all_emps = self.employee_db.get_all_employees()
+                for emp in all_emps:
+                    if emp_name.lower() in emp["name"].lower() or emp["name"].lower() in emp_name.lower():
+                        relevant_employee_ids.append(emp["id"])
+                        name = emp["name"]
+                        employee_name_counts[name] = employee_name_counts.get(name, 0) + 1
+                        employee_name_to_ids.setdefault(name, []).append(emp["id"])
+                        print(f"DEBUG: [disambiguation] Found match: {emp_name} -> {name}")
+            print(f"DEBUG: [disambiguation] Employee name counts: {employee_name_counts}")
+            print(f"DEBUG: [disambiguation] Relevant employee IDs: {relevant_employee_ids}")
+
+            # Check if we have multiple employees that could match the query
+            if len(employee_name_counts) > 1:
+                # Multiple employees found - need clarification
+                print(f"DEBUG: [disambiguation] Multiple employees found: {list(employee_name_counts.keys())}")
+                
+                # Collect all candidates
+                candidate_ids = set()
+                for name in employee_name_counts.keys():
+                    candidate_ids.update(employee_name_to_ids[name])
+                
+                candidates = []
+                for emp_id in candidate_ids:
+                    emp_data = self.employee_db.get_employee(emp_id)
+                    if emp_data:
+                        # Format candidate data for frontend
+                        candidate = {
+                            "name": emp_data.get("name", "Unknown"),
+                            "department": emp_data.get("department", "Unknown department"),
+                            "email": emp_data.get("email", "No email"),
+                            "id": str(emp_id)
+                        }
+                        candidates.append(candidate)
+                
+                return {
+                    "response": f"There are multiple employees matching your query. Please specify further (e.g., department or email).",
+                    "clarification_needed": True,
+                    "candidates": candidates,
+                    "query": query,
+                    "source": "name_disambiguation",
+                    "confidence": "low"
+                }
+            elif len(employee_name_counts) == 1:
+                # Single employee found - proceed normally
+                print(f"DEBUG: [disambiguation] Single employee found: {list(employee_name_counts.keys())[0]}")
+            else:
+                print(f"DEBUG: [disambiguation] No employees found in plan")
+        else:
+            print(f"DEBUG: [disambiguation] No employees found in plan")
         
         # Step 2: Execute the query plan
         result = self._execute_query_plan(plan)
@@ -299,8 +360,65 @@ CRITICAL SOURCE VALIDATION: NEVER reference sources that do not exist in the pro
 
     def _plan_query_with_ai(self, query: str) -> dict:
         """
-        Simulate AI query planning. For now, use hardcoded rules to parse the query.
-        In the future, this would call an LLM to understand intent and extract parameters.
+        Use AI to classify query intent and extract parameters.
+        """
+        print(f"DEBUG: Planning query with AI: '{query}'")
+        
+        if not self.client:
+            # Fallback to hardcoded rules if no OpenAI client
+            print("DEBUG: No OpenAI client, using fallback rules")
+            return self._plan_query_with_rules(query)
+        
+        try:
+            # Use OpenAI to classify the query intent
+            system_prompt = """You are a query classifier for a talent intelligence system. Analyze the user's query and return a JSON object with the following structure:
+
+{
+    "intent": "get_score|get_all_scores|compare_scores|rank_scores|general_query",
+    "trait": "specific_trait_name_if_applicable",
+    "assessment_type": "Hogan|IDI",
+    "employees": ["employee_name1", "employee_name2"],
+    "limit": 5
+}
+
+Intent types:
+- "get_score": User wants a specific assessment score for specific employee(s)
+- "get_all_scores": User wants all assessment scores for specific employee(s)  
+- "compare_scores": User wants to compare scores between employees
+- "rank_scores": User wants to rank employees by a trait
+- "general_query": User asks about work experience, team dynamics, or other qualitative information
+
+Only include fields that are relevant. For general queries, just return {"intent": "general_query", "query": "original_query"}.
+
+Examples:
+Query: "What is Ahmed's Prudence score?" → {"intent": "get_score", "trait": "prudence", "assessment_type": "Hogan", "employees": ["Ahmed"]}
+Query: "Compare Lisa and Ahmed's Sociability" → {"intent": "compare_scores", "trait": "sociability", "assessment_type": "Hogan", "employees": ["Lisa", "Ahmed"]}
+Query: "Tell me about Ahmed's work experience" → {"intent": "general_query", "query": "Tell me about Ahmed's work experience"}
+Query: "Top 5 employees by Ambition" → {"intent": "rank_scores", "trait": "ambition", "assessment_type": "Hogan", "limit": 5}"""
+
+            response = self.client.chat.completions.create(
+                model="gpt-4",
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": query}
+                ],
+                temperature=0.1,
+                max_tokens=200
+            )
+            
+            result = json.loads(response.choices[0].message.content)
+            print(f"DEBUG: AI query plan result: {result}")
+            return result
+            
+        except Exception as e:
+            logger.error(f"Error in AI query planning: {e}")
+            print(f"DEBUG: AI query planning failed, using fallback: {e}")
+            # Fallback to hardcoded rules
+            return self._plan_query_with_rules(query)
+    
+    def _plan_query_with_rules(self, query: str) -> dict:
+        """
+        Fallback to hardcoded rules for query planning.
         """
         query_lower = query.lower()
         
@@ -308,6 +426,7 @@ CRITICAL SOURCE VALIDATION: NEVER reference sources that do not exist in the pro
         if "score" in query_lower or "hogan" in query_lower or "idi" in query_lower:
             # Extract employee names
             employees = self._extract_employee_names_from_query(query)
+            print(f"DEBUG: [rules] Extracted employees: {employees}")
             
             # Extract trait/assessment type
             trait = self._extract_trait_from_query(query)
@@ -365,6 +484,7 @@ CRITICAL SOURCE VALIDATION: NEVER reference sources that do not exist in the pro
     def _execute_query_plan(self, plan: dict) -> dict:
         """
         Execute the query plan using structured database queries.
+        Falls back to RAG/embeddings for general queries.
         """
         intent = plan.get("intent")
         
@@ -376,18 +496,47 @@ CRITICAL SOURCE VALIDATION: NEVER reference sources that do not exist in the pro
             return self._execute_compare_scores(plan)
         elif intent == "rank_scores":
             return self._execute_rank_scores(plan)
-        else:
+        elif intent == "general_query":
+            # Hybrid RAG fallback for general queries
+            context_chunks = self._gather_context_with_hybrid_service(query=plan["query"])
+            if not context_chunks:
+                return {
+                    "response": "Sorry, I could not find relevant information.",
+                    "source": "hybrid_rag",
+                    "confidence": "low"
+                }
+            final_answer = self._generate_answer_from_context(plan["query"], context_chunks)
             return {
-                "response": "I understand your query, but I need more specific information about what assessment scores you'd like to see. Please specify the employee name and assessment trait (e.g., 'What is Ahmed's Prudence score?').",
-                "source": "ai_query_plan",
-                "confidence": "low"
+                "response": final_answer,
+                "source": "hybrid_rag",
+                "confidence": "medium"
             }
+        else:
+            if plan.get("query") == "":
+                return {
+                    "response": "I understand your query, but I need more specific information about what assessment scores you'd like to see. Please specify the employee name and assessment trait (e.g., 'What is Ahmed's Prudence score?').",
+                    "source": "ai_query_plan",
+                    "confidence": "low"
+                }
+            else:
+                return {
+                    "response": "I understand your query, but I'm not sure how to process it. Please try rephrasing your question.",
+                    "source": "ai_query_plan",
+                    "confidence": "low"
+                }
 
     def _execute_get_score(self, plan: dict) -> dict:
         """Execute a specific score query for one or more employees."""
         trait = plan.get("trait")
         assessment_type = plan.get("assessment_type", "Hogan")
         employees = plan.get("employees", [])
+        original_query = plan.get("query", "")
+        
+        print(f"DEBUG: _execute_get_score called with:")
+        print(f"  - trait: {trait}")
+        print(f"  - assessment_type: {assessment_type}")
+        print(f"  - employees: {employees}")
+        print(f"  - original_query: {original_query}")
         
         if not employees or not trait:
             return {
@@ -399,21 +548,50 @@ CRITICAL SOURCE VALIDATION: NEVER reference sources that do not exist in the pro
         results = []
         found_employees = []
         
+        # If the original query only contains a first name and there are multiple employees with that first name, ask for clarification
+        if len(employees) > 1:
+            print(f"DEBUG: Multiple employees found: {employees}")
+            import re
+            match = re.search(r"score of ([A-Za-z]+)", original_query.lower())
+            if match:
+                first_name = match.group(1)
+                print(f"DEBUG: Extracted first name: {first_name}")
+                first_names = [emp.split()[0].lower() for emp in employees]
+                print(f"DEBUG: First names from employees: {first_names}")
+                if all(fn == first_name for fn in first_names):
+                    print(f"DEBUG: All employees share first name '{first_name}', triggering clarification")
+                    employee_list = ", ".join(employees)
+                    return {
+                        "response": f"I found multiple employees with the name '{first_name.title()}': {employee_list}. Please specify which one you'd like to know about (e.g., 'Aisha Hassan' or 'Aisha Ibrahim').",
+                        "source": "ai_query_plan",
+                        "confidence": "medium",
+                        "employees": employees
+                    }
+                else:
+                    print(f"DEBUG: Employees do not all share first name '{first_name}'")
+            else:
+                print(f"DEBUG: Could not extract first name from query")
+        else:
+            print(f"DEBUG: Only {len(employees)} employee(s) found, not triggering clarification")
+        
         for employee_name in employees:
             employee_data = self._get_employee_by_name(employee_name)
             if not employee_data:
                 results.append(f"Employee '{employee_name}' not found in the database.")
                 continue
             
-            found_employees.append(employee_name)
+            # Always use the full name from the database
+            full_name = employee_data.get('name', employee_name)
+            found_employees.append(full_name)
             score = self._get_specific_score(employee_data, trait, assessment_type)
             
             if score is not None:
-                results.append(f"{employee_name}'s {trait} score is {score}.")
+                results.append(f"{full_name}'s {trait} score is {score}.")
             else:
-                results.append(f"No {trait} score found for {employee_name}.")
+                results.append(f"No {trait} score found for {full_name}.")
         
         response = "\n".join(results)
+        print(f"DEBUG: Final response: {response}")
         return {
             "response": response,
             "source": "ai_query_plan",
@@ -428,10 +606,10 @@ CRITICAL SOURCE VALIDATION: NEVER reference sources that do not exist in the pro
         
         if not employees:
             return {
-                "response": "I need an employee name to look up their scores.",
-                "source": "ai_query_plan",
-                "confidence": "low"
-            }
+                    "response": "I need an employee name to look up their scores.",
+                    "source": "ai_query_plan",
+                    "confidence": "low"
+                }
         
         results = []
         found_employees = []
@@ -468,10 +646,10 @@ CRITICAL SOURCE VALIDATION: NEVER reference sources that do not exist in the pro
         
         if not employees or not trait:
             return {
-                "response": "I need both employee names and a specific trait to compare scores.",
-                "source": "ai_query_plan",
-                "confidence": "low"
-            }
+                    "response": "I need both employee names and a specific trait to compare scores.",
+                    "source": "ai_query_plan",
+                    "confidence": "low"
+                }
         
         employee_scores = []
         found_employees = []
@@ -573,22 +751,55 @@ CRITICAL SOURCE VALIDATION: NEVER reference sources that do not exist in the pro
         
         query_lower = query.lower()
         
-        for emp in all_employees:
-            emp_name = emp["name"].lower()
-            if emp_name in query_lower:
-                found_employees.append(emp["name"])
-            else:
-                # Check for partial matches (first name or last name)
-                name_parts = emp_name.split()
-                for part in name_parts:
-                    if len(part) > 2 and part in query_lower:
-                        # Avoid common words
-                        common_words = {'the', 'and', 'for', 'are', 'but', 'not', 'you', 'all', 'can', 'her', 'was', 'one', 'our', 'out', 'day', 'get', 'use', 'man', 'new', 'now', 'way', 'may', 'say', 'has', 'his', 'their', 'what', 'when', 'where', 'why', 'how'}
-                        if part not in common_words:
-                            found_employees.append(emp["name"])
-                            break
+        # Common words to avoid matching
+        common_words = {
+            'the', 'and', 'for', 'are', 'but', 'not', 'you', 'all', 'can', 'her', 'was', 
+            'one', 'our', 'out', 'day', 'get', 'use', 'man', 'new', 'now', 'way', 'may', 
+            'say', 'has', 'his', 'their', 'what', 'when', 'where', 'why', 'how', 'is', 
+            'of', 'in', 'to', 'a', 'an', 'with', 'by', 'from', 'about', 'score', 'scores',
+            'tell', 'me', 'about', 'work', 'experience', 'hogan', 'idi', 'assessment',
+            'compare', 'between', 'and', 'what', 'are', 'tell', 'me', 'about', 'show',
+            'display', 'list', 'find', 'search', 'look', 'up', 'get', 'give', 'show'
+        }
         
-        return list(set(found_employees))  # Remove duplicates
+        # Extract potential name terms from query (words that could be names)
+        query_words = [word for word in query_lower.split() if word not in common_words and len(word) > 2]
+        
+        print(f"DEBUG: [extract] Query words: {query_words}")
+        
+        for emp in all_employees:
+            emp_name = emp["name"]
+            emp_name_lower = emp_name.lower()
+            emp_name_parts = emp_name_lower.split()
+            
+            # Check if any query word matches any part of the employee name
+            for query_word in query_words:
+                # Check if query word is in employee name (partial match)
+                if query_word in emp_name_lower:
+                    # Additional validation: make sure it's not just a substring of a longer word
+                    # unless it's a complete name part
+                    is_valid_match = False
+                    
+                    # Check if it matches a complete name part
+                    for name_part in emp_name_parts:
+                        if query_word == name_part:
+                            is_valid_match = True
+                            break
+                        elif len(query_word) > 3 and query_word in name_part:
+                            # Allow partial matches for longer words (4+ chars)
+                            is_valid_match = True
+                            break
+                    
+                    if is_valid_match:
+                        print(f"DEBUG: [extract] Found match: '{query_word}' in '{emp_name}'")
+                        if emp_name not in found_employees:
+                            found_employees.append(emp_name)
+                        break
+        
+        # Remove duplicates and return
+        unique_employees = list(set(found_employees))
+        print(f"DEBUG: [extract] Final extracted employees: {unique_employees}")
+        return unique_employees
 
     def _extract_trait_from_query(self, query: str) -> str:
         """Extract assessment trait from the query."""
@@ -639,13 +850,32 @@ CRITICAL SOURCE VALIDATION: NEVER reference sources that do not exist in the pro
             return 'Hogan'  # Default to Hogan
 
     def _get_employee_by_name(self, employee_name: str) -> dict:
-        """Get employee data by name."""
+        """Get employee data by name with partial matching support."""
         all_employees = self.employee_db.get_all_employees()
         
+        # First try exact match
         for emp in all_employees:
             if emp["name"].lower() == employee_name.lower():
                 # Get full employee data including scores
                 return self.employee_db.get_employee(emp["id"])
+        
+        # If no exact match, try partial matches
+        employee_name_lower = employee_name.lower()
+        for emp in all_employees:
+            emp_name_lower = emp["name"].lower()
+            
+            # Check if the search term is contained in the employee name
+            if employee_name_lower in emp_name_lower:
+                return self.employee_db.get_employee(emp["id"])
+            
+            # Check if any part of the employee name matches the search term
+            name_parts = emp_name_lower.split()
+            for part in name_parts:
+                if len(part) > 2 and part == employee_name_lower:
+                    # Avoid common words
+                    common_words = {'the', 'and', 'for', 'are', 'but', 'not', 'you', 'all', 'can', 'her', 'was', 'one', 'our', 'out', 'day', 'get', 'use', 'man', 'new', 'now', 'way', 'may', 'say', 'has', 'his', 'their', 'what', 'when', 'where', 'why', 'how'}
+                    if part not in common_words:
+                        return self.employee_db.get_employee(emp["id"])
         
         return None
 
@@ -2040,7 +2270,7 @@ Ensure your response is concise and focused, providing value that justifies the 
             
         except Exception as e:
             print(f"Error getting numerical scores: {e}")
-            return {"error": f"Database error: {str(e)}"}
+        return {"error": f"Database error: {str(e)}"}
 
     def _detect_numerical_ranking_query(self, query: str) -> Dict[str, Any]:
         """
@@ -2158,7 +2388,7 @@ Ensure your response is concise and focused, providing value that justifies the 
                 score_field = 'idi_irreproachability'
             # Add more specific mappings as needed
             
-            return {
+        return {
                 'is_numerical_ranking': True,
                 'ranking_type': ranking_type,
                 'score_field': score_field,
@@ -2356,6 +2586,56 @@ These employees exist in our employee database and have the highest adjustment s
     # Legacy methods removed - replaced by AI-driven query planning architecture
     # _find_direct_employee_match, _handle_specific_assessment_query, _extract_specific_score_request
     # have been replaced by _plan_query_with_ai() and _execute_query_plan() methods
+
+    def _generate_answer_from_context(self, query: str, context_chunks: list) -> str:
+        """
+        Use OpenAI LLM to generate intelligent answers from RAG context chunks.
+        """
+        if not context_chunks:
+            return "Sorry, I could not find relevant information to answer your question."
+        
+        if not self.client:
+            # Fallback to simple concatenation if no OpenAI client
+            combined_context = " ".join(context_chunks[:3])  # Use first 3 chunks
+            return f"Based on the available information: {combined_context[:800]}..."
+        
+        try:
+            # Prepare context for LLM
+            context_text = "\n\n".join(context_chunks[:5])  # Use first 5 chunks
+            
+            system_prompt = """You are a talent intelligence expert. Answer the user's question based on the provided context about employees, their assessments, work experience, and other relevant information.
+
+Guidelines:
+- Be concise but informative
+- Cite specific information from the context when possible
+- If the context doesn't contain enough information, say so clearly
+- Focus on actionable insights when relevant
+- Maintain a professional but conversational tone
+
+Context information:
+{context}
+
+User question: {query}
+
+Provide a helpful, accurate answer based on the context above."""
+
+            response = self.client.chat.completions.create(
+                model="gpt-4",
+                messages=[
+                    {"role": "system", "content": system_prompt.format(context=context_text, query=query)},
+                    {"role": "user", "content": query}
+                ],
+                temperature=0.3,
+                max_tokens=500
+            )
+            
+            return response.choices[0].message.content
+            
+        except Exception as e:
+            logger.error(f"Error generating answer from context: {e}")
+            # Fallback to simple concatenation
+            combined_context = " ".join(context_chunks[:3])
+            return f"Based on the available information: {combined_context[:800]}..."
 
 # Note: The RAG system is now initialized in the modular app with proper data instances
 # instead of using a global instance here 

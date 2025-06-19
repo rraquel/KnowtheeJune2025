@@ -1,0 +1,35 @@
+This is a list of things to do and not forget
+
+Add backend services in docker yml file to handle interference logiv and serves chat
+separate dev and prod  in docker configurations separate yml files with optimized settings
+add reverse proxy ? if we are going for a multi container approach
+Hardcoded API URL: Switch to environment variables or config.py for backend URLs.
+    import os
+    BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000/api/talent")
+
+Database:
+full text search indexes for resume dields 
+store token counts and labels per chunk in embedding_chunks for optimization
+ensure foreign key constraints between assessments and employee indexes
+Test chunking and embedding methods
+
+Backend:
+Hardcoded API URL: Switch to environment variables or config.py for backend URLs.
+    import os
+    BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000/api/talent")
+
+Add timeout=5 and try/except for robustness. Consider backoff logic for unstable production setups.
+
+Session memory is volatile:
+    Replace in-memory session_memory with Redis or a database-backed session store.
+    Allows persistence, scaling, and multi-user production use.
+
+Lazy loading is fine, but no concurrency control:
+    Protect RAG system instantiation with a thread lock or use dependency injection frameworks if moving to async/multiprocess environments.
+
+Logging is enabled, but likely missing structured tracing:
+    Add user ID, timestamps, and query IDs to logs.
+    Consider a logging framework like structlog or integrations with observability platforms (e.g., Sentry, Datadog).
+Testing and rate limiting:
+    No API authentication or user verification (not critical in MVP but needed before going to production).
+    Add rate limiting to prevent abuse.

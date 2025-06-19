@@ -44,9 +44,35 @@ def show_talent_explorer():
                 }
             )
             if response.status_code == 200:
-                answer = response.json()["response"]
+                rag_result = response.json()
+                
+                # Add user message to chat history
                 st.session_state.chat_history.append(("You", user_input))
-                st.session_state.chat_history.append(("AI", answer))
+                
+                # Handle clarification responses
+                if rag_result.get("clarification_needed"):
+                    answer = rag_result.get("response", "Sorry, I couldn't generate a response.")
+                    candidates = rag_result.get("candidates", [])
+                    
+                    # Show clarification warning
+                    st.warning(answer)
+                    
+                    # Show candidates list
+                    if candidates:
+                        st.markdown("**Available candidates:**")
+                        for cand in candidates:
+                            name = cand.get('name', 'Unknown')
+                            department = cand.get('department', 'Unknown department')
+                            email = cand.get('email', 'No email')
+                            st.markdown(f"- **{name}**, {department} ({email})")
+                    
+                    # Add clarification message to chat history
+                    st.session_state.chat_history.append(("AI", answer))
+                else:
+                    # Normal response - show as success and add to chat history
+                    answer = rag_result.get("response", "Sorry, I couldn't generate a response.")
+                    st.success(answer)
+                    st.session_state.chat_history.append(("AI", answer))
             else:
                 st.error("Failed to get a response from the backend.")
         except Exception as e:

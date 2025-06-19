@@ -30,3 +30,9 @@ Logging is enabled, but likely missing structured tracing:
 Testing and rate limiting:
     No API authentication or user verification (not critical in MVP but needed before going to production).
     Add rate limiting to prevent abuse.
+
+
+Fix Session Management
+    Implement persistent session storage
+    Add session cleanup
+    Add session recovery mechanisms

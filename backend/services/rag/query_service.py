@@ -11,19 +11,72 @@ load_dotenv()
 import json
 import re
 import tiktoken
-from typing import List, Dict, Any, Optional
+import time
+import hashlib
+from typing import List, Dict, Any, Optional, Tuple
 from openai import OpenAI
 import streamlit as st
 import logging
+from functools import lru_cache
 
 from backend.services.rag.vector_store import VectorStore
 from backend.services.data_access.employee_database import EmployeeDatabase
 
 logger = logging.getLogger(__name__)
 
+class QueryCache:
+    """Simple in-memory query cache for performance optimization."""
+    
+    def __init__(self, max_size: int = 1000, ttl_seconds: int = 300):
+        self.cache = {}
+        self.max_size = max_size
+        self.ttl_seconds = ttl_seconds
+        self.access_times = {}
+    
+    def _generate_key(self, query: str, context_type: str, conversation_id: str) -> str:
+        """Generate a cache key for the query."""
+        key_data = f"{query}:{context_type}:{conversation_id}"
+        return hashlib.md5(key_data.encode()).hexdigest()
+    
+    def get(self, query: str, context_type: str, conversation_id: str) -> Optional[Dict[str, Any]]:
+        """Get cached result if available and not expired."""
+        key = self._generate_key(query, context_type, conversation_id)
+        
+        if key in self.cache:
+            # Check if cache entry is still valid
+            if time.time() - self.access_times.get(key, 0) < self.ttl_seconds:
+                self.access_times[key] = time.time()
+                return self.cache[key]
+            else:
+                # Remove expired entry
+                del self.cache[key]
+                if key in self.access_times:
+                    del self.access_times[key]
+        
+        return None
+    
+    def set(self, query: str, context_type: str, conversation_id: str, result: Dict[str, Any]):
+        """Cache a query result."""
+        key = self._generate_key(query, context_type, conversation_id)
+        
+        # Implement LRU eviction if cache is full
+        if len(self.cache) >= self.max_size:
+            # Remove oldest entry
+            oldest_key = min(self.access_times.keys(), key=lambda k: self.access_times[k])
+            del self.cache[oldest_key]
+            del self.access_times[oldest_key]
+        
+        self.cache[key] = result
+        self.access_times[key] = time.time()
+    
+    def clear(self):
+        """Clear all cached entries."""
+        self.cache.clear()
+        self.access_times.clear()
+
 class RAGQuerySystem:
     def __init__(self, vector_store=None, employee_db=None):
-        """Initialize the RAG query system with intelligent context management"""
+        """Initialize the RAG query system with intelligent context management and caching"""
         api_key = os.getenv("OPENAI_API_KEY")
         if api_key:
             self.client = OpenAI(api_key=api_key)
@@ -50,6 +103,13 @@ class RAGQuerySystem:
             self.employee_db = employee_db
         else:
             self.employee_db = EmployeeDatabase()
+        
+        # Add caching
+        self.query_cache = QueryCache(max_size=500, ttl_seconds=300)
+        
+        # Add employee name index
+        self._employee_name_index = {}
+        self._index_initialized = False
         
         # Initialize token encoder for GPT-4
         self.encoding = tiktoken.encoding_for_model("gpt-4")
@@ -262,222 +322,255 @@ CRITICAL SOURCE VALIDATION: NEVER reference sources that do not exist in the pro
             return ""
 
     def _extract_docx_text(self, file_path: str) -> str:
-        """Extract text from DOCX file using python-docx"""
+        """Extract text from Word document using python-docx"""
         try:
             from docx import Document
             doc = Document(file_path)
             text = ""
             for paragraph in doc.paragraphs:
-                if paragraph.text.strip():
-                    text += paragraph.text + "\n"
-            return text.strip()
-        except ImportError:
-            print("Warning: python-docx not available. Install with: pip install python-docx")
-            return ""
+                text += paragraph.text + "\n"
+            return text
         except Exception as e:
-            print(f"Error extracting DOCX text from {file_path}: {e}")
+            print(f"Error extracting text from {file_path}: {e}")
             return ""
+
+    def _initialize_employee_index(self):
+        """Initialize employee name index for faster lookups."""
+        try:
+            all_employees = self.employee_db.get_all_employees()
+            self._employee_name_index = {
+                emp["name"].lower(): emp for emp in all_employees
+            }
+            self._index_initialized = True
+            logger.info(f"Initialized employee index with {len(all_employees)} employees")
+        except Exception as e:
+            logger.error(f"Failed to initialize employee index: {e}")
+            self._employee_name_index = {}
+
+    @lru_cache(maxsize=1000)
+    def _fuzzy_match_employee_name(self, name_query: str) -> List[str]:
+        """Fuzzy match employee names with caching."""
+        if not self._index_initialized:
+            self._initialize_employee_index()
+        
+        name_query_lower = name_query.lower().strip()
+        matches = []
+        
+        for emp_name, emp_data in self._employee_name_index.items():
+            # Exact match
+            if name_query_lower == emp_name:
+                matches.append(emp_data["name"])
+                continue
+            
+            # Partial match (check if any part of the name is in the query)
+            name_parts = emp_name.split()
+            query_parts = name_query_lower.split()
+            
+            for query_part in query_parts:
+                for name_part in name_parts:
+                    if len(query_part) > 2 and (query_part in name_part or name_part in query_part):
+                        if emp_data["name"] not in matches:
+                            matches.append(emp_data["name"])
+                        break
+        
+        return matches
+
+    def _create_clarification_response(self, employee_names: List[str], query: str, source: str) -> Dict[str, Any]:
+        """Create a clarification response with improved candidate presentation."""
+        try:
+            all_employees = self.employee_db.get_all_employees()
+            candidates = []
+            
+            for emp_name in employee_names:
+                for emp in all_employees:
+                    if emp["name"] == emp_name:
+                        candidate = {
+                            "name": emp["name"],
+                            "department": emp.get("department", "Unknown department"),
+                            "email": emp.get("email", "No email"),
+                            "position": emp.get("current_position", "Unknown position"),
+                            "id": str(emp["id"])
+                        }
+                        candidates.append(candidate)
+                        break
+            
+            # Create a more helpful clarification message
+            if len(candidates) == 2:
+                message = f"I found two employees with similar names: **{candidates[0]['name']}** ({candidates[0]['department']}) and **{candidates[1]['name']}** ({candidates[1]['department']}). Please specify which one you'd like to know about."
+            else:
+                message = f"I found {len(candidates)} employees that could match your query. Please specify which one you'd like to know about:"
+            
+            return {
+                "response": message,
+                "clarification_needed": True,
+                "candidates": candidates,
+                "query": query,
+                "source": source,
+                "confidence": "medium"
+            }
+            
+        except Exception as e:
+            logger.error(f"Error creating clarification response: {e}")
+            return self._create_error_response(
+                "An error occurred while processing your request. Please try again.",
+                "clarification_error",
+                "low"
+            )
+
+    def _create_error_response(self, message: str, source: str, confidence: str) -> Dict[str, Any]:
+        """Create a standardized error response."""
+        return {
+            "response": message,
+            "clarification_needed": False,
+            "candidates": None,
+            "query": "",
+            "source": source,
+            "confidence": confidence
+        }
+
+    def clear_cache(self):
+        """Clear the query cache."""
+        self.query_cache.clear()
+        logger.info("Query cache cleared")
 
     def process_complex_query(self, query: str, context_type: str = "general", 
                              conversation_id: str = "default") -> Dict[str, Any]:
-        """
-        Process complex queries with AI-driven query planning and execution
-        """
+        """Process complex queries with intelligent routing and caching."""
         
-        print(f"DEBUG: [process] Starting query processing: '{query}'")
+        # Check cache first
+        cached_result = self.query_cache.get(query, context_type, conversation_id)
+        if cached_result:
+            logger.debug(f"Cache hit for query: {query[:50]}...")
+            return cached_result
         
-        # Step 1: Extract employee names from query with priority for exact matches
-        extracted_employees = self._extract_employee_names_from_query(query)
-        print(f"DEBUG: [process] Extracted employees: {extracted_employees}")
+        logger.info(f"Processing query: '{query}'")
         
-        # Step 2: Check for exact full name matches in the query
-        exact_matches = []
-        query_lower = query.lower()
-        all_employees = self.employee_db.get_all_employees()
-        
-        for emp in all_employees:
-            emp_name_lower = emp["name"].lower()
-            if emp_name_lower in query_lower:
-                exact_matches.append(emp["name"])
-                print(f"DEBUG: [process] Found exact match: '{emp['name']}' in query")
-        
-        # Step 3: Handle disambiguation based on exact matches
-        if exact_matches:
-            if len(exact_matches) == 1:
-                # Single exact match - use only this employee
-                target_employee = exact_matches[0]
-                print(f"DEBUG: [process] Single exact match found: {target_employee}")
-                
-                # Find the employee data
-                target_emp_data = None
-                for emp in all_employees:
-                    if emp["name"] == target_employee:
-                        target_emp_data = emp
-                        break
-                
-                if target_emp_data:
-                    # Use only this employee's data
-                    return self._process_single_employee_query(query, target_emp_data, conversation_id)
-                else:
-                    return {
-                        "response": f"I found '{target_employee}' in the query but could not locate their data in the database. Please check the name or try rephrasing.",
-                        "clarification_needed": False,
-                        "candidates": None,
-                        "query": query,
-                        "source": "employee_not_found",
-                        "confidence": "low"
-                    }
-            else:
-                # Multiple exact matches - ask for clarification
-                print(f"DEBUG: [process] Multiple exact matches found: {exact_matches}")
-                candidates = []
-                for emp_name in exact_matches:
-                    for emp in all_employees:
-                        if emp["name"] == emp_name:
-                            candidate = {
-                                "name": emp["name"],
-                                "department": emp.get("department", "Unknown department"),
-                                "email": emp.get("email", "No email"),
-                                "id": str(emp["id"])
-                            }
-                            candidates.append(candidate)
-                            break
-                
-                return {
-                    "response": f"I found multiple employees with names mentioned in your query. Please specify which one you'd like to know about (e.g., department or email).",
-                    "clarification_needed": True,
-                    "candidates": candidates,
-                    "query": query,
-                    "source": "exact_name_disambiguation",
-                    "confidence": "medium"
-                }
-        
-        # Step 4: No exact matches - check extracted employees
-        if extracted_employees:
-            if len(extracted_employees) == 1:
-                # Single extracted employee - use this one
-                target_employee = extracted_employees[0]
-                print(f"DEBUG: [process] Single extracted employee: {target_employee}")
-                
-                # Find the employee data
-                target_emp_data = None
-                for emp in all_employees:
-                    if emp["name"] == target_employee:
-                        target_emp_data = emp
-                        break
-                
-                if target_emp_data:
-                    return self._process_single_employee_query(query, target_emp_data, conversation_id)
-                else:
-                    return {
-                        "response": f"I found '{target_employee}' in the query but could not locate their data in the database. Please check the name or try rephrasing.",
-                        "clarification_needed": False,
-                        "candidates": None,
-                        "query": query,
-                        "source": "employee_not_found",
-                        "confidence": "low"
-                    }
-            else:
-                # Multiple extracted employees - ask for clarification
-                print(f"DEBUG: [process] Multiple extracted employees: {extracted_employees}")
-                candidates = []
-                for emp_name in extracted_employees:
-                    for emp in all_employees:
-                        if emp["name"] == emp_name:
-                            candidate = {
-                                "name": emp["name"],
-                                "department": emp.get("department", "Unknown department"),
-                                "email": emp.get("email", "No email"),
-                                "id": str(emp["id"])
-                            }
-                            candidates.append(candidate)
-                            break
-                
-                return {
-                    "response": f"I found multiple employees that could match your query. Please specify which one you'd like to know about (e.g., department or email).",
-                    "clarification_needed": True,
-                    "candidates": candidates,
-                    "query": query,
-                    "source": "extracted_name_disambiguation",
-                    "confidence": "medium"
-                }
-        
-        # Step 5: No employees found - return clear message
-        print(f"DEBUG: [process] No employees found in query")
-        return {
-            "response": "I could not find any employee names in your query. Please specify an employee name (e.g., 'What is Carlos Garcia's work background?') or try rephrasing your question.",
-            "clarification_needed": False,
-            "candidates": None,
-            "query": query,
-            "source": "no_employee_found",
-            "confidence": "low"
-        }
+        try:
+            # Step 1: Use AI to plan the query and understand intent
+            plan = self._plan_query_with_ai(query)
+            logger.info(f"Query plan: {plan}")
+            
+            # Step 2: Execute the query plan
+            result = self._execute_query_plan(plan)
+            
+            # Step 3: Add conversation metadata
+            result.update({
+                "query": query,
+                "resolved_query": query,
+                "analysis": plan,
+                "conversation_id": conversation_id,
+                "context_sources": result.get("context_sources", 0),
+                "context_employees": result.get("employees", []),
+                "conversation_status": self.get_conversation_status()
+            })
+            
+            # Step 4: Update conversation history if we have a response
+            if result.get("response"):
+                self._update_conversation_history(
+                    original_query=query,
+                    resolved_query=query,
+                    response=result["response"],
+                    context_employees=result.get("employees", []),
+                    query_analysis=plan
+                )
+            
+            # Step 5: Cache the result
+            self.query_cache.set(query, context_type, conversation_id, result)
+            
+            return result
+            
+        except Exception as e:
+            logger.error(f"Error in process_complex_query: {e}")
+            error_result = self._create_error_response(
+                f"An error occurred while processing your query: {str(e)}",
+                "processing_error",
+                "low"
+            )
+            error_result.update({
+                "query": query,
+                "resolved_query": query,
+                "conversation_id": conversation_id,
+                "conversation_status": self.get_conversation_status()
+            })
+            return error_result
 
-    def _process_single_employee_query(self, query: str, target_emp_data: dict, conversation_id: str) -> Dict[str, Any]:
-        """
-        Process a query for a single employee using their specific data.
-        """
-        print(f"DEBUG: [single_employee] Processing query for: {target_emp_data['name']}")
-        
-        # Get the employee's full data from the database
-        employee_id = target_emp_data["id"]
-        full_employee_data = self.employee_db.get_employee(employee_id)
-        
-        if not full_employee_data:
+    def _process_single_employee_query(self, query: str, employee_name: str, conversation_id: str) -> Dict[str, Any]:
+        """Process a query for a single employee with optimized data retrieval."""
+        try:
+            logger.info(f"Processing single employee query for: {employee_name}")
+            
+            # Find employee data from index
+            emp_data = None
+            for emp_name_lower, emp in self._employee_name_index.items():
+                if emp["name"] == employee_name:
+                    emp_data = emp
+                    break
+            
+            if not emp_data:
+                return self._create_error_response(
+                    f"Could not find employee data for {employee_name}",
+                    "employee_not_found",
+                    "low"
+                )
+            
+            # Get full employee data
+            full_employee_data = self.employee_db.get_employee(emp_data["id"])
+            
+            if not full_employee_data:
+                return self._create_error_response(
+                    f"Could not retrieve complete data for {employee_name}",
+                    "employee_data_error",
+                    "low"
+                )
+            
+            # Generate context chunks
+            context_chunks = self._get_employee_context(emp_data["id"], {"query_type": "individual_profile", "scope": "single_employee"})
+            
+            if not context_chunks:
+                return self._create_error_response(
+                    f"Could not generate context for {employee_name}",
+                    "context_generation_error",
+                    "low"
+                )
+            
+            # Generate response
+            response = self._generate_intelligent_response(
+                query=query,
+                context_chunks=context_chunks,
+                analysis={"query_type": "individual_profile", "scope": "single_employee"},
+                original_query=query
+            )
+            
+            # Update conversation history
+            self._update_conversation_history(
+                original_query=query,
+                resolved_query=query,
+                response=response,
+                context_employees=[employee_name],
+                query_analysis={"query_type": "individual_profile", "scope": "single_employee"}
+            )
+            
             return {
-                "response": f"I found {target_emp_data['name']} but could not retrieve their complete data from the database. Please try again or contact support.",
-                "clarification_needed": False,
-                "candidates": None,
                 "query": query,
-                "source": "employee_data_error",
-                "confidence": "low"
+                "resolved_query": query,
+                "analysis": {"query_type": "individual_profile", "scope": "single_employee"},
+                "response": response,
+                "context_sources": len(context_chunks),
+                "context_employees": [employee_name],
+                "employee_limits": {"max": 1, "priority": 1},
+                "conversation_status": self.get_conversation_status(),
+                "conversation_id": conversation_id,
+                "source": "single_employee_query",
+                "confidence": "high"
             }
-        
-        # Generate context chunks from the employee's data
-        context_chunks = self._get_employee_context(employee_id, {"query_type": "individual_profile", "scope": "single_employee"})
-        
-        if not context_chunks:
-            return {
-                "response": f"I found {target_emp_data['name']} but their profile data appears to be incomplete. Please try asking about a different aspect or contact support.",
-                "clarification_needed": False,
-                "candidates": None,
-                "query": query,
-                "source": "incomplete_employee_data",
-                "confidence": "low"
-            }
-        
-        print(f"DEBUG: [single_employee] Generated {len(context_chunks)} context chunks for {target_emp_data['name']}")
-        
-        # Generate response using the employee's specific data
-        response = self._generate_intelligent_response(
-            query=query,
-            context_chunks=context_chunks,
-            analysis={"query_type": "individual_profile", "scope": "single_employee"},
-            original_query=query
-        )
-        
-        # Update conversation history
-        self._update_conversation_history(
-            original_query=query,
-            resolved_query=query,
-            response=response,
-            context_employees=[target_emp_data["name"]],
-            query_analysis={"query_type": "individual_profile", "scope": "single_employee"}
-        )
-        
-        return {
-            "query": query,
-            "resolved_query": query,
-            "analysis": {"query_type": "individual_profile", "scope": "single_employee"},
-            "response": response,
-            "context_sources": len(context_chunks),
-            "context_employees": [target_emp_data["name"]],
-            "employee_limits": {"max": 1, "priority": 1},
-            "conversation_status": self.get_conversation_status(),
-            "conversation_id": conversation_id,
-            "source": "single_employee_query",
-            "confidence": "high"
-        }
+            
+        except Exception as e:
+            logger.error(f"Error in _process_single_employee_query: {e}")
+            return self._create_error_response(
+                f"Error processing query for {employee_name}: {str(e)}",
+                "single_employee_error",
+                "low"
+            )
 
     def _plan_query_with_ai(self, query: str) -> dict:
         """
@@ -1104,15 +1197,22 @@ Query: "Top 5 employees by Ambition" → {"intent": "rank_scores", "trait": "amb
     def _get_specific_score(self, employee_data: dict, trait: str, assessment_type: str) -> float:
         """Get a specific score for an employee."""
         if assessment_type == 'Hogan':
-            hogan_scores = employee_data.get('hogan_scores', [])
-            for score_entry in hogan_scores:
-                if score_entry['trait'].lower() == trait.lower():
-                    return score_entry['score']
+            hogan_scores = employee_data.get('hogan_scores', {})
+            # Hogan scores are now structured by assessment type
+            for assessment_category, scores in hogan_scores.items():
+                if trait.lower() in scores:
+                    return scores[trait.lower()]
+                # Also check for exact trait name
+                for score_trait, score_value in scores.items():
+                    if score_trait.lower() == trait.lower():
+                        return score_value
         elif assessment_type == 'IDI':
-            idi_scores = employee_data.get('idi_scores', [])
-            for score_entry in idi_scores:
-                if score_entry['dimension'].lower() == trait.lower():
-                    return score_entry['score']
+            idi_scores = employee_data.get('idi_scores', {})
+            # IDI scores are structured by assessment
+            for assessment_name, scores in idi_scores.items():
+                for score_key, score_value in scores.items():
+                    if trait.lower() in score_key.lower():
+                        return score_value
         
         return None
 
@@ -1121,13 +1221,17 @@ Query: "Top 5 employees by Ambition" → {"intent": "rank_scores", "trait": "amb
         scores = {}
         
         if assessment_type == 'Hogan':
-            hogan_scores = employee_data.get('hogan_scores', [])
-            for score_entry in hogan_scores:
-                scores[score_entry['trait']] = score_entry['score']
+            hogan_scores = employee_data.get('hogan_scores', {})
+            # Hogan scores are now structured by assessment type
+            for assessment_category, category_scores in hogan_scores.items():
+                for trait, score in category_scores.items():
+                    scores[f"{assessment_category} - {trait}"] = score
         elif assessment_type == 'IDI':
-            idi_scores = employee_data.get('idi_scores', [])
-            for score_entry in idi_scores:
-                scores[score_entry['dimension']] = score_entry['score']
+            idi_scores = employee_data.get('idi_scores', {})
+            # IDI scores are structured by assessment
+            for assessment_name, assessment_scores in idi_scores.items():
+                for score_key, score_value in assessment_scores.items():
+                    scores[f"{assessment_name} - {score_key}"] = score_value
         
         return scores
 

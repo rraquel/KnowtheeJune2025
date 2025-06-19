@@ -442,6 +442,7 @@ class EmbeddingPipeline:
                     
                     # Create chunk record
                     chunk_record = EmbeddingChunk(
+                        employee_id=employee_id,
                         external_document_id=external_document_id,
                         chunk_index=i,
                         content=chunk["content"],

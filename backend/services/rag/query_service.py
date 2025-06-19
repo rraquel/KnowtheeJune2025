@@ -2,6 +2,12 @@
 RAG query system for KNOWTHEE.AI
 """
 import os
+import traceback
+from dotenv import load_dotenv
+
+# Load environment variables at the very top
+load_dotenv()
+
 import json
 import re
 import tiktoken
@@ -21,7 +27,15 @@ class RAGQuerySystem:
         api_key = os.getenv("OPENAI_API_KEY")
         if api_key:
             self.client = OpenAI(api_key=api_key)
+            print(f"✅ OpenAI client initialized successfully from {__file__}")
         else:
+            # Enhanced error logging with traceback
+            print(f"❌ OPENAI_API_KEY not set in {__file__}")
+            print("Stack trace:")
+            traceback.print_stack()
+            print(f"Current working directory: {os.getcwd()}")
+            print(f"Environment variables containing 'OPENAI': {[k for k in os.environ.keys() if 'OPENAI' in k.upper()]}")
+            
             # For testing purposes, allow initialization without API key
             self.client = None
             print("Warning: OPENAI_API_KEY not set. Some features may be limited.")
@@ -270,92 +284,199 @@ CRITICAL SOURCE VALIDATION: NEVER reference sources that do not exist in the pro
         Process complex queries with AI-driven query planning and execution
         """
         
-        # Step 1: Use AI to plan the query execution
-        plan = self._plan_query_with_ai(query)
-        plan["query"] = query  # Always include the original query for downstream logic
-
-        # Name disambiguation step
-        employees = plan.get("employees", [])
-        print(f"DEBUG: [disambiguation] Employees from plan: {employees}")
-        if employees:
-            employee_name_counts = {}
-            employee_name_to_ids = {}
-            relevant_employee_ids = []
-            for emp_name in employees:
-                print(f"DEBUG: [disambiguation] Processing employee name: {emp_name}")
-                # Find all employees matching this name (partial or full)
-                all_emps = self.employee_db.get_all_employees()
-                for emp in all_emps:
-                    if emp_name.lower() in emp["name"].lower() or emp["name"].lower() in emp_name.lower():
-                        relevant_employee_ids.append(emp["id"])
-                        name = emp["name"]
-                        employee_name_counts[name] = employee_name_counts.get(name, 0) + 1
-                        employee_name_to_ids.setdefault(name, []).append(emp["id"])
-                        print(f"DEBUG: [disambiguation] Found match: {emp_name} -> {name}")
-            print(f"DEBUG: [disambiguation] Employee name counts: {employee_name_counts}")
-            print(f"DEBUG: [disambiguation] Relevant employee IDs: {relevant_employee_ids}")
-
-            # Check if we have multiple employees that could match the query
-            if len(employee_name_counts) > 1:
-                # Multiple employees found - need clarification
-                print(f"DEBUG: [disambiguation] Multiple employees found: {list(employee_name_counts.keys())}")
+        print(f"DEBUG: [process] Starting query processing: '{query}'")
+        
+        # Step 1: Extract employee names from query with priority for exact matches
+        extracted_employees = self._extract_employee_names_from_query(query)
+        print(f"DEBUG: [process] Extracted employees: {extracted_employees}")
+        
+        # Step 2: Check for exact full name matches in the query
+        exact_matches = []
+        query_lower = query.lower()
+        all_employees = self.employee_db.get_all_employees()
+        
+        for emp in all_employees:
+            emp_name_lower = emp["name"].lower()
+            if emp_name_lower in query_lower:
+                exact_matches.append(emp["name"])
+                print(f"DEBUG: [process] Found exact match: '{emp['name']}' in query")
+        
+        # Step 3: Handle disambiguation based on exact matches
+        if exact_matches:
+            if len(exact_matches) == 1:
+                # Single exact match - use only this employee
+                target_employee = exact_matches[0]
+                print(f"DEBUG: [process] Single exact match found: {target_employee}")
                 
-                # Collect all candidates
-                candidate_ids = set()
-                for name in employee_name_counts.keys():
-                    candidate_ids.update(employee_name_to_ids[name])
+                # Find the employee data
+                target_emp_data = None
+                for emp in all_employees:
+                    if emp["name"] == target_employee:
+                        target_emp_data = emp
+                        break
                 
+                if target_emp_data:
+                    # Use only this employee's data
+                    return self._process_single_employee_query(query, target_emp_data, conversation_id)
+                else:
+                    return {
+                        "response": f"I found '{target_employee}' in the query but could not locate their data in the database. Please check the name or try rephrasing.",
+                        "clarification_needed": False,
+                        "candidates": None,
+                        "query": query,
+                        "source": "employee_not_found",
+                        "confidence": "low"
+                    }
+            else:
+                # Multiple exact matches - ask for clarification
+                print(f"DEBUG: [process] Multiple exact matches found: {exact_matches}")
                 candidates = []
-                for emp_id in candidate_ids:
-                    emp_data = self.employee_db.get_employee(emp_id)
-                    if emp_data:
-                        # Format candidate data for frontend
-                        candidate = {
-                            "name": emp_data.get("name", "Unknown"),
-                            "department": emp_data.get("department", "Unknown department"),
-                            "email": emp_data.get("email", "No email"),
-                            "id": str(emp_id)
-                        }
-                        candidates.append(candidate)
+                for emp_name in exact_matches:
+                    for emp in all_employees:
+                        if emp["name"] == emp_name:
+                            candidate = {
+                                "name": emp["name"],
+                                "department": emp.get("department", "Unknown department"),
+                                "email": emp.get("email", "No email"),
+                                "id": str(emp["id"])
+                            }
+                            candidates.append(candidate)
+                            break
                 
                 return {
-                    "response": f"There are multiple employees matching your query. Please specify further (e.g., department or email).",
+                    "response": f"I found multiple employees with names mentioned in your query. Please specify which one you'd like to know about (e.g., department or email).",
                     "clarification_needed": True,
                     "candidates": candidates,
                     "query": query,
-                    "source": "name_disambiguation",
-                    "confidence": "low"
+                    "source": "exact_name_disambiguation",
+                    "confidence": "medium"
                 }
-            elif len(employee_name_counts) == 1:
-                # Single employee found - proceed normally
-                print(f"DEBUG: [disambiguation] Single employee found: {list(employee_name_counts.keys())[0]}")
+        
+        # Step 4: No exact matches - check extracted employees
+        if extracted_employees:
+            if len(extracted_employees) == 1:
+                # Single extracted employee - use this one
+                target_employee = extracted_employees[0]
+                print(f"DEBUG: [process] Single extracted employee: {target_employee}")
+                
+                # Find the employee data
+                target_emp_data = None
+                for emp in all_employees:
+                    if emp["name"] == target_employee:
+                        target_emp_data = emp
+                        break
+                
+                if target_emp_data:
+                    return self._process_single_employee_query(query, target_emp_data, conversation_id)
+                else:
+                    return {
+                        "response": f"I found '{target_employee}' in the query but could not locate their data in the database. Please check the name or try rephrasing.",
+                        "clarification_needed": False,
+                        "candidates": None,
+                        "query": query,
+                        "source": "employee_not_found",
+                        "confidence": "low"
+                    }
             else:
-                print(f"DEBUG: [disambiguation] No employees found in plan")
-        else:
-            print(f"DEBUG: [disambiguation] No employees found in plan")
+                # Multiple extracted employees - ask for clarification
+                print(f"DEBUG: [process] Multiple extracted employees: {extracted_employees}")
+                candidates = []
+                for emp_name in extracted_employees:
+                    for emp in all_employees:
+                        if emp["name"] == emp_name:
+                            candidate = {
+                                "name": emp["name"],
+                                "department": emp.get("department", "Unknown department"),
+                                "email": emp.get("email", "No email"),
+                                "id": str(emp["id"])
+                            }
+                            candidates.append(candidate)
+                            break
+                
+                return {
+                    "response": f"I found multiple employees that could match your query. Please specify which one you'd like to know about (e.g., department or email).",
+                    "clarification_needed": True,
+                    "candidates": candidates,
+                    "query": query,
+                    "source": "extracted_name_disambiguation",
+                    "confidence": "medium"
+                }
         
-        # Step 2: Execute the query plan
-        result = self._execute_query_plan(plan)
+        # Step 5: No employees found - return clear message
+        print(f"DEBUG: [process] No employees found in query")
+        return {
+            "response": "I could not find any employee names in your query. Please specify an employee name (e.g., 'What is Carlos Garcia's work background?') or try rephrasing your question.",
+            "clarification_needed": False,
+            "candidates": None,
+            "query": query,
+            "source": "no_employee_found",
+            "confidence": "low"
+        }
+
+    def _process_single_employee_query(self, query: str, target_emp_data: dict, conversation_id: str) -> Dict[str, Any]:
+        """
+        Process a query for a single employee using their specific data.
+        """
+        print(f"DEBUG: [single_employee] Processing query for: {target_emp_data['name']}")
         
-        # Step 3: Update conversation tracking
-        self._update_conversation_history(query, query, result["response"], [], {
-            "query_type": plan.get("intent", "general"),
-            "scope": "ai_query_plan"
-        })
+        # Get the employee's full data from the database
+        employee_id = target_emp_data["id"]
+        full_employee_data = self.employee_db.get_employee(employee_id)
         
-        # Step 4: Return the result
+        if not full_employee_data:
+            return {
+                "response": f"I found {target_emp_data['name']} but could not retrieve their complete data from the database. Please try again or contact support.",
+                "clarification_needed": False,
+                "candidates": None,
+                "query": query,
+                "source": "employee_data_error",
+                "confidence": "low"
+            }
+        
+        # Generate context chunks from the employee's data
+        context_chunks = self._get_employee_context(employee_id, {"query_type": "individual_profile", "scope": "single_employee"})
+        
+        if not context_chunks:
+            return {
+                "response": f"I found {target_emp_data['name']} but their profile data appears to be incomplete. Please try asking about a different aspect or contact support.",
+                "clarification_needed": False,
+                "candidates": None,
+                "query": query,
+                "source": "incomplete_employee_data",
+                "confidence": "low"
+            }
+        
+        print(f"DEBUG: [single_employee] Generated {len(context_chunks)} context chunks for {target_emp_data['name']}")
+        
+        # Generate response using the employee's specific data
+        response = self._generate_intelligent_response(
+            query=query,
+            context_chunks=context_chunks,
+            analysis={"query_type": "individual_profile", "scope": "single_employee"},
+            original_query=query
+        )
+        
+        # Update conversation history
+        self._update_conversation_history(
+            original_query=query,
+            resolved_query=query,
+            response=response,
+            context_employees=[target_emp_data["name"]],
+            query_analysis={"query_type": "individual_profile", "scope": "single_employee"}
+        )
+        
         return {
             "query": query,
             "resolved_query": query,
-            "analysis": {"query_type": plan.get("intent", "general"), "scope": "ai_query_plan"},
-            "response": result["response"],
-            "context_sources": 0,
-            "context_employees": result.get("employees", []),
-            "employee_limits": {"max": 5, "priority": 3},
+            "analysis": {"query_type": "individual_profile", "scope": "single_employee"},
+            "response": response,
+            "context_sources": len(context_chunks),
+            "context_employees": [target_emp_data["name"]],
+            "employee_limits": {"max": 1, "priority": 1},
             "conversation_status": self.get_conversation_status(),
             "conversation_id": conversation_id,
-            "source": result["source"],
-            "confidence": result["confidence"]
+            "source": "single_employee_query",
+            "confidence": "high"
         }
 
     def _plan_query_with_ai(self, query: str) -> dict:
@@ -497,20 +618,99 @@ Query: "Top 5 employees by Ambition" → {"intent": "rank_scores", "trait": "amb
         elif intent == "rank_scores":
             return self._execute_rank_scores(plan)
         elif intent == "general_query":
-            # Hybrid RAG fallback for general queries
-            context_chunks = self._gather_context_with_hybrid_service(query=plan["query"])
-            if not context_chunks:
+            # Handle general queries with proper context gathering
+            query = plan.get("query", "")
+            
+            # Create basic analysis structure for general queries
+            analysis = {
+                "query_type": "general_guidance",
+                "scope": "single_employee",  # Default scope
+                "required_data": ["general"],
+                "analysis_depth": "detailed_analysis",
+                "key_entities": []
+            }
+            
+            # Extract employee names from query for context
+            context_employees = self._extract_employee_names_from_query(query)
+            if context_employees:
+                analysis["key_entities"] = context_employees
+                if len(context_employees) > 1:
+                    analysis["scope"] = "multiple_employees"
+            
+            # Set employee limits for general queries
+            employee_limits = {"max": 5, "priority": 3}
+            
+            try:
+                # Try hybrid service first
+                hybrid_service = self._get_hybrid_query_service()
+                context_chunks = []
+                
+                if hybrid_service:
+                    context_chunks = self._gather_context_with_hybrid_service(
+                        query=query,
+                        analysis=analysis,
+                        context_employees=context_employees,
+                        employee_limits=employee_limits,
+                        hybrid_service=hybrid_service
+                    )
+                    
+                    # Check if hybrid service returned the right employee
+                    if context_employees and context_chunks:
+                        # Check if any of the context chunks contain the expected employee names
+                        context_text = " ".join(context_chunks).lower()
+                        found_expected_employee = False
+                        
+                        for employee_name in context_employees:
+                            if employee_name.lower() in context_text:
+                                found_expected_employee = True
+                                print(f"DEBUG: Hybrid service correctly found {employee_name}")
+                                break
+                        
+                        if not found_expected_employee:
+                            print(f"DEBUG: Hybrid service returned wrong employees, falling back to legacy method")
+                            # Hybrid service returned wrong results, try legacy method
+                            context_chunks = self._gather_context_legacy_method(
+                                query=query,
+                                analysis=analysis,
+                                context_employees=context_employees,
+                                employee_limits=employee_limits
+                            )
+                else:
+                    # Fallback to legacy method
+                    context_chunks = self._gather_context_legacy_method(
+                        query=query,
+                        analysis=analysis,
+                        context_employees=context_employees,
+                        employee_limits=employee_limits
+                    )
+                
+                if not context_chunks:
+                    # Emergency fallback
+                    context_chunks = self._emergency_employee_fallback(query, analysis, employee_limits["max"])
+                
+                if context_chunks:
+                    final_answer = self._generate_answer_from_context(query, context_chunks)
+                    return {
+                        "response": final_answer,
+                        "source": "hybrid_rag",
+                        "confidence": "medium",
+                        "employees": context_employees
+                    }
+                else:
+                    return {
+                        "response": "I couldn't find relevant information to answer your question. Please try rephrasing or ask about a specific employee.",
+                        "source": "general_query",
+                        "confidence": "low"
+                    }
+                    
+            except Exception as e:
+                print(f"DEBUG: Error in general query processing: {e}")
+                # Fallback to simple response
                 return {
-                    "response": "Sorry, I could not find relevant information.",
-                    "source": "hybrid_rag",
+                    "response": f"I understand your question about '{query}', but I'm having trouble accessing the relevant information right now. Please try asking about a specific employee or assessment scores.",
+                    "source": "general_query_fallback",
                     "confidence": "low"
                 }
-            final_answer = self._generate_answer_from_context(plan["query"], context_chunks)
-            return {
-                "response": final_answer,
-                "source": "hybrid_rag",
-                "confidence": "medium"
-            }
         else:
             if plan.get("query") == "":
                 return {
@@ -767,10 +967,26 @@ Query: "Top 5 employees by Ambition" → {"intent": "rank_scores", "trait": "amb
         
         print(f"DEBUG: [extract] Query words: {query_words}")
         
+        # PRIORITY 1: Look for exact full name matches first (highest priority)
+        for emp in all_employees:
+            emp_name = emp["name"]
+            emp_name_lower = emp_name.lower()
+            
+            # Check for exact full name match in query
+            if emp_name_lower in query_lower:
+                print(f"DEBUG: [extract] EXACT MATCH found: '{emp_name}' in query")
+                found_employees.insert(0, emp_name)  # Insert at beginning for highest priority
+                continue
+        
+        # PRIORITY 2: Look for partial matches (lower priority)
         for emp in all_employees:
             emp_name = emp["name"]
             emp_name_lower = emp_name.lower()
             emp_name_parts = emp_name_lower.split()
+            
+            # Skip if already found as exact match
+            if emp_name in found_employees:
+                continue
             
             # Check if any query word matches any part of the employee name
             for query_word in query_words:
@@ -791,14 +1007,20 @@ Query: "Top 5 employees by Ambition" → {"intent": "rank_scores", "trait": "amb
                             break
                     
                     if is_valid_match:
-                        print(f"DEBUG: [extract] Found match: '{query_word}' in '{emp_name}'")
+                        print(f"DEBUG: [extract] PARTIAL MATCH found: '{query_word}' in '{emp_name}'")
                         if emp_name not in found_employees:
                             found_employees.append(emp_name)
                         break
         
-        # Remove duplicates and return
-        unique_employees = list(set(found_employees))
-        print(f"DEBUG: [extract] Final extracted employees: {unique_employees}")
+        # Remove duplicates while preserving order
+        unique_employees = []
+        seen = set()
+        for emp in found_employees:
+            if emp not in seen:
+                unique_employees.append(emp)
+                seen.add(emp)
+        
+        print(f"DEBUG: [extract] Final extracted employees (ordered by priority): {unique_employees}")
         return unique_employees
 
     def _extract_trait_from_query(self, query: str) -> str:
@@ -1324,21 +1546,15 @@ Return as JSON:
     def _get_hybrid_query_service(self):
         """Get hybrid query service if available"""
         try:
-            # Try to get from cache service first
-            cache_service = st.session_state.get('cache_service')
-            if cache_service and hasattr(cache_service, 'get_hybrid_query_service'):
-                hybrid_service = cache_service.get_hybrid_query_service()
-                if hybrid_service:
-                    return hybrid_service
-            
-            # Try to get from session state directly
-            hybrid_services = st.session_state.get('hybrid_services')
-            if hybrid_services and 'hybrid_query_service' in hybrid_services:
-                return hybrid_services['hybrid_query_service']
-            
+            # Try to import and initialize the hybrid service directly
+            from backend.services.rag.hybrid_query import HybridQueryService
+            hybrid_service = HybridQueryService()
+            return hybrid_service
+        except ImportError:
+            print("DEBUG: HybridQueryService not available")
             return None
         except Exception as e:
-            print(f"Warning: Could not access hybrid query service: {e}")
+            print(f"DEBUG: Could not initialize hybrid query service: {e}")
             return None
     
     def _gather_context_with_hybrid_service(self, query: str, analysis: Dict[str, Any], 
@@ -1347,6 +1563,11 @@ Return as JSON:
                                           hybrid_service) -> List[str]:
         """Gather context using the hybrid query service for optimal performance"""
         context_chunks = []
+        
+        print(f"DEBUG: [hybrid] Starting hybrid context gathering")
+        print(f"DEBUG: [hybrid] Query: '{query}'")
+        print(f"DEBUG: [hybrid] Context employees: {context_employees}")
+        print(f"DEBUG: [hybrid] Employee limits: {employee_limits}")
         
         # Extract potential filters from the query and analysis
         filters = self._extract_filters_from_analysis(query, analysis)
@@ -1359,7 +1580,7 @@ Return as JSON:
         )
         
         if search_results and search_results.get('results'):
-            print(f"Hybrid search found {len(search_results['results'])} employees using strategy: {search_results['strategy_used']}")
+            print(f"DEBUG: [hybrid] Hybrid search found {len(search_results['results'])} employees using strategy: {search_results['strategy_used']}")
             
             # Process hybrid results
             for result in search_results['results']:
@@ -1371,18 +1592,25 @@ Return as JSON:
                         # Format structured data for context
                         context_chunk = self._format_hybrid_result_for_context(result)
                         context_chunks.append(context_chunk)
+                        print(f"DEBUG: [hybrid] Added detailed context for employee {result.get('name', 'Unknown')}")
                     else:
                         # Fallback to traditional employee context
                         employee_context = self._get_employee_context(employee_id, analysis)
                         context_chunks.extend(employee_context)
+                        print(f"DEBUG: [hybrid] Added traditional context for employee {result.get('name', 'Unknown')} ({len(employee_context)} chunks)")
+        else:
+            print(f"DEBUG: [hybrid] No results from hybrid search")
         
         # If priority employees specified, ensure they're included
         if context_employees:
+            print(f"DEBUG: [hybrid] Ensuring priority employees are included")
             priority_context = self._ensure_priority_employees_included(
                 context_employees, context_chunks, analysis, employee_limits["priority"]
             )
             context_chunks.extend(priority_context)
+            print(f"DEBUG: [hybrid] Added {len(priority_context)} priority context chunks")
         
+        print(f"DEBUG: [hybrid] Final context: {len(context_chunks)} total chunks")
         return context_chunks
     
     def _gather_context_legacy_method(self, query: str, analysis: Dict[str, Any], 
@@ -1396,7 +1624,7 @@ Return as JSON:
         
         print(f"DEBUG: Starting context gathering - query: '{query}', scope: {analysis.get('scope')}")
         
-        # PRIORITY 0 - Direct employee lookup for specific names
+        # PRIORITY 0 - Direct employee lookup for specific names (HIGHEST PRIORITY)
         direct_employee = self._find_direct_employee_match(query)
         if direct_employee:
             print(f"DEBUG: Found direct employee match: {direct_employee['name']}")
@@ -1478,36 +1706,69 @@ Return as JSON:
                 # If no specific employee found or need more, do semantic search
                 if employees_added < max_employees:
                     print(f"DEBUG: Doing semantic search for single employee query")
-                    search_results = self.vector_store.search_employees(query, n_results=remaining_slots + 5)
-                    for result in search_results:
-                        if employees_added >= max_employees:
-                            break
-                        # Skip if already added
-                        emp_data = self.employee_db.get_employee(result['employee_id'])
-                        if emp_data and not any(emp_data['name'] in chunk for chunk in context_chunks):
-                            employee_context = self._get_employee_context(result['employee_id'], analysis)
-                            context_chunks.extend(employee_context)
-                            employees_added += 1
-                            print(f"DEBUG: Added employee {emp_data['name']} from semantic search")
+                    try:
+                        search_results = self.vector_store.search_employees(query, n_results=remaining_slots + 5)
+                        for result in search_results:
+                            if employees_added >= max_employees:
+                                break
+                            # Skip if already added
+                            emp_data = self.employee_db.get_employee(result['employee_id'])
+                            if emp_data and not any(emp_data['name'] in chunk for chunk in context_chunks):
+                                employee_context = self._get_employee_context(result['employee_id'], analysis)
+                                context_chunks.extend(employee_context)
+                                employees_added += 1
+                                print(f"DEBUG: Added employee {emp_data['name']} from semantic search")
+                    except Exception as e:
+                        print(f"DEBUG: Vector search failed: {e}")
+                        # If vector search fails, try direct name matching as fallback
+                        print(f"DEBUG: Using direct name matching fallback")
+                        for entity in entities:
+                            if employees_added >= max_employees:
+                                break
+                            for emp in employees:
+                                if entity.lower() in emp['name'].lower():
+                                    if not any(emp['name'] in chunk for chunk in context_chunks):
+                                        employee_context = self._get_employee_context(emp['id'], analysis)
+                                        context_chunks.extend(employee_context)
+                                        employees_added += 1
+                                        print(f"DEBUG: Added employee {emp['name']} from direct name matching")
+                                        break
             
             elif scope in ["multiple_employees", "department", "team_analysis"]:
                 # Get broader context - search for relevant employees
                 print(f"DEBUG: Doing semantic search for multiple employees query")
-                search_results = self.vector_store.search_employees(query, n_results=remaining_slots + 10)
-                added_employees = set()
-                
-                for result in search_results:
-                    if employees_added >= max_employees:
-                        break
+                try:
+                    search_results = self.vector_store.search_employees(query, n_results=remaining_slots + 10)
+                    added_employees = set()
                     
-                    emp_data = self.employee_db.get_employee(result['employee_id'])
-                    if emp_data and emp_data['name'] not in added_employees:
-                        # Limit context per employee for broader analysis
-                        employee_context = self._get_employee_context(result['employee_id'], analysis)
-                        context_chunks.extend(employee_context[:2])  # Max 2 chunks per employee for broad analysis
-                        employees_added += 1
-                        added_employees.add(emp_data['name'])
-                        print(f"DEBUG: Added employee {emp_data['name']} from broad search")
+                    for result in search_results:
+                        if employees_added >= max_employees:
+                            break
+                        
+                        emp_data = self.employee_db.get_employee(result['employee_id'])
+                        if emp_data and emp_data['name'] not in added_employees:
+                            # Limit context per employee for broader analysis
+                            employee_context = self._get_employee_context(result['employee_id'], analysis)
+                            context_chunks.extend(employee_context[:2])  # Max 2 chunks per employee for broad analysis
+                            employees_added += 1
+                            added_employees.add(emp_data['name'])
+                            print(f"DEBUG: Added employee {emp_data['name']} from broad search")
+                except Exception as e:
+                    print(f"DEBUG: Vector search failed: {e}")
+                    # If vector search fails, use entities as fallback
+                    entities = analysis.get("key_entities", [])
+                    employees = self.employee_db.get_all_employees()
+                    for entity in entities:
+                        if employees_added >= max_employees:
+                            break
+                        for emp in employees:
+                            if entity.lower() in emp['name'].lower():
+                                if not any(emp['name'] in chunk for chunk in context_chunks):
+                                    employee_context = self._get_employee_context(emp['id'], analysis)
+                                    context_chunks.extend(employee_context[:2])
+                                    employees_added += 1
+                                    print(f"DEBUG: Added employee {emp['name']} from entity fallback")
+                                    break
         
         print(f"DEBUG: After semantic search - {employees_added} employees added, {len(context_chunks)} context chunks")
         
@@ -1538,8 +1799,11 @@ Return as JSON:
             # Only use general chunks if we still have no employee data
             if not any("Profile Summary" in chunk or " - " in chunk for chunk in context_chunks):
                 print("DEBUG: Still no employee data, using general chunks as last resort")
-                general_chunks = self.vector_store.get_relevant_chunks(query, n_results=8)
-                context_chunks.extend(general_chunks)
+                try:
+                    general_chunks = self.vector_store.get_relevant_chunks(query, n_results=8)
+                    context_chunks.extend(general_chunks)
+                except Exception as e:
+                    print(f"DEBUG: General chunk search failed: {e}")
         
         print(f"DEBUG: Final context - {len(context_chunks)} chunks total")
         return context_chunks
@@ -1681,26 +1945,47 @@ Return as JSON:
         priority_chunks = []
         added_names = set()
         
+        print(f"DEBUG: [priority] Ensuring {len(context_employees)} priority employees are included")
+        print(f"DEBUG: [priority] Priority employees: {context_employees}")
+        
         # Extract names already in existing chunks
         for chunk in existing_chunks:
             for emp_name in context_employees:
                 if emp_name.lower() in chunk.lower():
                     added_names.add(emp_name)
+                    print(f"DEBUG: [priority] {emp_name} already found in existing chunks")
+        
+        print(f"DEBUG: [priority] Already included: {list(added_names)}")
         
         # Add missing priority employees
         employees = self.employee_db.get_all_employees()
         for target_name in context_employees:
-            if target_name in added_names or len(priority_chunks) >= max_priority:
+            if target_name in added_names:
+                print(f"DEBUG: [priority] Skipping {target_name} - already included")
                 continue
                 
+            if len(priority_chunks) >= max_priority:
+                print(f"DEBUG: [priority] Reached max priority limit ({max_priority}), stopping")
+                break
+                
+            # Find the employee in the database
+            target_found = False
             for emp in employees:
                 if target_name.lower() in emp['name'].lower() or emp['name'].lower() in target_name.lower():
                     employee_context = self._get_employee_context(emp['id'], analysis)
-                    priority_chunks.extend(employee_context)
-                    added_names.add(target_name)
-                    print(f"DEBUG: Added missing priority context for {emp['name']}")
+                    if employee_context:
+                        priority_chunks.extend(employee_context)
+                        added_names.add(target_name)
+                        target_found = True
+                        print(f"DEBUG: [priority] Added context for {emp['name']} ({len(employee_context)} chunks)")
+                    else:
+                        print(f"DEBUG: [priority] No context found for {emp['name']}")
                     break
+            
+            if not target_found:
+                print(f"DEBUG: [priority] Could not find employee matching '{target_name}' in database")
         
+        print(f"DEBUG: [priority] Added {len(priority_chunks)} priority chunks for {len(added_names)} employees")
         return priority_chunks
 
     def _get_employee_context(self, employee_id: str, analysis: Dict[str, Any]) -> List[str]:
@@ -2583,9 +2868,37 @@ These employees exist in our employee database and have the highest adjustment s
             # Return a meaningful error message instead of None
             return f"I apologize, but I encountered an error while processing your numerical ranking query: {str(e)}. Please try again or contact support if the issue persists."
 
-    # Legacy methods removed - replaced by AI-driven query planning architecture
-    # _find_direct_employee_match, _handle_specific_assessment_query, _extract_specific_score_request
-    # have been replaced by _plan_query_with_ai() and _execute_query_plan() methods
+    def _find_direct_employee_match(self, query: str) -> Optional[Dict[str, Any]]:
+        """Find a direct employee match in the query"""
+        # Extract employee names from query
+        employee_names = self._extract_employee_names_from_query(query)
+        
+        if len(employee_names) == 1:
+            # Single employee found - get their data
+            employee_name = employee_names[0]
+            all_employees = self.employee_db.get_all_employees()
+            
+            for emp in all_employees:
+                if emp["name"].lower() == employee_name.lower():
+                    return {
+                        "id": emp["id"],
+                        "name": emp["name"]
+                    }
+        elif len(employee_names) > 1:
+            # Multiple employees found - check if query is asking about a specific one
+            query_lower = query.lower()
+            for employee_name in employee_names:
+                # Check if the query specifically mentions this employee
+                if employee_name.lower() in query_lower:
+                    all_employees = self.employee_db.get_all_employees()
+                    for emp in all_employees:
+                        if emp["name"].lower() == employee_name.lower():
+                            return {
+                                "id": emp["id"],
+                                "name": emp["name"]
+                            }
+        
+        return None
 
     def _generate_answer_from_context(self, query: str, context_chunks: list) -> str:
         """
@@ -2637,5 +2950,3 @@ Provide a helpful, accurate answer based on the context above."""
             combined_context = " ".join(context_chunks[:3])
             return f"Based on the available information: {combined_context[:800]}..."
 
-# Note: The RAG system is now initialized in the modular app with proper data instances
-# instead of using a global instance here 

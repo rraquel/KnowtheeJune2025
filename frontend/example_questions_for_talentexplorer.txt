@@ -1,0 +1,72 @@
+📋 Example Questions for Talent Explorer
+🎯 Succession Planning & Leadership
+"Who are the top 3 candidates for senior engineering leadership?"
+"Which employees show the highest leadership potential in marketing?"
+"Who are the top 3 candidates with highest Hogan ambition scores?"
+"Who would be best for an international assignment?"
+👥 Team Analysis & Dynamics
+"What are the strengths and gaps in our product team?"
+"Who would work well together on an innovation project?"
+"What are the strengths and gaps in our engineering team?"
+"Compare leadership styles between Sarah and Michael"
+⚠️ Risk Assessment
+"Which high-performers might be at risk of leaving?"
+"What are common derailers among senior leaders?"
+"Which high-performers have concerning derailer patterns?"
+"Show me all employees with adjustment scores over 75"
+📈 Development Planning
+"Which employees need communication skills development?"
+"Who has potential for international assignments?"
+"Who needs coaching on emotional regulation?"
+"What are Sarah Johnson's development priorities?"
+�� CV/Resume Specific Queries
+"What specific programming languages does Sarah know from her CV?"
+"What specific projects did John work on at Microsoft?"
+"Which employees have MBA degrees according to their resumes?"
+"What universities did our engineering team attend?"
+"Which employees have international work experience based on their resumes?"
+📊 Assessment Score Queries
+"What is Maria's exact Hogan Adjustment score?"
+"Show me the detailed IDI development areas for David"
+"Which employees have Hogan HDS Skeptical scores above 70?"
+"What is John's exact Adjustment score from his Hogan assessment?"
+"Which employees have the highest Hogan Ambition scores with exact numbers?"
+🔄 Cross-Document Analysis
+"Compare CV experience with Hogan assessment results for leadership roles"
+"Find employees whose resume skills match their IDI development strengths"
+"Compare the leadership experience mentioned in CVs vs. assessment results"
+"Find employees whose CV experience aligns with high Hogan Leadership Potential"
+🏢 Organizational Analytics
+"What are the strengths and gaps in our engineering team?"
+"How do our values align across different departments?"
+"Who are our emerging leaders under 35?"
+"How do Hogan scores relate to performance ratings?"
+🎯 Individual Deep Dives
+"What programming languages does John Smith know?"
+"What are Sarah Johnson's development priorities?"
+"Generate comprehensive profiles with numerical score extraction"
+"Ask unlimited follow-up questions about specific employees"
+📋 Department & Role Analysis
+"Who would be best for an international assignment?"
+"Who would be best for an innovation project?"
+"What are the strengths and gaps in our product team?"
+"Compare leadership styles between Sarah and Michael"
+�� Technical & Skills Queries
+"What specific programming languages does Sarah know from her CV?"
+"Which employees have MBA degrees according to their resumes?"
+"What universities did our engineering team attend?"
+"Search within a specific document for project management experience"
+📈 Performance & Analytics
+"How do Hogan scores relate to performance ratings?"
+"Who are our emerging leaders under 35?"
+"Show me all employees with adjustment scores over 75"
+"Which employees have the highest Hogan Ambition scores with exact numbers?"
+🎯 Sample Query Categories
+Basic Employee Information
+"What is [employee name]'s educational background?"
+"What are [employee name]'s key strengths?"
+"What is [employee name]'s management level?"
+Assessment-Specific
+"What are [employee name]'s Hogan scores?"
+"What is [employee name]'s IDI development profile?"
+"What are [employee name]'s derailer risks?"

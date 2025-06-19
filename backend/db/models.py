@@ -187,6 +187,7 @@ class EmbeddingChunk(Base, TimestampMixin):
     __tablename__ = 'embedding_chunks'
 
     id = Column(PG_UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    employee_id = Column(PG_UUID(as_uuid=True), ForeignKey('employees.id', ondelete='CASCADE'), nullable=False)
     external_document_id = Column(PG_UUID(as_uuid=True), ForeignKey('embedding_documents.external_document_id', ondelete='CASCADE'), nullable=False)
     chunk_index = Column(Integer, nullable=False)
     content = Column(Text, nullable=False)
@@ -196,4 +197,5 @@ class EmbeddingChunk(Base, TimestampMixin):
     chunk_label = Column(Text, nullable=True)
     
     # Relationships
+    employee = relationship("Employee")
     document = relationship("EmbeddingDocument", back_populates="chunks", foreign_keys=[external_document_id])

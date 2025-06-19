@@ -147,6 +147,7 @@ CREATE TABLE embedding_documents (
 -- Create embedding_chunks table
 CREATE TABLE embedding_chunks (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    employee_id UUID NOT NULL REFERENCES employees(id) ON DELETE CASCADE,
     external_document_id UUID NOT NULL REFERENCES embedding_documents(external_document_id) ON DELETE CASCADE,
     chunk_index INTEGER NOT NULL,
     
@@ -167,5 +168,6 @@ CREATE INDEX idx_embedding_docs_employee ON embedding_documents(employee_id);
 CREATE INDEX idx_embedding_docs_run ON embedding_documents(embedding_run_id);
 CREATE INDEX idx_embedding_docs_type ON embedding_documents(document_type);
 CREATE INDEX idx_embedding_docs_external ON embedding_documents(external_document_id);
+CREATE INDEX idx_embedding_chunks_employee ON embedding_chunks(employee_id);
 CREATE INDEX idx_embedding_chunks_doc ON embedding_chunks(external_document_id);
 CREATE INDEX idx_embedding_chunks_vector ON embedding_chunks USING ivfflat(embedding);

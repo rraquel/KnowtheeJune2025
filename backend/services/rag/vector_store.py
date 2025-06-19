@@ -3,6 +3,12 @@ PostgreSQL pgvector-based vector store
 Production-ready vector storage and retrieval using PostgreSQL + pgvector
 """
 import os
+import traceback
+from dotenv import load_dotenv
+
+# Load environment variables at the very top
+load_dotenv()
+
 import json
 import logging
 from typing import List, Dict, Any, Optional
@@ -37,10 +43,15 @@ class VectorStore:
             # Initialize OpenAI client for embeddings
             openai_api_key = os.getenv('OPENAI_API_KEY')
             if not openai_api_key:
-                logger.warning("OPENAI_API_KEY not set - vector search will be limited")
+                logger.warning(f"❌ OPENAI_API_KEY not set in {__file__}")
+                print("Stack trace:")
+                traceback.print_stack()
+                print(f"Current working directory: {os.getcwd()}")
+                print(f"Environment variables containing 'OPENAI': {[k for k in os.environ.keys() if 'OPENAI' in k.upper()]}")
                 self.openai_client = None
             else:
                 self.openai_client = openai.OpenAI(api_key=openai_api_key)
+                print(f"✅ OpenAI client initialized successfully from {__file__}")
             
             # Test database connection and pgvector
             self._test_connection()

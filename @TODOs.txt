@@ -3,9 +3,6 @@ This is a list of things to do and not forget
 Add backend services in docker yml file to handle interference logiv and serves chat
 separate dev and prod  in docker configurations separate yml files with optimized settings
 add reverse proxy ? if we are going for a multi container approach
-Hardcoded API URL: Switch to environment variables or config.py for backend URLs.
-    import os
-    BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000/api/talent")
 
 Database:
 full text search indexes for resume dields 

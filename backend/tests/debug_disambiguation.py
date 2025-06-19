@@ -6,19 +6,19 @@ import sys
 import os
 
 # Add backend to path for imports
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.append(os.path.join(os.path.dirname(__file__), 'backend'))
 from config import API_BASE_URL
 
-def test_api_flow():
-    """Test the complete API flow to debug the Aisha issue."""
+def test_disambiguation():
+    """Test the disambiguation logic."""
     
     # Test 1: Clear cache first
     print("1. Clearing cache...")
     response = requests.post(f"{API_BASE_URL}/clear-cache")
     print(f"Cache clear response: {response.json()}")
     
-    # Test 2: Send Aisha query
-    print("\n2. Sending Aisha query...")
+    # Test 2: Send ambiguous query
+    print("\n2. Sending ambiguous query...")
     query_data = {
         "message": "what is the ambition score of Aisha",
         "session_id": "debug_session"
@@ -33,14 +33,14 @@ def test_api_flow():
         result = response.json()
         print(f"Response: {result['response']}")
         
-        # Test 3: Check if the response contains clarification
-        if "multiple employees" in result['response'].lower() or "please specify" in result['response'].lower():
-            print("✅ SUCCESS: Clarification logic is working!")
+        if result.get("clarification_needed"):
+            print("✅ SUCCESS: Disambiguation working!")
+            candidates = result.get("candidates", [])
+            print(f"Found {len(candidates)} candidates")
         else:
-            print("❌ FAILURE: Clarification logic is NOT working!")
-            print("Expected clarification message but got direct answer.")
+            print("❌ FAILURE: Expected disambiguation but got direct answer")
     else:
         print(f"❌ API Error: {response.status_code} - {response.text}")
 
 if __name__ == "__main__":
-    test_api_flow() 
+    test_disambiguation() 

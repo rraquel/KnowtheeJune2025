@@ -5,8 +5,12 @@ from sqlalchemy.exc import SQLAlchemyError
 import os
 from typing import Generator
 
-# Get database URL from environment variable or use default
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+psycopg2://postgres:postgres@127.0.0.1:5433/knowthee")
+# Import config for database URL
+try:
+    from ..config import DATABASE_URL
+except ImportError:
+    # Fallback for direct execution
+    DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+psycopg2://postgres:postgres@127.0.0.1:5433/knowthee")
 
 # Create engine and session factory with connection parameters
 engine = create_engine(

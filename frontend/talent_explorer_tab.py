@@ -1,9 +1,7 @@
 import streamlit as st
 import pandas as pd
 import requests
-
-#BACKEND_URL = "http://localhost:8000"
-BACKEND_URL = "http://localhost:8000/api/talent"
+from config import BACKEND_URL
 
 def show_talent_explorer():
     st.title("Talent Explorer")

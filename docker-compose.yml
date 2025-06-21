@@ -33,7 +33,9 @@ services:
     volumes:
       - .:/app
     environment:
+      - DOCKER_ENV=true
       - DATABASE_URL=postgresql+psycopg2://postgres:postgres@db:5432/knowthee
+      - BACKEND_HOST=0.0.0.0
       - OPENAI_API_KEY=${OPENAI_API_KEY}
     command: ["uvicorn", "backend.api:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
 

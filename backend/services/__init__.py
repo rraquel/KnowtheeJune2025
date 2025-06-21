@@ -1,1 +1,1 @@
-from .talent_explorer import router as talent_router
+from .talent_explorer_services import router as talent_router

@@ -2,15 +2,20 @@ import streamlit as st
 import requests
 import json
 import time
+import sys
+import os
 from typing import Dict, Any, Optional
 
-# Configuration
-API_BASE_URL = "http://localhost:8000/api/talent"
+# Add root directory to path to import config
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from config import BACKEND_URL
+
+BACKEND_API_URL = BACKEND_URL
 
 def check_api_health():
     """Check if the API is healthy."""
     try:
-        response = requests.get(f"{API_BASE_URL}/health", timeout=5)
+        response = requests.get(f"{BACKEND_API_URL}/health", timeout=5)
         return response.status_code == 200
     except:
         return False
@@ -19,7 +24,7 @@ def send_chat_message(message: str, session_id: str) -> Dict[str, Any]:
     """Send a chat message to the API."""
     try:
         response = requests.post(
-            f"{API_BASE_URL}/chat",
+            f"{BACKEND_API_URL}/chat",
             json={"message": message, "session_id": session_id},
             timeout=30
         )
@@ -39,7 +44,7 @@ def send_chat_message(message: str, session_id: str) -> Dict[str, Any]:
 def clear_cache():
     """Clear the API cache."""
     try:
-        response = requests.post(f"{API_BASE_URL}/clear-cache", timeout=5)
+        response = requests.post(f"{BACKEND_API_URL}/clear-cache", timeout=5)
         return response.status_code == 200
     except:
         return False

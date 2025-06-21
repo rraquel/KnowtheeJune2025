@@ -5,16 +5,16 @@ import json
 import sys
 import os
 
-# Add backend to path for imports
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from config import API_BASE_URL
+# Add root directory to path for imports
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+from config import BACKEND_API_URL
 
 def test_api_flow():
     """Test the complete API flow to debug the Aisha issue."""
     
     # Test 1: Clear cache first
     print("1. Clearing cache...")
-    response = requests.post(f"{API_BASE_URL}/clear-cache")
+    response = requests.post(f"{BACKEND_API_URL}/clear-cache")
     print(f"Cache clear response: {response.json()}")
     
     # Test 2: Send Aisha query
@@ -25,7 +25,7 @@ def test_api_flow():
     }
     
     response = requests.post(
-        f"{API_BASE_URL}/chat",
+        f"{BACKEND_API_URL}/chat",
         json=query_data
     )
     

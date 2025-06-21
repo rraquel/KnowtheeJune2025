@@ -3,11 +3,15 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.exc import SQLAlchemyError
 import os
+import sys
 from typing import Generator
+
+# Add root directory to path to import config
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 # Import config for database URL
 try:
-    from ..config import DATABASE_URL
+    from config import DATABASE_URL
 except ImportError:
     # Fallback for direct execution
     DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+psycopg2://postgres:postgres@127.0.0.1:5433/knowthee")
